@@ -7,9 +7,7 @@ import java.util.Properties;
 public class PropertyFileReader {
     private Properties properties;
     InputStream inputStream = null;
-
     public PropertyFileReader(String filePath){
-
         try{
             inputStream = new FileInputStream(filePath);
             properties = new Properties();
@@ -27,7 +25,6 @@ public class PropertyFileReader {
             }
         }
     }
-
     public String getValueFromKey(String key){
         String value = null;
         value = properties.getProperty(key);
