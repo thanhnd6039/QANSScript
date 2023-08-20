@@ -24,7 +24,6 @@ public class WebDriverManager {
 
     public WebDriverManager(){
         driverPath = "C:\\CucumberFramework\\Drivers\\Web\\Windows\\";
-        driverPath = "C:\\CucumberFramework\\Downloads\\";
         environmentType = FileReaderManager.getInstance().getPropertyFileReader("C:\\CucumberFramework\\Config\\Configuration.properties").getValueFromKey("ENVIRONMENT");
         driverType = FileReaderManager.getInstance().getPropertyFileReader("C:\\CucumberFramework\\Config\\Configuration.properties").getValueFromKey("BROWSER");
     }
