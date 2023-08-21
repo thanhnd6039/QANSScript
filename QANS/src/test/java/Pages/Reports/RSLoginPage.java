@@ -18,7 +18,7 @@ public class RSLoginPage extends KeywordWebUI {
         String url = "";
         switch (title){
             case "GAP to SF Part Number Details":
-                url = rootUrl + "/Pages/ReportViewer.aspx?%2fNetsuite+Reports%2fSales+Gap+Report+NS+With+SO+Forecast&rs:Command=Render";
+                url = rootUrl + "/Pages/ReportViewer.aspx?/NetSuite+Reports/GAP+to+SF+-+Part+Number+Detail&rs:Command=Render&FromYear=2021&FromTime=1&ToYear=2023&ToTime=3&SalesPerson=29336&SalesPerson=98&SalesPerson=96&SalesPerson=28095";
                 break;
             default:
                 System.out.println("no match");
@@ -26,5 +26,10 @@ public class RSLoginPage extends KeywordWebUI {
         }
         driver.get(url);
     }
+    public void shouldSeeTitleOfReport(String title){
+
+    }
+
+
 
 }
