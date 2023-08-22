@@ -27,9 +27,7 @@ public class RSLoginPage extends KeywordWebUI {
         }
         driver.get(url);
     }
-    public void shouldSeeTitleOfReport(String title){
 
-    }
 
 
 
