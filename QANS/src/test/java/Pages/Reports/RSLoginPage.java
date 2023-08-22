@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 
 public class RSLoginPage extends KeywordWebUI {
     private WebDriver driver;
+
     private String rootUrl = "";
     public RSLoginPage(WebDriver driver){
         super(driver);
