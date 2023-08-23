@@ -13,16 +13,12 @@ public class RSLoginStepDefinition {
     public RSLoginStepDefinition(TestContext context){
         testContext = context;
         rsLoginPage = testContext.getPageObjectManager().getRsLoginPage();
-        rsGapToSFPartNumberDetailsPage = testContext.getPageObjectManager().getRsGapToSFPartNumberDetailsPage();
     }
     @Given("^I login to the (.*) Report$")
     public void loginToReport(String title) throws Throwable{
         rsLoginPage.loginToReport(title);
     }
-    @Then("^I should see the title of report is (.*)$")
-    public void shouldSeeTitleOfReport(String title) throws Throwable{
-        rsGapToSFPartNumberDetailsPage.shouldSeeTitle(title);
-    }
+
 
 
 }
