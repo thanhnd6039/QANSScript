@@ -2,6 +2,7 @@ package StepDefinitions.Reports;
 
 import Pages.Reports.RSGapToSFPartNumberDetailsPage;
 import SharingTestContext.TestContext;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 
 public class RSGapToSFPartNumberDetailsStepDefinition {
@@ -15,8 +16,9 @@ public class RSGapToSFPartNumberDetailsStepDefinition {
     public void shouldSeeTitleOfReport(String title) throws Throwable{
         rsGapToSFPartNumberDetailsPage.shouldSeeTitle(title);
     }
-    public void getSourceDataForGapToSFPNDetail(){
-
+    @And("^I get the source data for the GAP to SF - Part Number Detail report from NS$")
+    public void getSourceDataForGapToSFPNDetailReport(){
+        rsGapToSFPartNumberDetailsPage.getSourceDataForGapToSFPNDetailReport();
     }
 
 

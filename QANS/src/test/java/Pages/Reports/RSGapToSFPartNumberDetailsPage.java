@@ -21,6 +21,9 @@ public class RSGapToSFPartNumberDetailsPage extends KeywordWebUI {
         String actualTitle = getTextFromElement(txtTitle);
         Assert.assertEquals(title, actualTitle);
     }
+    public void getSourceDataForGapToSFPNDetailReport(){
+
+    }
 
 
 }
