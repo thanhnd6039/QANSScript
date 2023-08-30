@@ -16,6 +16,10 @@ public class RSGapToSFPartNumberDetailsStepDefinition {
     public void shouldSeeTitleOfReport(String title) throws Throwable{
         rsGapToSFPartNumberDetailsPage.shouldSeeTitle(title);
     }
+    @And("^I get OEM Group by main Sale Rep from NS$")
+    public void getOEMGroupByMainSaleRep() throws Throwable{
+        rsGapToSFPartNumberDetailsPage.getOEMGroupByMainSaleRep();
+    }
     @And("^I get the source data for the GAP to SF - Part Number Detail report from NS$")
     public void getSourceDataForGapToSFPNDetailReport(){
         rsGapToSFPartNumberDetailsPage.getSourceDataForGapToSFPNDetailReport();
