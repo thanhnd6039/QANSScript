@@ -7,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,4 +64,33 @@ public class ExcelReader {
         }
         return rowsArr;
     }
+
+    public void writeDataToExcel(String filePath, int sheetIndex, int rowIndex, int colIndex, Object cellValue){
+        try{
+            File file = new File(filePath);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            XSSFWorkbook wb = new XSSFWorkbook(fileInputStream);
+            XSSFSheet sheet = wb.getSheetAt(sheetIndex);
+            Row row = null;
+            if (sheet.getRow(rowIndex) != null){
+                row = sheet.getRow(rowIndex);
+            }else {
+                row = sheet.createRow(rowIndex);
+            }
+            Cell cell = row.createCell(colIndex);
+            if (cellValue instanceof Double){
+                cell.setCellValue(Double.valueOf(cellValue.toString()));
+            }else if (cellValue instanceof String){
+                cell.setCellValue(cellValue.toString());
+            }
+            FileOutputStream fout = new FileOutputStream(file);
+            wb.write(fout);
+            fout.close();
+
+        }catch (Exception e){
+            System.out.println(String.format("Error: %s", e.getMessage()));
+        }
+    }
+
+
 }

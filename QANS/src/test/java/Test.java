@@ -1,16 +1,15 @@
 import Helpers.DataProvider.ExcelReader;
+import org.apache.commons.collections4.list.SetUniqueList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Test {
     public static void main(String[] args) {
-        String filePath = "C:\\CucumberFramework\\Downloads\\VTOEMGroup.xlsx";
-        ExcelReader excelReader = new ExcelReader();
-        List<Object[]> dataOfVTOEMGroup = new ArrayList<>();
-        dataOfVTOEMGroup = excelReader.readDataFromExcel(filePath, 0, 1, 0);
-        System.out.println("Num of rows: "+dataOfVTOEMGroup.size());
+        String filePath = "C:\\CucumberFramework\\Downloads\\ApprovedSalesForecast.xlsx";
 
     }
 }
