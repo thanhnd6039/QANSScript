@@ -138,9 +138,17 @@ public class RSGapToSFPartNumberDetailsPage extends RSCommonPage {
 //        }
         return table;
     }
+
     public List<Object[]> getOEMGroupByMainSaleRepFromApprovedBudgetFile(){
         List<Object[]> table = new ArrayList<>();
+        List<Object[]> dataOfApprovedBudgetFile = new ArrayList<>();
+        String approvedBudgetFilePath = "C:\\CucumberFramework\\Downloads\\ApprovedBudget.xlsx";
 
+        dataOfApprovedBudgetFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(approvedBudgetFilePath,0, 1,0);
+        List<String> listOfOEMGroupFromApprovedBudgetFile =  new ArrayList<>();
+        for (int approvedBudgetIndex = 0; approvedBudgetIndex < dataOfApprovedBudgetFile.size(); approvedBudgetIndex++){
+            listOfOEMGroupFromApprovedSaleFCFile.add(dataOfApprovedSaleFCFile.get(approvedSaleFCIndex)[1].toString().trim());
+        }
         return table;
     }
 
