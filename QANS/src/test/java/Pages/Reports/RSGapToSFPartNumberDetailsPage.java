@@ -1,6 +1,7 @@
 package Pages.Reports;
 
 import Helpers.Manager.FileReaderManager;
+import Pages.CommonPage;
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +11,7 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.util.*;
 
-public class RSGapToSFPartNumberDetailsPage extends RSCommonPage {
+public class RSGapToSFPartNumberDetailsPage extends CommonPage {
     private WebDriver driver;
     @FindBy(xpath = "//*/div[contains(text(),'GAP to SF - Part Number Detail')]")
     private WebElement txtTitle;
@@ -86,9 +87,9 @@ public class RSGapToSFPartNumberDetailsPage extends RSCommonPage {
         for (int approvedSaleFCIndex = 0; approvedSaleFCIndex < listOfOEMGroupFromApprovedSaleFCFileWithoutDuplicated.size(); approvedSaleFCIndex++){
             String oemGroupFromApprovedSaleFCFile = listOfOEMGroupFromApprovedSaleFCFileWithoutDuplicated.get(approvedSaleFCIndex).toString().trim();
             Boolean hasOEMGroup = false;
-            for (int VTOEMGroupIndex = 0; VTOEMGroupIndex < dataOfVTOEMGroupFile.size(); VTOEMGroupIndex++){
-                String oemGroupFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(VTOEMGroupIndex)[1].toString().trim();
-                String saleRepFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(VTOEMGroupIndex)[4].toString().trim();
+            for (int vtOEMGroupIndex = 0; vtOEMGroupIndex < dataOfVTOEMGroupFile.size(); vtOEMGroupIndex++){
+                String oemGroupFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(vtOEMGroupIndex)[1].toString().trim();
+                String saleRepFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(vtOEMGroupIndex)[4].toString().trim();
                 Object[] cols = new Object[2];
                 if (oemGroupFromApprovedSaleFCFile.equalsIgnoreCase(oemGroupFromVTOEMGroupFile)){
                     cols[0] = oemGroupFromApprovedSaleFCFile;
@@ -141,13 +142,25 @@ public class RSGapToSFPartNumberDetailsPage extends RSCommonPage {
 
     public List<Object[]> getOEMGroupByMainSaleRepFromApprovedBudgetFile(){
         List<Object[]> table = new ArrayList<>();
+        List<Object[]> dataOfVTOEMGroupFile = new ArrayList<>();
         List<Object[]> dataOfApprovedBudgetFile = new ArrayList<>();
+        String vtOEMGroupFilePath = "C:\\CucumberFramework\\Downloads\\VTOEMGroup.xlsx";
         String approvedBudgetFilePath = "C:\\CucumberFramework\\Downloads\\ApprovedBudget.xlsx";
 
+        dataOfVTOEMGroupFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(vtOEMGroupFilePath, 0, 1, 0);
         dataOfApprovedBudgetFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(approvedBudgetFilePath,0, 1,0);
         List<String> listOfOEMGroupFromApprovedBudgetFile =  new ArrayList<>();
         for (int approvedBudgetIndex = 0; approvedBudgetIndex < dataOfApprovedBudgetFile.size(); approvedBudgetIndex++){
-            listOfOEMGroupFromApprovedSaleFCFile.add(dataOfApprovedSaleFCFile.get(approvedSaleFCIndex)[1].toString().trim());
+            listOfOEMGroupFromApprovedBudgetFile.add(dataOfApprovedBudgetFile.get(approvedBudgetIndex)[1].toString().trim());
+        }
+        List<String> listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated = SetUniqueList.setUniqueList(listOfOEMGroupFromApprovedBudgetFile);
+
+        for (int approvedBudgetIndex = 0; approvedBudgetIndex < listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated.size(); approvedBudgetIndex++){
+            String oemGroupFromApprovedBudgetFile = listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated.get(approvedBudgetIndex).toString().trim();
+            for (int vtOEMGroupIndex = 0; vtOEMGroupIndex < dataOfVTOEMGroupFile.size(); vtOEMGroupIndex++){
+                String oemGroupFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(vtOEMGroupIndex)[1].toString().trim();
+
+            }
         }
         return table;
     }
