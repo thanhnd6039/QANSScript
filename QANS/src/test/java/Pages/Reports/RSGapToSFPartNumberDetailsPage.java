@@ -139,31 +139,105 @@ public class RSGapToSFPartNumberDetailsPage extends CommonPage {
 //        }
         return table;
     }
-
     public List<Object[]> getOEMGroupByMainSaleRepFromApprovedBudgetFile(){
         List<Object[]> table = new ArrayList<>();
         List<Object[]> dataOfVTOEMGroupFile = new ArrayList<>();
         List<Object[]> dataOfApprovedBudgetFile = new ArrayList<>();
+        List<Object[]> dataOfAllOEMWithOEMGroupFile = new ArrayList<>();
         String vtOEMGroupFilePath = "C:\\CucumberFramework\\Downloads\\VTOEMGroup.xlsx";
         String approvedBudgetFilePath = "C:\\CucumberFramework\\Downloads\\ApprovedBudget.xlsx";
+        String allOEMWithOEMGroupFilePath = "C:\\CucumberFramework\\Downloads\\AllOEMwithOEMGroup.xlsx";
 
         dataOfVTOEMGroupFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(vtOEMGroupFilePath, 0, 1, 0);
         dataOfApprovedBudgetFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(approvedBudgetFilePath,0, 1,0);
+        dataOfAllOEMWithOEMGroupFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(allOEMWithOEMGroupFilePath, 0, 1, 0);
         List<String> listOfOEMGroupFromApprovedBudgetFile =  new ArrayList<>();
         for (int approvedBudgetIndex = 0; approvedBudgetIndex < dataOfApprovedBudgetFile.size(); approvedBudgetIndex++){
             listOfOEMGroupFromApprovedBudgetFile.add(dataOfApprovedBudgetFile.get(approvedBudgetIndex)[1].toString().trim());
         }
         List<String> listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated = SetUniqueList.setUniqueList(listOfOEMGroupFromApprovedBudgetFile);
+        List<String> listOfOEMGroupFromApprovedBudgetFileNeedToTakeSaleRep = new ArrayList<>();
 
         for (int approvedBudgetIndex = 0; approvedBudgetIndex < listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated.size(); approvedBudgetIndex++){
+            boolean isOEMGroupFromApprovedBudgetInVTOEMGroupFile = false;
             String oemGroupFromApprovedBudgetFile = listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated.get(approvedBudgetIndex).toString().trim();
             for (int vtOEMGroupIndex = 0; vtOEMGroupIndex < dataOfVTOEMGroupFile.size(); vtOEMGroupIndex++){
                 String oemGroupFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(vtOEMGroupIndex)[1].toString().trim();
-
+                if (oemGroupFromApprovedBudgetFile.contains(":")){
+                    String[] strArr = oemGroupFromAllOEMWithOEMGroupFile.split(":", 2);
+                    oemGroupFromAllOEMWithOEMGroupFile = strArr[1].toString().trim();
+                }
+                if (oemGroupFromApprovedBudgetFile.equalsIgnoreCase(oemGroupFromVTOEMGroupFile)){
+                    isOEMGroupFromApprovedBudgetInVTOEMGroupFile = true;
+                    break;
+                }
+            }
+            if (isOEMGroupFromApprovedBudgetInVTOEMGroupFile == false){
+                listOfOEMGroupFromApprovedBudgetFileNeedToTakeSaleRep.add(oemGroupFromApprovedBudgetFile);
+            }
+        }
+        for (int approvedBudgetIndex = 0; approvedBudgetIndex < listOfOEMGroupFromApprovedBudgetFileNeedToTakeSaleRep.size(); approvedBudgetIndex++){
+            String oemGroupFromApprovedBudgetFile = listOfOEMGroupFromApprovedBudgetFileNeedToTakeSaleRep.get(approvedBudgetIndex).toString().trim();
+            for(int allOEMWithOEMGroupIndex = 0; allOEMWithOEMGroupIndex < dataOfAllOEMWithOEMGroupFile.size(); allOEMWithOEMGroupIndex++){
+                String oemGroupFromAllOEMWithOEMGroupFile = dataOfAllOEMWithOEMGroupFile.get(allOEMWithOEMGroupIndex)[7].toString().trim();
+                String saleRepFromAllOEMWithOEMGroupFile = dataOfAllOEMWithOEMGroupFile.get(allOEMWithOEMGroupIndex)[4].toString().trim();
+                String cusName =  dataOfAllOEMWithOEMGroupFile.get(allOEMWithOEMGroupIndex)[2].toString().trim();
+                Object[] cols = new Object[2];
+                if (oemGroupFromAllOEMWithOEMGroupFile.contains(":")){
+                    String[] strArr = oemGroupFromAllOEMWithOEMGroupFile.split(":", 2);
+                    oemGroupFromAllOEMWithOEMGroupFile = strArr[1].toString().trim();
+                }
+                if (oemGroupFromApprovedBudgetFile.equalsIgnoreCase(oemGroupFromAllOEMWithOEMGroupFile)){
+                    cols[0] = oemGroupFromApprovedBudgetFile;
+                    cols[1] = saleRepFromAllOEMWithOEMGroupFile;
+                    table.add(cols);
+                    break;
+                }
+                if (cusName.contains(":")){
+                    String[] strArr = cusName.split(":", 2);
+                    cusName = strArr[1].toString().trim();
+                }
+                if (oemGroupFromApprovedBudgetFile.equalsIgnoreCase(cusName)){
+                    cols[0] = oemGroupFromApprovedBudgetFile;
+                    cols[1] = saleRepFromAllOEMWithOEMGroupFile;
+                    table.add(cols);
+                    break;
+                }
             }
         }
         return table;
     }
+    public List<Object[]> getOEMGroupByMainSaleRepFromRevenueCostDumpFile(){
+        List<Object[]> table = new ArrayList<>();
+        List<Object[]> dataOfVTOEMGroupFile = new ArrayList<>();
+        List<Object[]> dataOfRevenueCostDumpFile = new ArrayList<>();
+        String vtOEMGroupFilePath = "C:\\CucumberFramework\\Downloads\\VTOEMGroup.xlsx";
+        String revenueCostDumpFilePath = "C:\\CucumberFramework\\Downloads\\RevenueCostDump.xlsx";
+        dataOfVTOEMGroupFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(vtOEMGroupFilePath, 0, 1, 0);
+        dataOfRevenueCostDumpFile = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(revenueCostDumpFilePath, 0, 1, 0);
+        List<String> listOfOEMGroupFromRevenueCostDumpFile =  new ArrayList<>();
+        for (int revenueCostDumpIndex = 0; revenueCostDumpIndex < dataOfRevenueCostDumpFile.size(); revenueCostDumpIndex++){
+            listOfOEMGroupFromRevenueCostDumpFile.add(dataOfRevenueCostDumpFile.get(revenueCostDumpIndex)[1].toString().trim());
+        }
+        List<String> listOfOEMGroupFromRevenueCostDumpFileWithoutDuplicated = SetUniqueList.setUniqueList(listOfOEMGroupFromRevenueCostDumpFile);
+        for (int revenueCostDumpIndex = 0; revenueCostDumpIndex < listOfOEMGroupFromRevenueCostDumpFileWithoutDuplicated.size(); revenueCostDumpIndex++){
+            boolean isOEMGroupFromRevenueCostDumpInVTOEMGroupFile = false;
+            String oemGroupFromApprovedBudgetFile = listOfOEMGroupFromApprovedBudgetFileWithoutDuplicated.get(approvedBudgetIndex).toString().trim();
+            for (int vtOEMGroupIndex = 0; vtOEMGroupIndex < dataOfVTOEMGroupFile.size(); vtOEMGroupIndex++){
+                String oemGroupFromVTOEMGroupFile = dataOfVTOEMGroupFile.get(vtOEMGroupIndex)[1].toString().trim();
+                if (oemGroupFromApprovedBudgetFile.equalsIgnoreCase(oemGroupFromVTOEMGroupFile)){
+                    isOEMGroupFromApprovedBudgetInVTOEMGroupFile = true;
+                    break;
+                }
+            }
+            if (isOEMGroupFromApprovedBudgetInVTOEMGroupFile == false){
+                listOfOEMGroupFromApprovedBudgetFileNeedToTakeSaleRep.add(oemGroupFromApprovedBudgetFile);
+            }
+        }
+
+        return table;
+    }
+
 
     public void getSourceDataForGapToSFPNDetailReport(){
 
