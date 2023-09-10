@@ -2,6 +2,8 @@ package Helpers.DataProvider;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -91,6 +93,31 @@ public class ExcelReader {
             System.out.println(String.format("Error: %s", e.getMessage()));
         }
     }
+
+    public void getOutputFromData(String filePath, Object[] headerCols, List<Object[]> data){
+        try {
+            File file = new File(filePath);
+            if (file.exists()){
+                file.delete();
+            }
+            Workbook wb = new XSSFWorkbook();
+            Sheet sheet = wb.createSheet("Sheet1");
+            FileOutputStream fileOut = new FileOutputStream(file);
+            wb.write(fileOut);
+            fileOut.close();
+            for (int colIndex = 0; colIndex < headerCols.length; colIndex++){
+                writeDataToExcel(filePath, 0, 0, colIndex, headerCols[colIndex]);
+            }
+            for (int rowIndex = 0; rowIndex < data.size(); rowIndex++){
+                for (int colIndex = 0; colIndex < headerCols.length; colIndex++){
+                    writeDataToExcel(filePath, 0, rowIndex+1, colIndex, data.get(rowIndex)[colIndex].toString().trim());
+                }
+            }
+        }catch (Exception e){
+            System.out.println(String.format("Error: %s", e.getMessage()));
+        }
+    }
+
 
 
 }

@@ -1,15 +1,14 @@
 package StepDefinitions.Reports;
 
-import Pages.Reports.RSGapToSFPartNumberDetailsPage;
+import Pages.Reports.RSGapToSFPNDetailsPage;
 import Pages.Reports.RSLoginPage;
 import SharingTestContext.TestContext;
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 
 public class RSLoginStepDefinition {
     private TestContext testContext;
     private RSLoginPage rsLoginPage;
-    private RSGapToSFPartNumberDetailsPage rsGapToSFPartNumberDetailsPage;
+    private RSGapToSFPNDetailsPage rsGapToSFPartNumberDetailsPage;
     public RSLoginStepDefinition(TestContext context){
         testContext = context;
         rsLoginPage = testContext.getPageObjectManager().getRsLoginPage();
