@@ -24,13 +24,14 @@ public class CommonPage extends KeywordWebUI {
     public void getAllOEMGroupByMainSaleRep(){
         List<Object[]> allOEMGroupByMainSaleReptable = new ArrayList<>();
         List<Object[]> VTOEMGroupTable = new ArrayList<>();
+        List<Object[]> SFTable = new ArrayList<>();
+        List<Object[]> budgetTable = new ArrayList<>();
+        List<Object[]> revCostDumpTable = new ArrayList<>();
 
-//        List<Object[]> budgetTable = new ArrayList<>();
-//        List<Object[]> revCostDumpTable = new ArrayList<>();
         VTOEMGroupTable = getOEMGroupByMainSaleRepFromVTOEMGroupOnNS();
-//        SFTable = getOEMGroupByMainSaleRepFromSFOnNS();
-//        budgetTable = getOEMGroupByMainSaleRepFromBudgetOnNS();
-//        revCostDumpTable = getOEMGroupByMainSaleRepFromRevCostDumpOnNS();
+        SFTable = getOEMGroupByMainSaleRepFromSFOnNS();
+        budgetTable = getOEMGroupByMainSaleRepFromBudgetOnNS();
+        revCostDumpTable = getOEMGroupByMainSaleRepFromRevCostDumpOnNS();
         for (int rowIndex = 0; rowIndex < VTOEMGroupTable.size(); rowIndex++){
             String oemGroup = VTOEMGroupTable.get(rowIndex)[0].toString().trim();
             String saleRep = VTOEMGroupTable.get(rowIndex)[1].toString().trim();
@@ -39,9 +40,6 @@ public class CommonPage extends KeywordWebUI {
             cols[1] = saleRep;
             allOEMGroupByMainSaleReptable.add(cols);
         }
-        VTOEMGroupTable.clear();
-        List<Object[]> SFTable = new ArrayList<>();
-        SFTable = getOEMGroupByMainSaleRepFromSFOnNS();
         for (int rowIndex = 0; rowIndex < SFTable.size(); rowIndex++){
             String oemGroup = SFTable.get(rowIndex)[0].toString().trim();
             String saleRep = SFTable.get(rowIndex)[1].toString().trim();
@@ -50,9 +48,7 @@ public class CommonPage extends KeywordWebUI {
             cols[1] = saleRep;
             allOEMGroupByMainSaleReptable.add(cols);
         }
-        SFTable.clear();
-        List<Object[]> budgetTable = new ArrayList<>();
-        budgetTable = getOEMGroupByMainSaleRepFromBudgetOnNS();
+
         for (int rowIndex = 0; rowIndex < budgetTable.size(); rowIndex++){
             String oemGroup = budgetTable.get(rowIndex)[0].toString().trim();
             String saleRep = budgetTable.get(rowIndex)[1].toString().trim();
@@ -61,9 +57,7 @@ public class CommonPage extends KeywordWebUI {
             cols[1] = saleRep;
             allOEMGroupByMainSaleReptable.add(cols);
         }
-        budgetTable.clear();
-        List<Object[]> revCostDumpTable = new ArrayList<>();
-        revCostDumpTable = getOEMGroupByMainSaleRepFromRevCostDumpOnNS();
+
         for (int rowIndex = 0; rowIndex < revCostDumpTable.size(); rowIndex++){
             String oemGroup = revCostDumpTable.get(rowIndex)[0].toString().trim();
             String saleRep = revCostDumpTable.get(rowIndex)[1].toString().trim();
@@ -72,7 +66,6 @@ public class CommonPage extends KeywordWebUI {
             cols[1] = saleRep;
             allOEMGroupByMainSaleReptable.add(cols);
         }
-        revCostDumpTable.clear();
 
         String output = "C:\\CucumberFramework\\Downloads\\Output.xlsx";
         Object[] headerCols = new Object[2];
