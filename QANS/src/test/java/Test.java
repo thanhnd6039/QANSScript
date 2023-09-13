@@ -1,4 +1,5 @@
 import Helpers.DataProvider.ExcelReader;
+import Pages.Reports.RSSaleGapAccountAssignmentPage;
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,17 +19,8 @@ import java.util.Set;
 public class Test {
     public static void main(String[] args) {
         String filePath = "C:\\CucumberFramework\\Downloads\\Output.xlsx";
-        try {
-            File file = new File(filePath);
-            Workbook wb = new XSSFWorkbook();
-            Sheet sheet = wb.createSheet("Sheet1");
-            FileOutputStream fileOut = new FileOutputStream(file);
-            wb.write(fileOut);
-            fileOut.close();
-            System.out.println("Excel File has been created successfully.");
-        }catch (Exception e){
-            System.out.println(String.format("Error: %s", e.getMessage()));
-        }
-
+        RSSaleGapAccountAssignmentPage rsSaleGapAccountAssignmentPage = new RSSaleGapAccountAssignmentPage();
+        rsSaleGapAccountAssignmentPage.getAllOEMGroupByMainSaleRep();
+        System.out.println("Done");
     }
 }
