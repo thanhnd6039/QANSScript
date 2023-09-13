@@ -88,51 +88,6 @@ public class RSSaleGapAccountAssignmentPage {
                 allOEMGroupByMainSaleRepTable.add(cols);
             }
         }
-        List<Object[]> allOEMGroupByMainSaleRepIncludedDataTable = new ArrayList<>();
-        List<Object[]> dataOfSF = new ArrayList<>();
-        List<Object[]> dataOfRevCostDump = new ArrayList<>();
-        dataOfRevCostDump = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(revCostDumpFilePath, 0, 1, 0);
-        dataOfSF = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(SFFilePath,0, 1,0);
-        for (int rowIndex = 0; rowIndex < allOEMGroupByMainSaleRepTable.size(); rowIndex++){
-            String oemGroup = allOEMGroupByMainSaleRepTable.get(rowIndex)[0].toString().trim();
-            String mainSaleRep = allOEMGroupByMainSaleRepTable.get(rowIndex)[1].toString().trim();
-            float revVal = 0;
-            float backLogVal = 0;
-            float backLogFCVal = 0;
-            float customerFCVal = 0;
-            float revTotal = 0;
-            for (int rowIndexFromRevCostDump = 0; rowIndexFromRevCostDump < dataOfRevCostDump.size(); rowIndexFromRevCostDump++){
-                String oemGroupCol = dataOfRevCostDump.get(rowIndexFromRevCostDump)[1].toString().trim();
-                float revCol = (float)dataOfRevCostDump.get(rowIndexFromRevCostDump)[28];
-                float backLogCol = (float)dataOfRevCostDump.get(rowIndexFromRevCostDump)[34];
-                float backLogFCCol = (float)dataOfRevCostDump.get(rowIndexFromRevCostDump)[37];
-                float customerFCCol = (float)dataOfRevCostDump.get(rowIndexFromRevCostDump)[40];
-                if (oemGroupCol.contains(":")){
-                    String[] strArr = oemGroupCol.split(":", 2);
-                    oemGroupCol = strArr[1].toString().trim();
-                }
-                if (oemGroup.equalsIgnoreCase(oemGroupCol)){
-                    revTotal += revCol + backLogCol + backLogFCCol + customerFCCol;
-                }
-            }
-            float SFVal = 0;
-            for (int rowIndexFromSF = 0; rowIndexFromSF < dataOfSF.size(); rowIndexFromSF++){
-                String oemGroupCol = dataOfSF.get(rowIndexFromSF)[1].toString().trim();
-                float SFCol = (float) dataOfSF.get(rowIndexFromSF)[7];
-                if (oemGroupCol.contains(":")){
-                    String[] strArr = oemGroupCol.split(":", 2);
-                    oemGroupCol = strArr[1].toString().trim();
-                }
-                if (oemGroup.equalsIgnoreCase(oemGroupCol)){
-                    SFVal += SFCol;
-                }
-            }
-
-            Object[] cols = new Object[8];
-            cols[0] = oemGroup;
-            cols[1] = mainSaleRep;
-            cols[2] = revTotal;
-        }
 
         String output = "C:\\CucumberFramework\\Downloads\\Output.xlsx";
         Object[] headerCols = new Object[2];
@@ -157,7 +112,9 @@ public class RSSaleGapAccountAssignmentPage {
     public List<Object[]> getOEMGroupByMainSaleRepFromSFOnNS(){
         List<Object[]> table = new ArrayList<>();
         List<Object[]> dataOfSF = new ArrayList<>();
+
         dataOfSF = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(SFFilePath,0, 1,0);
+
         List<String> listOfOEMGroupFromSF = new ArrayList<>();
         for (int rowIndex = 0; rowIndex < dataOfSF.size(); rowIndex++){
             listOfOEMGroupFromSF.add(dataOfSF.get(rowIndex)[1].toString().trim());
