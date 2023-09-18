@@ -93,7 +93,6 @@ public class ExcelReader {
             System.out.println(String.format("Error: %s", e.getMessage()));
         }
     }
-
     public void getOutputFromData(String filePath, Object[] headerCols, List<Object[]> data){
         try {
             File file = new File(filePath);
@@ -116,6 +115,37 @@ public class ExcelReader {
         }catch (Exception e){
             System.out.println(String.format("Error: %s", e.getMessage()));
         }
+    }
+    public int getPosOfCol(String filePath, int sheetIndex, int headerRowIndex, String searchStr){
+        int pos = -1;
+        boolean isFound = false;
+        try
+        {
+            File file = new File(filePath);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            XSSFWorkbook wb = new XSSFWorkbook(fileInputStream);
+            XSSFSheet sheet = wb.getSheetAt(sheetIndex);
+            int numOfRows = sheet.getLastRowNum();
+            int numOfCols = sheet.getRow(headerRowIndex).getPhysicalNumberOfCells();
+            for (int rowIndex = 0; rowIndex < 6; rowIndex++){
+                for (int colIndex = 0; colIndex < numOfCols; colIndex++){
+                    String colVal = readDataFromExcel(filePath, sheetIndex, 3, headerRowIndex).get(rowIndex)[colIndex].toString().trim();
+                    System.out.println(String.format("Value: %s", colVal));
+                    if (colVal.equalsIgnoreCase(searchStr)){
+                        pos = colIndex;
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (isFound == true){
+                    break;
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println(String.format("Error: %s", e.getMessage()));
+        }
+        return pos;
     }
 
 
