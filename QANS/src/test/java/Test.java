@@ -15,8 +15,8 @@ public class Test {
 //        rsMarginReportPage.getDataFromMarginReport();
         RSSaleGapReportPage rsSaleGapReportPage = new RSSaleGapReportPage();
 //        rsSaleGapReportPage.getDataFromSGReport("2023", "3");
-//        rsSaleGapReportPage.getDataSourceForSGReport("2023", "3");
-        rsSaleGapReportPage.verifySGReport();
+        rsSaleGapReportPage.getDataSourceForSGReport("2023", "3");
+//        rsSaleGapReportPage.verifySGReport();
         System.out.println("Done");
     }
 }
