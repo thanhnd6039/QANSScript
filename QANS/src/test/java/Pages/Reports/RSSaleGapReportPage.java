@@ -257,7 +257,6 @@ public class RSSaleGapReportPage{
         listOfOEMGroup = getListOfOEMGroup(tempTable);
         listOfPN = getListOfPN(tempTable);
 
-
         for (int rowIndexFromListOEMGroup = 0; rowIndexFromListOEMGroup < listOfOEMGroup.size(); rowIndexFromListOEMGroup++){
             String oemGroupColFromListOEMGroup = listOfOEMGroup.get(rowIndexFromListOEMGroup).toString().trim();
             for (int rowIndexFromListPN = 0; rowIndexFromListPN < listOfPN.size(); rowIndexFromListPN++){
@@ -270,6 +269,7 @@ public class RSSaleGapReportPage{
                 float bfAmount = 0;
                 float cfQty = 0;
                 float cfAmount = 0;
+                boolean hasData = false;
                 for (int rowIndex = 0; rowIndex < tempTable.size(); rowIndex++){
                     oemGroupCol = tempTable.get(rowIndex)[0].toString().trim();
                     pnCol = tempTable.get(rowIndex)[1].toString().trim();
@@ -283,24 +283,53 @@ public class RSSaleGapReportPage{
                         cfQtyCol = tempTable.get(rowIndex)[8].toString().trim();
                         cfAmountCol = tempTable.get(rowIndex)[9].toString().trim();
                         float tempRQty = Float.parseFloat(rQtyCol);
+                        float tempRAmount = Float.parseFloat(rAmountCol);
+                        float tempBQty = Float.parseFloat(bQtyCol);
+                        float tempBAmount = Float.parseFloat(bAmountCol);
+                        float tempBFQty = Float.parseFloat(bfQtyCol);
+                        float tempBFAmount = Float.parseFloat(bfAmountCol);
+                        float tempCFQty = Float.parseFloat(cfQtyCol);
+                        float tempCFAmount = Float.parseFloat(cfAmountCol);
                         rQty += tempRQty;
+                        rAmount += tempRAmount;
+                        bQty += tempBQty;
+                        bAmount += tempBAmount;
+                        bfQty += tempBFQty;
+                        bfAmount += tempBFAmount;
+                        cfQty += tempCFQty;
+                        cfAmount += tempCFAmount;
+                        hasData = true;
                     }
+                }
+                if (hasData == true){
+                    Object[] cols = new Object[10];
+                    cols[0] = oemGroupColFromListOEMGroup;
+                    cols[1] = pnColFromListPN;
+                    cols[2] = rQty;
+                    cols[3] = rAmount;
+                    cols[4] = bQty;
+                    cols[5] = bAmount;
+                    cols[6] = bfQty;
+                    cols[7] = bfAmount;
+                    cols[8] = cfQty;
+                    cols[9] = cfAmount;
+                    table.add(cols);
                 }
             }
         }
- //        String output = "C:\\CucumberFramework\\Downloads\\Source.xlsx";
-//        Object[] headerCols = new Object[10];
-//        headerCols[0] = "OEM GROUP";
-//        headerCols[1] = "PART NUMBER";
-//        headerCols[2] = "REV QTY";
-//        headerCols[3] = "REV AMOUNT";
-//        headerCols[4] = "BL QTY";
-//        headerCols[5] = "BL AMOUNT";
-//        headerCols[6] = "BF QTY";
-//        headerCols[7] = "BF AMOUNT";
-//        headerCols[8] = "CF QTY";
-//        headerCols[9] = "CF AMOUNT";
-//        FileReaderManager.getInstance().getExcelReader().getOutputFromData(output, headerCols, table);
+        String output = "C:\\CucumberFramework\\Downloads\\Source.xlsx";
+        Object[] headerCols = new Object[10];
+        headerCols[0] = "OEM GROUP";
+        headerCols[1] = "PART NUMBER";
+        headerCols[2] = "REV QTY";
+        headerCols[3] = "REV AMOUNT";
+        headerCols[4] = "BL QTY";
+        headerCols[5] = "BL AMOUNT";
+        headerCols[6] = "BF QTY";
+        headerCols[7] = "BF AMOUNT";
+        headerCols[8] = "CF QTY";
+        headerCols[9] = "CF AMOUNT";
+        FileReaderManager.getInstance().getExcelReader().getOutputFromData(output, headerCols, table);
     }
     public List<String> getListOfOEMGroup(List<Object[]> data){
         List<String> listOfOEMGroup = new ArrayList<>();
@@ -328,6 +357,13 @@ public class RSSaleGapReportPage{
         List<Object[]> sourceData = FileReaderManager.getInstance().getExcelReader().readDataFromExcel(sourceFilePath, 0, 1, 0);
         List<Object[]> revQtyResults = verifyRevQty(targetData, sourceData);
         System.out.println(String.format("Num: %d", revQtyResults.size()));
+        for (int rowIndex = 0; rowIndex < revQtyResults.size(); rowIndex++){
+            String oem = revQtyResults.get(rowIndex)[0].toString().trim();
+            String pn = revQtyResults.get(rowIndex)[1].toString().trim();
+            String qtyTarget = revQtyResults.get(rowIndex)[3].toString().trim();
+            String qtySource = revQtyResults.get(rowIndex)[4].toString().trim();
+            System.out.println(String.format("OEM: %s, PN: %s, Qty Target: %s, Qty Source: %s", oem, pn, qtyTarget, qtySource));
+        }
     }
     public List<Object[]> verifyRevQty(List<Object[]> targetData, List<Object[]> sourceData){
         List<Object[]> results = new ArrayList<>();
@@ -370,7 +406,49 @@ public class RSSaleGapReportPage{
                 }
             }
         }
-
+        return results;
+    }
+    public List<Object[]> verifyRevAmount(List<Object[]> targetData, List<Object[]> sourceData){
+        List<Object[]> results = new ArrayList<>();
+        for (int rowIndexFromSource = 0; rowIndexFromSource < sourceData.size(); rowIndexFromSource++){
+            String oemGroupColFromSource = sourceData.get(rowIndexFromSource)[0].toString().trim();
+            String pnColFromSource = sourceData.get(rowIndexFromSource)[1].toString().trim();
+            String rQtyColFromSource = sourceData.get(rowIndexFromSource)[2].toString().trim();
+            float rQtyFromSource = Float.parseFloat(rQtyColFromSource);
+            boolean isOEMGroupFromSourceFound = false;
+            if (rQtyFromSource != 0){
+                for (int rowIndexFromTarget = 0; rowIndexFromTarget < targetData.size(); rowIndexFromTarget++){
+                    String oemGroupColFromTarget = targetData.get(rowIndexFromTarget)[0].toString().trim();
+                    String pnColFromTarget = targetData.get(rowIndexFromTarget)[1].toString().trim();
+                    String rQtyColFromTarget = targetData.get(rowIndexFromTarget)[2].toString().trim();
+                    float rQtyFromTarget = Float.parseFloat(rQtyColFromTarget);
+                    if (oemGroupColFromSource.equalsIgnoreCase(oemGroupColFromTarget) && pnColFromSource.equalsIgnoreCase(pnColFromTarget)){
+                        float diff = rQtyFromSource - rQtyFromTarget;
+                        diff = Math.abs(diff);
+                        if (diff >= 1){
+                            Object[] cols = new Object[5];
+                            cols[0] = oemGroupColFromSource;
+                            cols[1] = pnColFromSource;
+                            cols[2] = "REV QTY";
+                            cols[3] = rQtyColFromTarget;
+                            cols[4] = rQtyColFromSource;
+                            results.add(cols);
+                        }
+                        isOEMGroupFromSourceFound = true;
+                        break;
+                    }
+                }
+                if (isOEMGroupFromSourceFound == false){
+                    Object[] cols = new Object[5];
+                    cols[0] = oemGroupColFromSource;
+                    cols[1] = pnColFromSource;
+                    cols[2] = "REV QTY";
+                    cols[3] = 0;
+                    cols[4] = rQtyColFromSource;
+                    results.add(cols);
+                }
+            }
+        }
         return results;
     }
 }
