@@ -1,15 +1,16 @@
 package Helpers.Manager;
 
 import Pages.CommonPage;
-import Pages.Reports.RSGapToSFPNDetailsPage;
 import Pages.Reports.RSLoginPage;
+import Pages.Reports.RSSGReportPage;
 import org.openqa.selenium.WebDriver;
 
 public class PageObjectManager {
     private WebDriver driver;
     private CommonPage rsCommonPage;
     private RSLoginPage rsLoginPage;
-    private RSGapToSFPNDetailsPage rsGapToSFPNDetailsPage;
+    private RSSGReportPage rssgReportPage;
+
     public PageObjectManager(WebDriver driver){
         this.driver = driver;
     }
@@ -19,8 +20,9 @@ public class PageObjectManager {
     public RSLoginPage getRsLoginPage(){
         return (rsLoginPage == null) ? rsLoginPage = new RSLoginPage(driver) : rsLoginPage;
     }
-    public RSGapToSFPNDetailsPage getRsGapToSFPNDetailsPage(){
-        return (rsGapToSFPNDetailsPage == null) ? rsGapToSFPNDetailsPage = new RSGapToSFPNDetailsPage(driver) : rsGapToSFPNDetailsPage;
+    public RSSGReportPage getRssgReportPage(){
+        return (rssgReportPage == null) ? rssgReportPage = new RSSGReportPage(driver) : rssgReportPage;
     }
+
 
 }

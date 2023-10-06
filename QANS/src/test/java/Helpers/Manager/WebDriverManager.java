@@ -76,6 +76,7 @@ public class WebDriverManager {
         else {
             throw new RuntimeException(String.format("The value of BROWSER key in the file Configuration.properties is wrong"));
         }
+
         return driver;
     }
 
