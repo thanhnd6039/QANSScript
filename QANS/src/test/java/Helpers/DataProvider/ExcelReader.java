@@ -14,11 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelReader {
-
     public ExcelReader(){
 
     }
-
     public List<Object[]> readDataFromExcel(String filePath, int sheetIndex, int startRow, int headerRowIndex){
         List<Object[]> rowsArr = new ArrayList<Object[]>();
         try
@@ -66,7 +64,6 @@ public class ExcelReader {
         }
         return rowsArr;
     }
-
     public void writeDataToExcel(String filePath, int sheetIndex, int rowIndex, int colIndex, Object cellValue){
         try{
             File file = new File(filePath);
