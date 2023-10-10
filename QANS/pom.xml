@@ -19,11 +19,30 @@
         <cucumber-java.version>1.2.6</cucumber-java.version>
         <cucumber-junit.version>1.2.6</cucumber-junit.version>
         <cucumber-picocontainer.version>1.2.5</cucumber-picocontainer.version>
+        <cucumber-core.version>1.2.5</cucumber-core.version>
         <!-- Office-->
         <poi-version>5.2.4</poi-version>
+        <!-- Logging -->
+        <log4j-api.version>2.20.0</log4j-api.version>
+        <log4j-core.version>2.20.0</log4j-core.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-core</artifactId>
+            <version>${cucumber-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j-core.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
