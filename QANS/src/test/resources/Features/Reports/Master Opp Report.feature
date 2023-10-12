@@ -4,8 +4,9 @@ Feature: The Master Opp Report
   @MO-0001
   Scenario: Verify data for the Master Opp report by default
     Given I navigate to NS
-#    And I login to NS
-#    And I choose Account Type is PRODUCTION
+    And I login to NS
+    And I choose Account Type is SANDBOX
+    Then I should see the title contains Logging in to on LogIn page
 #    And I input verification code
 #    And I check to the Trust this device for 30 days for access to this role checkbox
 #    And I click to Submit button

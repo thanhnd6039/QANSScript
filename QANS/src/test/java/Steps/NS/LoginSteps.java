@@ -4,6 +4,7 @@ import Pages.NS.LoginPage;
 import SharingTestContext.TestContext;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class LoginSteps {
     private TestContext testContext;
@@ -18,7 +19,15 @@ public class LoginSteps {
     }
     @And("^I login to NS$")
     public void loginToNS() throws Throwable{
-
+        loginPage.loginToNS();
+    }
+    @And("^I choose Account Type is (PRODUCTION|SANDBOX)$")
+    public void chooseAccountType(String expectedAccountType)throws Throwable{
+        loginPage.chooseAccountType(expectedAccountType);
+    }
+    @Then("^I should see the title contains (.*) to on LogIn page$")
+    public void shouldSeeTitle(String expectedTitle)throws Throwable{
+        loginPage.shouldSeeTitle(expectedTitle);
     }
 
 }
