@@ -58,7 +58,6 @@ public class KeywordWebUI {
         }
     }
     public void setTextToElement(WebElement element, String inputText){
-        waitForElementVisibility(element);
         try{
             element.clear();
             element.sendKeys(inputText);

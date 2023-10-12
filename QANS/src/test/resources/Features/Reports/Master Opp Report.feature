@@ -7,9 +7,9 @@ Feature: The Master Opp Report
     And I login to NS
     And I choose Account Type is SANDBOX
     Then I should see the title contains Logging in to on LogIn page
-#    And I input verification code
-#    And I check to the Trust this device for 30 days for access to this role checkbox
-#    And I click to Submit button
+    And I input verification code
+    And I check to the Trust this device for 30 days for access to this role checkbox
+    And I click to Submit button
 #    And I choose Role is VT Full Developer
 #    Then I should see the user role is VT Full Developer
 #    Then I should see the account type is PRODUCTION

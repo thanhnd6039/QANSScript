@@ -1,6 +1,7 @@
 package Pages.NS;
 
 import Helpers.Manager.FileReaderManager;
+import Helpers.Mf2;
 import Pages.CommonPage;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -21,6 +22,12 @@ public class LoginPage extends CommonPage {
     private WebElement btnLogIn;
     @FindBy(id = "uif43")
     private WebElement txtTitle;
+    @FindBy(id = "uif51")
+    private WebElement txtVerificationCode;
+    @FindBy(id = "uif67")
+    private WebElement chkTrustThisDevice;
+    @FindBy(id = "uif71")
+    private WebElement btnSubmit;
     public LoginPage(WebDriver driver){
         super(driver);
         this.driver = driver;
@@ -59,6 +66,16 @@ public class LoginPage extends CommonPage {
         Assert.assertTrue(waitForElementVisibility(txtTitle));
         String actualTitle = getTextFromElement(txtTitle);
         Assert.assertTrue(String.format("Cannot see the title %s", expectedTitle), actualTitle.contains(expectedTitle));
+    }
+    public void inputVerificationCode(){
+        Mf2 mf2 = new Mf2();
+        String key = FileReaderManager.getInstance().getPropertyFileReader(CONFIGURE_FILE_PATH).getValueFromKey("NS_KEY");
+        String verificationCode = mf2.getTwoFactorCode(key);
+        Assert.assertTrue(waitForElementVisibility(txtVerificationCode));
+        setTextToElement(txtVerificationCode, verificationCode);
+    }
+    public void checktoCheckbox() {
+        Assert.assertTrue("Cannot check to the Trust this device for 30 days for access to this role checkbox", clickToElement(chkTrustThisDevice));
     }
 
 }

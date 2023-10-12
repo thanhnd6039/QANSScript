@@ -29,6 +29,9 @@ public class RSLoginPage extends CommonPage {
         driver.get(url);
         driver.manage().window().maximize();
     }
+    public void inputVerificationCode(){
+
+    }
 
 
 

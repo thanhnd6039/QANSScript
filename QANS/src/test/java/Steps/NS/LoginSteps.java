@@ -29,5 +29,17 @@ public class LoginSteps {
     public void shouldSeeTitle(String expectedTitle)throws Throwable{
         loginPage.shouldSeeTitle(expectedTitle);
     }
+    @And("^I input verification code$")
+    public void inputVerificationCode()throws Throwable{
+        loginPage.inputVerificationCode();
+    }
+    @And("^I check to the Trust this device for 30 days for access to this role checkbox$")
+    public void checktoCheckbox() throws Throwable {
+        loginPage.checktoCheckbox();
+    }
+    @And("^I click to Submit button$")
+    public void clickToButton() throws Throwable {
+
+    }
 
 }
