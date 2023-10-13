@@ -42,8 +42,11 @@ public class LoginPage extends CommonPage {
     public void loginToNS(){
         String email = FileReaderManager.getInstance().getPropertyFileReader(CONFIGURE_FILE_PATH).getValueFromKey("EMAIL");
         String pass = FileReaderManager.getInstance().getPropertyFileReader(CONFIGURE_FILE_PATH).getValueFromKey("NS_PASS");
+        Assert.assertTrue(String.format("The Email textbox is not visible"),waitForElementVisibility(txtEmail));
+        Assert.assertTrue(String.format("The Password textbox is not visible"),waitForElementVisibility(txtPass));
         setTextToElement(txtEmail, email);
         setTextToElement(txtPass, pass);
+        Assert.assertTrue(String.format("The LogIn button is not enabled"),waitForElementIsEnabled(btnLogIn));
         Assert.assertTrue("Cannot click to the LogIn button", clickToElement(btnLogIn));
     }
     public void chooseAccountType(String expectedAccountType){
@@ -63,7 +66,7 @@ public class LoginPage extends CommonPage {
         }
     }
     public void shouldSeeTitle(String expectedTitle){
-        Assert.assertTrue(waitForElementVisibility(txtTitle));
+        Assert.assertTrue(String.format("Cannot see the title on the Login page"),waitForElementVisibility(txtTitle));
         String actualTitle = getTextFromElement(txtTitle);
         Assert.assertTrue(String.format("Cannot see the title %s", expectedTitle), actualTitle.contains(expectedTitle));
     }
@@ -71,11 +74,17 @@ public class LoginPage extends CommonPage {
         Mf2 mf2 = new Mf2();
         String key = FileReaderManager.getInstance().getPropertyFileReader(CONFIGURE_FILE_PATH).getValueFromKey("NS_KEY");
         String verificationCode = mf2.getTwoFactorCode(key);
-        Assert.assertTrue(waitForElementVisibility(txtVerificationCode));
+        Assert.assertTrue("Cannot see the Verification Code textbox",waitForElementVisibility(txtVerificationCode));
         setTextToElement(txtVerificationCode, verificationCode);
     }
     public void checktoCheckbox() {
+        Assert.assertTrue(String.format("The Trust this device for 30 days for access to this role checkbox is not visible"),waitForElementVisibility(chkTrustThisDevice));
         Assert.assertTrue("Cannot check to the Trust this device for 30 days for access to this role checkbox", clickToElement(chkTrustThisDevice));
+    }
+    public void clickToButton() {
+        Assert.assertTrue(String.format("Cannot see the Submit button"),waitForElementVisibility(btnSubmit));
+        Assert.assertTrue(String.format("The Submit button is not enabled"),waitForElementIsEnabled(btnSubmit));
+        Assert.assertTrue(String.format("Cannot click to the Submit button"),clickToElement(btnSubmit));
     }
 
 }

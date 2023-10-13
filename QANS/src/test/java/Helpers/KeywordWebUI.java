@@ -83,12 +83,6 @@ public class KeywordWebUI {
     }
     public boolean clickToElement(WebElement element){
         try{
-            if (waitForElementVisibility(element) == false){
-                return false;
-            }
-            if (waitForElementIsEnabled(element) == false){
-                return false;
-            }
             wait.until(ExpectedConditions.elementToBeClickable(element));
             element.click();
             return true;

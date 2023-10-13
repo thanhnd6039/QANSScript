@@ -39,7 +39,7 @@ public class LoginSteps {
     }
     @And("^I click to Submit button$")
     public void clickToButton() throws Throwable {
-
+        loginPage.clickToButton();
     }
 
 }
