@@ -1,5 +1,9 @@
 *** Settings ***
 Library     SeleniumLibrary
+Library     JSONLibrary
+
+*** Variables ***
+${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 
 *** Keywords ***
 Setup

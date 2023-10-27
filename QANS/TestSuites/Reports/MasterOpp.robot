@@ -3,5 +3,6 @@ Resource    ../../Pages/Reports/MasterOppPage.robot
 
 *** Test Cases ***
 Testcase1
-    Setup
+    Setup    Firefox
+    Navigate To Master Opp Report
     
