@@ -2,10 +2,22 @@
 Resource    ../CommonPage.robot
 
 *** Variables ***
-${chkNullCreatedFrom}       //*[@id='ReportViewerControl_ctl04_ctl05_cbNull']
-${txtTitleOfMasterOpp}      //*[contains(text(),'Master')]
-${lstOppStageFilter}              //*[@id='ReportViewerControl_ctl04_ctl29_txtValue']
-${chkSelectAllOnOppStageFilter}     //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl00']
+${chkNullCreatedFrom}                   //*[@id='ReportViewerControl_ctl04_ctl05_cbNull']
+${txtTitleOfMasterOpp}                  //*[contains(text(),'Master')]
+${lstOppStageFilter}                    //*[@id='ReportViewerControl_ctl04_ctl29_txtValue']
+${chkSelectAllOfOppStageOption}         //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl00']
+${chk0_IdentifyOfOppStageOption}        //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl02']
+${chk1_OppApprovedOppStageOption}       //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl03']
+${chk2_EvalSubmittedOppStageOption}     //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl04']
+${chk3_QualIssuesOppStageOption}        //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl05']
+${chk4_QualApprovedOppStageOption}        //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl06']
+${chk5_FirstProductionPOOppStageOption}        //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl07']
+${chk6_ProductionOppStageOption}               //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl08']
+${chk7_HoldOppStageOption}                     //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl09']
+${chk8_LostOppStageOption}                     //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl10']
+${chk9_CancelledOppStageOption}                //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl11']
+${chk9_ClosedOppStageOption}                   //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl12']
+${chk9_OppDisapprovedOppStageOption}           //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl13']
 
 *** Keywords ***
 Navigate To Master Opp Report
@@ -20,16 +32,89 @@ Navigate To Master Opp Report
     Wait Until Element Is Visible    ${txtTitleOfMasterOpp}     ${TIMEOUT}
     Element Text Should Be    ${txtTitleOfMasterOpp}    Master Opportunity Report
 
-Select Opp Stage On Master Opp Report
-    [Arguments]     ${oppStage}
-    IF    '${oppStage}' == '0.Identified'
-         Log To Console    0.Identify
+Select All Opp Stages On Master Opp Report
+    Wait Until Element Is Visible    ${lstOppStageFilter}   ${TIMEOUT}
+    Click Element    ${lstOppStageFilter}
+    Wait Until Element Is Visible    ${chkSelectAllOfOppStageOption}    ${TIMEOUT}
+    ${isCheckSelectAll}     Run Keyword And Return Status    Checkbox Should Be Selected    ${chkSelectAllOfOppStageOption}
+    IF    '${isCheckSelectAll}' == '${False}'
+         Click Element    ${chkSelectAllOfOppStageOption}
     END
-#    Wait Until Element Is Visible    ${lstOppStageFilter}
-#    Click Element    ${lstOppStageFilter}
-#    Wait Until Element Is Visible    ${chkSelectAllOnOppStageFilter}
-#    Click Element    ${chkSelectAllOnOppStageFilter}
-#    Click Element    ${chkSelectAllOnOppStageFilter}
+
+
+Select Opp Stage On Master Opp Report
+    [Arguments]     ${multiOppStageOptions}
+    Wait Until Element Is Visible    ${lstOppStageFilter}       ${TIMEOUT}
+    Click Element    ${lstOppStageFilter}
+    Wait Until Element Is Visible    ${chkSelectAllOfOppStageOption}    ${TIMEOUT}
+    ${isCheckSelectAll}     Run Keyword And Return Status    Checkbox Should Be Selected    ${chkSelectAllOfOppStageOption}
+    IF    '${isCheckSelectAll}' == '${False}'
+        Click Element    ${chkSelectAllOfOppStageOption}
+        Click Element    ${chkSelectAllOfOppStageOption}
+    ELSE
+        Click Element    ${chkSelectAllOfOppStageOption}
+    END
+    
+    FOR    ${oppStage}    IN    @{multiOppStageOptions}
+        IF    '${oppStage}' == '0.Identified'
+             Wait Until Element Is Visible    ${chk0_IdentifyOfOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk0_IdentifyOfOppStageOption}
+        END
+        IF    '${oppStage}' == '1.Opp Approved'
+             Wait Until Element Is Visible    ${chk1_OppApprovedOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk1_OppApprovedOppStageOption}
+        END
+        IF    '${oppStage}' == '2.Eval Submitted/Qual in Progress'
+             Wait Until Element Is Visible    ${chk2_EvalSubmittedOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk2_EvalSubmittedOppStageOption}
+        END
+        IF    '${oppStage}' == '3.Qual Issues'
+             Wait Until Element Is Visible    ${chk3_QualIssuesOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk3_QualIssuesOppStageOption}
+        END
+        IF    '${oppStage}' == '4.Qual Approved'
+             Wait Until Element Is Visible    ${chk4_QualApprovedOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk4_QualApprovedOppStageOption}
+        END
+        IF    '${oppStage}' == '5.First - Production PO'
+             Wait Until Element Is Visible    ${chk5_FirstProductionPOOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk5_FirstProductionPOOppStageOption}
+        END
+        IF    '${oppStage}' == '6.Production'
+             Wait Until Element Is Visible    ${chk6_ProductionOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk6_ProductionOppStageOption}
+        END
+        IF    '${oppStage}' == '7.Hold'
+             Wait Until Element Is Visible    ${chk7_HoldOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk7_HoldOppStageOption}
+        END
+        IF    '${oppStage}' == '8.Lost'
+             Wait Until Element Is Visible    ${chk8_LostOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk8_LostOppStageOption}
+        END
+        IF    '${oppStage}' == '9.Cancelled'
+             Wait Until Element Is Visible    ${chk9_CancelledOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk9_CancelledOppStageOption}
+        END
+        IF    '${oppStage}' == '9.Closed'
+             Wait Until Element Is Visible    ${chk9_ClosedOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk9_ClosedOppStageOption}
+        END
+        IF    '${oppStage}' == '9.Opp Disapproved'
+             Wait Until Element Is Visible    ${chk9_OppDisapprovedOppStageOption}      ${TIMEOUT}
+             Click Element    ${chk9_OppDisapprovedOppStageOption}
+        END
+    END
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,10 +1,29 @@
 *** Settings ***
 Resource    ../../Pages/Reports/MasterOppPage.robot
+Library    Collections
 
 *** Test Cases ***
 Testcase1
     Setup    Firefox
     Navigate To Master Opp Report
-    Select Opp Stage On Master Opp Report    0.Identified
+    ${multiOppStageOptions}     Create List
+    Append To List        ${multiOppStageOptions}   0.Identified
+    Append To List        ${multiOppStageOptions}   1.Opp Approved
+    Append To List        ${multiOppStageOptions}   2.Eval Submitted/Qual in Progress
+    Append To List        ${multiOppStageOptions}   3.Qual Issues
+    Append To List        ${multiOppStageOptions}   4.Qual Approved
+    Append To List        ${multiOppStageOptions}   5.First - Production PO
+    Append To List        ${multiOppStageOptions}   6.Production
+#    Append To List        ${multiOppStageOptions}   7.Hold
+#    Append To List        ${multiOppStageOptions}   8.Lost
+#    Append To List        ${multiOppStageOptions}   9.Cancelled
+#    Append To List        ${multiOppStageOptions}   9.Closed
+#    Append To List        ${multiOppStageOptions}   9.Opp Disapproved
+    Select Opp Stage On Master Opp Report    ${multiOppStageOptions}
+
+#    Select All Opp Stages On Master Opp Report
+
+#    Click On Button View Report
+
 
     

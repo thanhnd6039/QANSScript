@@ -1,10 +1,14 @@
 *** Settings ***
 Library     SeleniumLibrary
 Library     JSONLibrary
+Library     ExcelLibrary
+Library     ../Libs/CExcel.py
+
 
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
+${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 
 *** Keywords ***
 Setup
@@ -24,4 +28,8 @@ Wait Until Page Load Completed
              Fail   Page is hang or crashed
         END
     END
+
+Click On Button View Report
+    Wait Until Element Is Visible    ${btnViewReport}   ${TIMEOUT}
+    Click Element    ${btnViewReport}
 
