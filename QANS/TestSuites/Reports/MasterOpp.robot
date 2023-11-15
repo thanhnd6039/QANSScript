@@ -6,6 +6,10 @@ Library    Collections
 Testcase1
     Setup    Firefox
     Navigate To Master Opp Report
+    Wait Until Page Load Completed
+    Should See The Title Of Master Opp Report    Master Opportunity Report
+    Filter Created Date On Master Opp Report    NULL    NULL
+    Sleep    3s
     ${multiOppStageOptions}     Create List
     Append To List        ${multiOppStageOptions}   0.Identified
     Append To List        ${multiOppStageOptions}   1.Opp Approved
@@ -20,10 +24,8 @@ Testcase1
 #    Append To List        ${multiOppStageOptions}   9.Closed
 #    Append To List        ${multiOppStageOptions}   9.Opp Disapproved
     Select Opp Stage On Master Opp Report    ${multiOppStageOptions}
-
-#    Select All Opp Stages On Master Opp Report
-
-#    Click On Button View Report
+    Click On Button View Report
+    Should See The Title Of Master Opp Report    Master Opportunity Report
 
 
     

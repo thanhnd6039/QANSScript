@@ -2,7 +2,6 @@
 Resource    ../CommonPage.robot
 
 *** Variables ***
-${chkNullCreatedFrom}                   //*[@id='ReportViewerControl_ctl04_ctl05_cbNull']
 ${txtTitleOfMasterOpp}                  //*[contains(text(),'Master')]
 ${lstOppStageFilter}                    //*[@id='ReportViewerControl_ctl04_ctl29_txtValue']
 ${chkSelectAllOfOppStageOption}         //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl00']
@@ -18,6 +17,8 @@ ${chk8_LostOppStageOption}                     //*[@id='ReportViewerControl_ctl0
 ${chk9_CancelledOppStageOption}                //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl11']
 ${chk9_ClosedOppStageOption}                   //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl12']
 ${chk9_OppDisapprovedOppStageOption}           //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl13']
+${chkNullOfCreatedFromFilter}                        //*[@id='ReportViewerControl_ctl04_ctl05_cbNull']
+${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerControl_ctl04_ctl07_cbNull']
 
 *** Keywords ***
 Navigate To Master Opp Report
@@ -28,10 +29,12 @@ Navigate To Master Opp Report
     ${pass}                 Set Variable           ${pass}[0]
     ${url}                  Set Variable           http://${username}:${pass}@report/ReportServer/Pages/ReportViewer.aspx?/NetSuite+Reports/Sales/Opportunity+Report&rs:Command=Render
     Go To    ${url}
-    Wait Until Page Load Completed
-    Wait Until Element Is Visible    ${txtTitleOfMasterOpp}     ${TIMEOUT}
-    Element Text Should Be    ${txtTitleOfMasterOpp}    Master Opportunity Report
 
+Should See The Title Of Master Opp Report
+    [Arguments]     ${title}
+    Wait Until Element Is Visible    ${txtTitleOfMasterOpp}     ${TIMEOUT}
+    Element Text Should Be    ${txtTitleOfMasterOpp}    ${title}
+    
 Select All Opp Stages On Master Opp Report
     Wait Until Element Is Visible    ${lstOppStageFilter}   ${TIMEOUT}
     Click Element    ${lstOppStageFilter}
@@ -40,7 +43,6 @@ Select All Opp Stages On Master Opp Report
     IF    '${isCheckSelectAll}' == '${False}'
          Click Element    ${chkSelectAllOfOppStageOption}
     END
-
 
 Select Opp Stage On Master Opp Report
     [Arguments]     ${multiOppStageOptions}
@@ -106,6 +108,23 @@ Select Opp Stage On Master Opp Report
         END
     END
 
+Filter Created Date On Master Opp Report
+    [Arguments]     ${createdFrom}      ${createdTo}
+    IF    '${createdFrom}' == 'NULL'
+         Wait Until Element Is Visible    ${chkNullOfCreatedFromFilter}     ${TIMEOUT}
+         ${isCheckCheckboxNullOfCreatedFromFilter}  Run Keyword And Return Status    Checkbox Should Be Selected    ${chkNullOfCreatedFromFilter}
+         IF    '${isCheckCheckboxNullOfCreatedFromFilter}' == '${False}'
+              Click Element    ${chkNullOfCreatedFromFilter}
+         END
+    END
+    
+    IF    '${createdTo}' == 'NULL'
+         Wait Until Element Is Visible    ${chkNullOfCreatedToFilter}   ${TIMEOUT}
+         ${isCheckCheckboxNullOfCreatedToFilter}  Run Keyword And Return Status    Checkbox Should Be Selected    ${chkNullOfCreatedToFilter}
+         IF    '${isCheckCheckboxNullOfCreatedToFilter}' == '${False}'
+              Click Element    ${chkNullOfCreatedToFilter}
+         END
+    END
 
 
 
