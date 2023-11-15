@@ -1,5 +1,6 @@
 from openpyxl import load_workbook
 
+
 class CExcel(object):
     def get_number_of_cols_in_excel(self, filePath):
         numOfCols = 0
@@ -14,6 +15,10 @@ class CExcel(object):
         sheet = file.active
         numOfRows = sheet.max_row
         return numOfRows
+    # def generate_otp(self, key):
+    #     totp = pyotp.TOTP(key)
+    #     otp = totp.now()
+    #     return otp
 
 
 

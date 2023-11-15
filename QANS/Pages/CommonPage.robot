@@ -3,12 +3,16 @@ Library     SeleniumLibrary
 Library     JSONLibrary
 Library     ExcelLibrary
 Library     ../Libs/CExcel.py
+Library     ../Libs/COTP.py
+Library     Collections
 
 
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
+${iconExportData}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
+
 
 *** Keywords ***
 Setup
@@ -32,4 +36,13 @@ Wait Until Page Load Completed
 Click On Button View Report
     Wait Until Element Is Visible    ${btnViewReport}   ${TIMEOUT}
     Click Element    ${btnViewReport}
+
+Export Report To
+    [Arguments]     ${option}
+    ${exportOptionXpath}    Set Variable    //*/div/a[@title='${option}']
+    Wait Until Element Is Visible    ${iconExportData}      ${TIMEOUT}
+    Click Element    ${iconExportData}
+    Wait Until Element Is Visible    ${exportOptionXpath}   ${TIMEOUT}
+    Click Element    ${exportOptionXpath}
+    
 

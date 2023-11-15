@@ -30,6 +30,7 @@ Navigate To Master Opp Report
     ${url}                  Set Variable           http://${username}:${pass}@report/ReportServer/Pages/ReportViewer.aspx?/NetSuite+Reports/Sales/Opportunity+Report&rs:Command=Render
     Go To    ${url}
 
+
 Should See The Title Of Master Opp Report
     [Arguments]     ${title}
     Wait Until Element Is Visible    ${txtTitleOfMasterOpp}     ${TIMEOUT}
