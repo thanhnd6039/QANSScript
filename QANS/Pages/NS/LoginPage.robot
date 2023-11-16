@@ -10,6 +10,8 @@ ${txtAccountTitle}  //*[@class='tableTitle']
 ${txtVerificationCode}    //*[@id='uif51']
 ${chkTrustThisDeviceFor30Days}    //*[@id='uif67']
 ${btnSubmit}    //*[@id='uif71']
+${imgSANDBOXIcon}   //*[@id='uif128']
+${imgLogoIcon}      //*[@id='uif129']
 
 *** Keywords ***
 Login To NS With Account
@@ -21,10 +23,14 @@ Login To NS With Account
         Should See Login Title    Logging in to Virtium
     ELSE IF     '${account}' == 'SANDBOX4'
         Should See Login Title    Logging in to Virtium__SB4
-    ELSE
-        Log To Console    The Account ${account} is invalid. Please contact with Admin!
     END
     Input Verification Code And Click Submit
+    IF    '${account}' == 'PRODUCTION'
+        Should See Account Is PRODUCTION
+    ELSE IF     '${account}' == 'SANDBOX4'
+        Should See Account Is SANDBOX
+    END
+
 
 Login To NS
     ${configFileObject}     Load Json From File    ${CONFIG_FILE}
@@ -63,7 +69,7 @@ Choose Account
                 Exit For Loop
             END
         ELSE
-             Log To Console    The Account ${account} is invalid. Please contact with Admin!
+             Fail   The Account ${account} is invalid. Please contact with Admin!
         END
     END
 
@@ -96,3 +102,11 @@ Input Verification Code And Click Submit
 
 
 
+
+Should See Account Is SANDBOX
+    Wait Until Element Is Visible    ${imgSANDBOXIcon}      ${TIMEOUT}
+    Wait Until Element Is Visible    ${imgLogoIcon}     ${TIMEOUT}
+    
+Should See Account Is PRODUCTION
+    Wait Until Element Is Visible    ${imgLogoIcon}     ${TIMEOUT}
+    

@@ -4,7 +4,7 @@ Resource    ../../Pages/NS/LoginPage.robot
 
 *** Test Cases ***
 Testcase1
-    Setup    Firefox
+#    Setup    Firefox
 #    Navigate To Master Opp Report
 #    Wait Until Page Load Completed
 #    Should See The Title Of Master Opp Report    Master Opportunity Report
@@ -28,7 +28,8 @@ Testcase1
 #    Should See The Title Of Master Opp Report    Master Opportunity Report
 #    Export Report To    Excel
 
-    Login To NS With Account    PRODUCTION
+#    Navigate To The Save Search Of Master Opp Report On NS
+    Convert Data
 
 
 

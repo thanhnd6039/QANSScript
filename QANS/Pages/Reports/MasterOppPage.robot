@@ -1,5 +1,7 @@
 *** Settings ***
 Resource    ../CommonPage.robot
+Resource    ../NS/LoginPage.robot
+Resource    ../NS/SaveSearchPage.robot
 
 *** Variables ***
 ${txtTitleOfMasterOpp}                  //*[contains(text(),'Master')]
@@ -29,7 +31,6 @@ Navigate To Master Opp Report
     ${pass}                 Set Variable           ${pass}[0]
     ${url}                  Set Variable           http://${username}:${pass}@report/ReportServer/Pages/ReportViewer.aspx?/NetSuite+Reports/Sales/Opportunity+Report&rs:Command=Render
     Go To    ${url}
-
 
 Should See The Title Of Master Opp Report
     [Arguments]     ${title}
@@ -127,14 +128,11 @@ Filter Created Date On Master Opp Report
          END
     END
 
-
-
-
-
-
-
-
-
+Navigate To The Save Search Of Master Opp Report On NS
+    ${url}      Set Variable    https://4499123.app.netsuite.com/app/common/search/searchresults.nl?searchid=4002&whence=
+    Login To NS With Account    PRODUCTION
+    Go To    ${url}
+    The Title Of Save Search Should Contain    Master Opps
 
 
 
