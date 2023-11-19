@@ -10,9 +10,9 @@ Library     Collections
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
+${DOWNLOAD_DIR}     C:\\Users\\thanh.nguyen\\Downloads\\
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
-${iconExportData}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
-
+${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
 
 *** Keywords ***
 Setup
@@ -37,12 +37,14 @@ Click On Button View Report
     Wait Until Element Is Visible    ${btnViewReport}   ${TIMEOUT}
     Click Element    ${btnViewReport}
 
-Export Report To
+Export Report Data To
     [Arguments]     ${option}
     ${exportOptionXpath}    Set Variable    //*/div/a[@title='${option}']
-    Wait Until Element Is Visible    ${iconExportData}      ${TIMEOUT}
-    Click Element    ${iconExportData}
+    Wait Until Element Is Visible    ${iconExportDataReport}      ${TIMEOUT}
+    Click Element    ${iconExportDataReport}
     Wait Until Element Is Visible    ${exportOptionXpath}   ${TIMEOUT}
     Click Element    ${exportOptionXpath}
+
+
     
 

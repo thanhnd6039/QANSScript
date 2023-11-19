@@ -1,6 +1,7 @@
 *** Settings ***
 Resource    ../../Pages/Reports/MasterOppPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
+Resource    ../../Pages/UtilityPage.robot
 
 *** Test Cases ***
 Testcase1
@@ -26,10 +27,12 @@ Testcase1
 #    Select Opp Stage On Master Opp Report    ${multiOppStageOptions}
 #    Click On Button View Report
 #    Should See The Title Of Master Opp Report    Master Opportunity Report
-#    Export Report To    Excel
+    Get File Path From Given Name       MasterOpps
 
-#    Navigate To The Save Search Of Master Opp Report On NS
-    Convert Data
+
+
+
+
 
 
 
