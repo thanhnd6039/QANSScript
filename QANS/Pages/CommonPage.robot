@@ -6,7 +6,6 @@ Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
 Library     Collections
 
-
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
@@ -44,6 +43,8 @@ Export Report Data To
     Click Element    ${iconExportDataReport}
     Wait Until Element Is Visible    ${exportOptionXpath}   ${TIMEOUT}
     Click Element    ${exportOptionXpath}
+
+
 
 
     

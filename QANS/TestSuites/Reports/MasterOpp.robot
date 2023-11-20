@@ -27,7 +27,18 @@ Testcase1
 #    Select Opp Stage On Master Opp Report    ${multiOppStageOptions}
 #    Click On Button View Report
 #    Should See The Title Of Master Opp Report    Master Opportunity Report
-    Get File Path From Given Name       MasterOpps
+#    Navigate To The Save Search Of Master Opp Report On NS
+#    The Title Of Save Search Should Contain    Master Opps
+#    Export SS Data To CSV
+#    ${fullyFileName}    Get Fully File Name From Given Name    MasterOpps    ${DOWNLOAD_DIR}
+    ${csvFilePath}      Set Variable    C:\\RobotFramework\\Downloads\\MasterOppsTestingResults370.csv
+    ${xlsxFilePath}     Set Variable    C:\\Users\\thanh.nguyen\\Downloads\\MasterOppSource.xlsx
+    Log To Console    csvFilePath: ${csvFilePath}
+    Log To Console    xlsxFilePath: ${xlsxFilePath}
+    Convert Csv To Xlsx    csvFilePath    xlsxFilePath
+
+
+
 
 
 

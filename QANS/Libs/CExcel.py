@@ -17,9 +17,14 @@ class CExcel(object):
         numOfRows = sheet.max_row
         return numOfRows
     def convert_csv_to_xlsx(self, csvFilePath, xlsxFilePath):
-        merge_all_to_a_book(glob.glob(csvFilePath), xlsxFilePath)
+        # merge_all_to_a_book(glob.glob(csvFilePath), xlsxFilePath)
         os.remove(csvFilePath)
 
+# if __name__ == '__main__':
+#     object = CExcel()
+#     csvFilePath = "C:\\Users\\thanh.nguyen\\Downloads\\MasterOppsTestingResults370.csv"
+#     xlsxFilePath = "C:\\Users\\thanh.nguyen\\Downloads\\MasterOppSource.xlsx"
+#     object.convert_csv_to_xlsx(csvFilePath, xlsxFilePath)
 
 
 

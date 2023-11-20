@@ -3,13 +3,17 @@ Resource    CommonPage.robot
 Library    OperatingSystem
 
 *** Keywords ***
-Get File Path From Given Name
-    [Arguments]     ${givenName}
-    @{files}    List Files In Directory    ${DOWNLOAD_DIR}
+Get Fully File Name From Given Name
+    [Arguments]     ${givenName}    ${dirPath}
+    ${fullyFileName}    Set Variable    ${EMPTY}
+    @{files}    List Files In Directory    ${dirPath}
     FOR    ${file}    IN    @{files}
-        Log To Console    File Path: ${file}
-
-         
+        ${contains}     Evaluate    "${givenName}" in """${file}"""
+        IF    '${contains}' == '${True}'
+             ${fullyFileName}   Set Variable    ${file}
+             Exit For Loop
+        END
     END
+    [Return]    ${fullyFileName}
 
 
