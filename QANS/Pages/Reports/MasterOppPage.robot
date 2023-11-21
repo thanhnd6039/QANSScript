@@ -3,6 +3,7 @@ Resource    ../CommonPage.robot
 Resource    ../NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
+
 *** Variables ***
 ${txtTitleOfMasterOpp}                  //*[contains(text(),'Master')]
 ${lstOppStageFilter}                    //*[@id='ReportViewerControl_ctl04_ctl29_txtValue']
@@ -134,7 +135,12 @@ Navigate To The Save Search Of Master Opp Report On NS
     Go To    ${url}
     The Title Of Save Search Should Contain    Master Opps
 
-
+Export Excel Data From The Save Search Of Master Opp Report On NS
+    Export SS Data To CSV
+    ${fullyFileName}    Get Fully File Name From Given Name    MasterOpps    ${DOWNLOAD_DIR}
+    ${csvFilePath}      Set Variable    ${DOWNLOAD_DIR}${fullyFileName}
+    ${xlsxFilePath}     Set Variable    ${DOWNLOAD_DIR}MasterOppSource.xlsx
+    Convert Csv To Xlsx    ${csvFilePath}    ${xlsxFilePath}
 
 
 

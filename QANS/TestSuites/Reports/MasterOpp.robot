@@ -1,14 +1,14 @@
 *** Settings ***
 Resource    ../../Pages/Reports/MasterOppPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
-Resource    ../../Pages/UtilityPage.robot
+
 
 *** Test Cases ***
 Testcase1
-#    Setup    Firefox
-#    Navigate To Master Opp Report
-#    Wait Until Page Load Completed
-#    Should See The Title Of Master Opp Report    Master Opportunity Report
+    Setup    Firefox
+    Navigate To Master Opp Report
+    Wait Until Page Load Completed
+    Should See The Title Of Master Opp Report    Master Opportunity Report
 #    Filter Created Date On Master Opp Report    NULL    NULL
 #    Sleep    3s
 #    ${multiOppStageOptions}     Create List
@@ -26,16 +26,12 @@ Testcase1
 #    Append To List        ${multiOppStageOptions}   9.Opp Disapproved
 #    Select Opp Stage On Master Opp Report    ${multiOppStageOptions}
 #    Click On Button View Report
-#    Should See The Title Of Master Opp Report    Master Opportunity Report
+    Should See The Title Of Master Opp Report    Master Opportunity Report
+#    Export Report Data To    Excel
+#    Open New Tab
 #    Navigate To The Save Search Of Master Opp Report On NS
 #    The Title Of Save Search Should Contain    Master Opps
-#    Export SS Data To CSV
-#    ${fullyFileName}    Get Fully File Name From Given Name    MasterOpps    ${DOWNLOAD_DIR}
-    ${csvFilePath}      Set Variable    C:\\RobotFramework\\Downloads\\MasterOppsTestingResults370.csv
-    ${xlsxFilePath}     Set Variable    C:\\Users\\thanh.nguyen\\Downloads\\MasterOppSource.xlsx
-    Log To Console    csvFilePath: ${csvFilePath}
-    Log To Console    xlsxFilePath: ${xlsxFilePath}
-    Convert Csv To Xlsx    csvFilePath    xlsxFilePath
+#    Export Excel Data From The Save Search Of Master Opp Report On NS
 
 
 

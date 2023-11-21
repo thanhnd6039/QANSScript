@@ -5,10 +5,12 @@ Library     ExcelLibrary
 Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
 Library     Collections
+Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
+#${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads\\
 ${DOWNLOAD_DIR}     C:\\Users\\thanh.nguyen\\Downloads\\
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
@@ -16,7 +18,8 @@ ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonI
 *** Keywords ***
 Setup
     [Arguments]     ${browser}
-    Open Browser    browser=${browser}
+#    ${firefoxProfileInstance}   Set Variable    set_preference("browser.download.dir", "C:\\RobotFramework\\Downloads\\")
+    Open Browser    browser=${browser}      ff_profile_dir=set_preference("browser.download.dir", "C:\RobotFramework\Downloads")
     Maximize Browser Window
 
 TearDown
@@ -44,6 +47,8 @@ Export Report Data To
     Wait Until Element Is Visible    ${exportOptionXpath}   ${TIMEOUT}
     Click Element    ${exportOptionXpath}
 
+Open New Tab
+    Execute Javascript      window.open('https://www.google.com')
 
 
 
