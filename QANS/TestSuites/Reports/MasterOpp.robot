@@ -27,11 +27,12 @@ Testcase1
 #    Select Opp Stage On Master Opp Report    ${multiOppStageOptions}
 #    Click On Button View Report
     Should See The Title Of Master Opp Report    Master Opportunity Report
-#    Export Report Data To    Excel
+    Export Report Data To    Excel
 #    Open New Tab
 #    Navigate To The Save Search Of Master Opp Report On NS
 #    The Title Of Save Search Should Contain    Master Opps
 #    Export Excel Data From The Save Search Of Master Opp Report On NS
+
 
 
 

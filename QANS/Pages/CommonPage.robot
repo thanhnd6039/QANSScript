@@ -5,6 +5,7 @@ Library     ExcelLibrary
 Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
 Library     Collections
+Library    String
 Resource    UtilityPage.robot
 
 *** Variables ***
@@ -18,9 +19,14 @@ ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonI
 *** Keywords ***
 Setup
     [Arguments]     ${browser}
-#    ${firefoxProfileInstance}   Set Variable    set_preference("browser.download.dir", "C:\\RobotFramework\\Downloads\\")
-    Open Browser    browser=${browser}      ff_profile_dir=set_preference("browser.download.dir", "C:\RobotFramework\Downloads")
+    ${random_string}    generate random string  3
+    ${path}     Catenate    SEPARATOR=\\    ${TEMPDIR}  ${random_string}
+#    ${path}     Set Variable    C:\\RobotFramework\\Downloads
+    ${profile}  Create Profile     ${path}
+    Open Browser    browser=${browser}      ff_profile_dir=${profile}
+#    Open Browser    ${url}      browser=${browser}      ff_profile_dir=${profilePath}
     Maximize Browser Window
+
 
 TearDown
     Close Browser
