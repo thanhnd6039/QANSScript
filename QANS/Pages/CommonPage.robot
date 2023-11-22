@@ -4,29 +4,24 @@ Library     JSONLibrary
 Library     ExcelLibrary
 Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
+Library     ../Libs/CBrowser.py
 Library     Collections
-Library    String
+Library     String
 Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
-#${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads\\
-${DOWNLOAD_DIR}     C:\\Users\\thanh.nguyen\\Downloads\\
+${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads\\
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
 
 *** Keywords ***
 Setup
     [Arguments]     ${browser}
-    ${random_string}    generate random string  3
-    ${path}     Catenate    SEPARATOR=\\    ${TEMPDIR}  ${random_string}
-#    ${path}     Set Variable    C:\\RobotFramework\\Downloads
-    ${profile}  Create Profile     ${path}
-    Open Browser    browser=${browser}      ff_profile_dir=${profile}
-#    Open Browser    ${url}      browser=${browser}      ff_profile_dir=${profilePath}
+    ${chromeOptions}      Get Chrome Options
+    Open Browser    browser=${browser}      options=${chromeOptions}
     Maximize Browser Window
-
 
 TearDown
     Close Browser

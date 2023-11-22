@@ -137,7 +137,9 @@ Navigate To The Save Search Of Master Opp Report On NS
 
 Export Excel Data From The Save Search Of Master Opp Report On NS
     Export SS Data To CSV
+    Sleep    5s
     ${fullyFileName}    Get Fully File Name From Given Name    MasterOpps    ${DOWNLOAD_DIR}
+    Log To Console    FullyName: ${fullyFileName}
     ${csvFilePath}      Set Variable    ${DOWNLOAD_DIR}${fullyFileName}
     ${xlsxFilePath}     Set Variable    ${DOWNLOAD_DIR}MasterOppSource.xlsx
     Convert Csv To Xlsx    ${csvFilePath}    ${xlsxFilePath}
