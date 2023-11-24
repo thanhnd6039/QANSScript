@@ -51,6 +51,13 @@ Export Report Data To
 Open New Tab
     Execute Javascript      window.open('https://www.google.com')
 
+Remove All Files in Specified Directory
+    [Arguments]     ${dirPath}
+    @{fileNames}    List Files In Directory    ${dirPath}
+    FOR    ${fileName}    IN    @{fileNames}
+        Remove File    ${dirPath}${fileName}
+    END
+
 
 
     

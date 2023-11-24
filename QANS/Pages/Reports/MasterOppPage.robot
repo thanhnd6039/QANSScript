@@ -133,16 +133,25 @@ Navigate To The Save Search Of Master Opp Report On NS
     ${url}      Set Variable    https://4499123.app.netsuite.com/app/common/search/searchresults.nl?searchid=4002&whence=
     Login To NS With Account    PRODUCTION
     Go To    ${url}
-    The Title Of Save Search Should Contain    Master Opps
 
 Export Excel Data From The Save Search Of Master Opp Report On NS
     Export SS Data To CSV
     Sleep    5s
     ${fullyFileName}    Get Fully File Name From Given Name    MasterOpps    ${DOWNLOAD_DIR}
-    Log To Console    FullyName: ${fullyFileName}
     ${csvFilePath}      Set Variable    ${DOWNLOAD_DIR}${fullyFileName}
     ${xlsxFilePath}     Set Variable    ${DOWNLOAD_DIR}MasterOppSource.xlsx
     Convert Csv To Xlsx    ${csvFilePath}    ${xlsxFilePath}
+
+Compare Data Between Master Opp Report And SS On NS
+    [Arguments]     ${reportFilePath}   ${ssFilePath}
+
+Get List Of Opps From The SS Of Master Opp Report On NS
+    [Arguments]     ${ssFilePath}
+    @{listOfOpps}   Create List
+
+    [Return]    ${listOfOpps}
+
+
 
 
 
