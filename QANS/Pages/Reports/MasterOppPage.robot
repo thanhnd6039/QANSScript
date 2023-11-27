@@ -3,6 +3,7 @@ Resource    ../CommonPage.robot
 Resource    ../NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
+Library    XML
 
 *** Variables ***
 ${txtTitleOfMasterOpp}                  //*[contains(text(),'Master')]
@@ -144,15 +145,35 @@ Export Excel Data From The Save Search Of Master Opp Report On NS
 
 Compare Data Between Master Opp Report And SS On NS
     [Arguments]     ${reportFilePath}   ${ssFilePath}
+#    Get List Of Opps From The SS Of Master Opp Report On NS    ${ssFilePath}
+    Get List Of Opps From The Master Opp Report    ${reportFilePath}
 
 Get List Of Opps From The SS Of Master Opp Report On NS
     [Arguments]     ${ssFilePath}
     @{listOfOpps}   Create List
 
+    Open Excel Document    ${ssFilePath}    MasterOppSource
+    ${numOfRows}    Get Number Of Rows In Excel    ${ssFilePath}
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}
+        ${opp}  Read Excel Cell    ${rowIndex}    2
+        Append To List    ${listOfOpps}     ${opp}
+    END
+    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
     [Return]    ${listOfOpps}
 
+Get List Of Opps From The Master Opp Report
+    [Arguments]     ${reportFilePath}
 
+    @{listOfOpps}   Create List
 
+    Open Excel Document    ${reportFilePath}    MasterOppReport
+    ${numOfRows}    Get Number Of Rows In Excel    ${reportFilePath}
+    FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
+        ${opp}  Read Excel Cell    ${rowIndex}    1
+        Append To List    ${listOfOpps}     ${opp}
+    END
+    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+    [Return]    ${listOfOpps}
 
 
 
