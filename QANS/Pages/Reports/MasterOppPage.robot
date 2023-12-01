@@ -145,8 +145,30 @@ Export Excel Data From The Save Search Of Master Opp Report On NS
 
 Compare Data Between Master Opp Report And SS On NS
     [Arguments]     ${reportFilePath}   ${ssFilePath}
-#    Get List Of Opps From The SS Of Master Opp Report On NS    ${ssFilePath}
-    Get List Of Opps From The Master Opp Report    ${reportFilePath}
+
+    ${resultFilePath}       Set Variable    ${OUTPUT_DIR}\\Results\\MAsterOpp\\MasterOppResult.xlsx
+    @{listOfOppsOnReport}   Create List
+    @{listOfOppsOnNS}       Create List
+
+    ${listOfOppsOnNS}       Get List Of Opps From The SS Of Master Opp Report On NS    ${ssFilePath}
+    ${listOfOppsOnReport}   Get List Of Opps From The Master Opp Report    ${reportFilePath}
+
+    ${numOfOppsOnNS}    Get Length    ${listOfOppsOnNS}
+    ${numOfOppsOnReport}    Get Length    ${listOfOppsOnReport}
+    Log To Console    Number of Opps on Report: ${numOfOppsOnReport}
+    Log To Console    Number of Opps On NS: ${numOfOppsOnNS}
+    File Should Exist    ${resultFilePath}
+    IF    '${numOfOppsOnReport}' != '${numOfOppsOnNS}'
+        ${latestRowInResultFile}   Get Number Of Rows In Excel    ${resultFilePath}
+        Open Excel Document    ${resultFilePath}    MasterOppResult
+        ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+        Write Excel Cell    row_num=${nextRow}    col_num=1    value=Number of Opps
+        Write Excel Cell    row_num=${nextRow}    col_num=2    value=${numOfOppsOnReport}
+        Write Excel Cell    row_num=${nextRow}    col_num=3    value=${numOfOppsOnNS}
+        Save Excel Document    ${resultFilePath}
+    END
+    Get List Of Opps Only Have One Item From The Master Opp Report    ${reportFilePath}
+    
 
 Get List Of Opps From The SS Of Master Opp Report On NS
     [Arguments]     ${ssFilePath}
@@ -159,6 +181,7 @@ Get List Of Opps From The SS Of Master Opp Report On NS
         Append To List    ${listOfOpps}     ${opp}
     END
     ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+    Close All Excel Documents
     [Return]    ${listOfOpps}
 
 Get List Of Opps From The Master Opp Report
@@ -173,8 +196,53 @@ Get List Of Opps From The Master Opp Report
         Append To List    ${listOfOpps}     ${opp}
     END
     ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+    Close All Excel Documents
     [Return]    ${listOfOpps}
 
+Get List Of Opps Only Have One Item From The Master Opp Report
+    [Arguments]     ${reportFilePath}
+    @{listOfOpps}              Create List
+    @{listOfOppsHaveOneItem}   Create List
+    
+#    ${listOfOpps}   Get List Of Opps From The Master Opp Report    ${reportFilePath}
+    Open Excel Document    ${reportFilePath}    MasterOppReport
+    ${numOfRows}    Get Number Of Rows In Excel    ${reportFilePath}
+    FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
+        ${opp}      Read Excel Cell    ${rowIndex}    1
+        ${countOpps}    Set Variable    0
+        FOR    ${rowIndexTemp}    IN RANGE    ${rowIndex}+1    ${numOfRows}+1
+            ${oppTemp}  Read Excel Cell    ${rowIndexTemp}    1
+            IF    '${opp}' == '${oppTemp}'
+                 ${countOpps}   Evaluate    ${countOpps}+1
+            END
+        END
+        IF    '${countOpps}' == '1'
+            Log To Console    OPP: ${opp}
+        END
+    END
+    
+#    FOR    ${opp}    IN    @{listOfOpps}
+#        ${countOpps}    Set Variable    0
+#        FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
+#            ${oppInReportFile}  Read Excel Cell    ${rowIndex}    1
+#            IF    '${opp}' == '${oppInReportFile}'
+#                 ${countOpps}   Evaluate    ${countOpps}+1
+#            END
+#
+#        END
+#        IF    '${countOpps}' == '1'
+#            Log To Console    OPP: ${opp}
+#             Append To List    ${listOfOppsHaveOneItem}     ${opp}
+#        END
+#    END
+#    FOR    ${opp}    IN    @{listOfOppsHaveOneItem}
+#        IF    '${opp}' == '2856'
+#             Log To Console    Error111111111111111111
+#        END
+#    END
+
+    Close All Excel Documents
+    [Return]    ${listOfOppsHaveOneItem}
 
 
 

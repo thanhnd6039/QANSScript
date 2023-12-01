@@ -10,8 +10,9 @@ Validating Detailed Data For Master Opp Report
 #    Navigate To Master Opp Report
 #    Wait Until Page Load Completed
 #    Should See The Title Of Master Opp Report    Master Opportunity Report
-##    Filter Created Date On Master Opp Report    NULL    NULL
-#    Sleep    5s
+#    Filter Created Date On Master Opp Report    NULL    NULL
+#    Sleep    10s
+#    Select All Opp Stages On Master Opp Report
 #    ${multiOppStageOptions}     Create List
 #    Append To List        ${multiOppStageOptions}   0.Identified
 #    Append To List        ${multiOppStageOptions}   1.Opp Approved
@@ -25,7 +26,7 @@ Validating Detailed Data For Master Opp Report
 #    Sleep    10s
 #    Should See The Title Of Master Opp Report    Master Opportunity Report
 #    Export Report Data To    Excel
-#    Sleep    5s
+#    Sleep    10s
 #    File Should Exist    ${DOWNLOAD_DIR}Opportunity Report.xlsx
 #    Navigate To The Save Search Of Master Opp Report On NS
 #    The Title Of Save Search Should Contain    Master Opps
