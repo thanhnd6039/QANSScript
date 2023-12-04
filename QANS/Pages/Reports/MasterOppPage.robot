@@ -199,50 +199,43 @@ Get List Of Opps From The Master Opp Report
     Close All Excel Documents
     [Return]    ${listOfOpps}
 
-Get List Of Opps Only Have One Item From The Master Opp Report
+Get List Of Opps Have Multi Items From The Master Opp Report
     [Arguments]     ${reportFilePath}
-    @{listOfOpps}              Create List
-    @{listOfOppsHaveOneItem}   Create List
+    @{listOfOpps}   Create List
     
-#    ${listOfOpps}   Get List Of Opps From The Master Opp Report    ${reportFilePath}
     Open Excel Document    ${reportFilePath}    MasterOppReport
     ${numOfRows}    Get Number Of Rows In Excel    ${reportFilePath}
     FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
-        ${opp}      Read Excel Cell    ${rowIndex}    1
-        ${countOpps}    Set Variable    0
-        FOR    ${rowIndexTemp}    IN RANGE    ${rowIndex}+1    ${numOfRows}+1
-            ${oppTemp}  Read Excel Cell    ${rowIndexTemp}    1
-            IF    '${opp}' == '${oppTemp}'
-                 ${countOpps}   Evaluate    ${countOpps}+1
-            END
-        END
-        IF    '${countOpps}' == '1'
-            Log To Console    OPP: ${opp}
+        ${currentOpp}   Read Excel Cell    ${rowIndex}    1
+        ${nextRow}  Evaluate    ${rowIndex}+1
+        ${nextOpp}      Read Excel Cell    ${nextRow}    1
+        IF    '${nextOpp}' == '${currentOpp}'
+             Append To List    ${listOfOpps}    ${currentOpp}
         END
     END
-    
-#    FOR    ${opp}    IN    @{listOfOpps}
-#        ${countOpps}    Set Variable    0
-#        FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
-#            ${oppInReportFile}  Read Excel Cell    ${rowIndex}    1
-#            IF    '${opp}' == '${oppInReportFile}'
-#                 ${countOpps}   Evaluate    ${countOpps}+1
-#            END
-#
-#        END
-#        IF    '${countOpps}' == '1'
-#            Log To Console    OPP: ${opp}
-#             Append To List    ${listOfOppsHaveOneItem}     ${opp}
-#        END
-#    END
-#    FOR    ${opp}    IN    @{listOfOppsHaveOneItem}
-#        IF    '${opp}' == '2856'
-#             Log To Console    Error111111111111111111
-#        END
-#    END
-
     Close All Excel Documents
-    [Return]    ${listOfOppsHaveOneItem}
+    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+
+    [Return]    ${listOfOpps}
+
+Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS
+    [Arguments]     ${ssFilePath}
+    @{listOfOpps}   Create List
+
+    Open Excel Document    ${ssFilePath}    MasterOppSource
+    ${numOfRows}    Get Number Of Rows In Excel    ${ssFilePath}
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}
+        ${currentOpp}   Read Excel Cell    ${rowIndex}    2
+        ${nextRow}  Evaluate    ${rowIndex}+1
+        ${nextOpp}      Read Excel Cell    ${nextRow}    2
+        IF    '${nextOpp}' == '${currentOpp}'
+             Append To List    ${listOfOpps}    ${currentOpp}
+        END
+    END
+    Close All Excel Documents
+    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+
+    [Return]    ${listOfOpps}
 
 
 
