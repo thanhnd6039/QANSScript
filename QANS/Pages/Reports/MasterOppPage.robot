@@ -146,7 +146,7 @@ Export Excel Data From The Save Search Of Master Opp Report On NS
 Compare Data Between Master Opp Report And SS On NS
     [Arguments]     ${reportFilePath}   ${ssFilePath}
 
-    ${resultFilePath}       Set Variable    ${OUTPUT_DIR}\\Results\\MAsterOpp\\MasterOppResult.xlsx
+    ${resultFilePath}       Set Variable    ${OUTPUT_DIR}\\Results\\MasterOpp\\MasterOppResult.xlsx
     @{listOfOppsOnReport}   Create List
     @{listOfOppsOnNS}       Create List
 
@@ -158,16 +158,71 @@ Compare Data Between Master Opp Report And SS On NS
     Log To Console    Number of Opps on Report: ${numOfOppsOnReport}
     Log To Console    Number of Opps On NS: ${numOfOppsOnNS}
     File Should Exist    ${resultFilePath}
+    Open Excel Document    ${resultFilePath}    MasterOppResult
     IF    '${numOfOppsOnReport}' != '${numOfOppsOnNS}'
         ${latestRowInResultFile}   Get Number Of Rows In Excel    ${resultFilePath}
-        Open Excel Document    ${resultFilePath}    MasterOppResult
         ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-        Write Excel Cell    row_num=${nextRow}    col_num=1    value=Number of Opps
-        Write Excel Cell    row_num=${nextRow}    col_num=2    value=${numOfOppsOnReport}
-        Write Excel Cell    row_num=${nextRow}    col_num=3    value=${numOfOppsOnNS}
+        Write Excel Cell    row_num=${nextRow}    col_num=2    value=Number of Opps
+        Write Excel Cell    row_num=${nextRow}    col_num=3    value=${numOfOppsOnReport}
+        Write Excel Cell    row_num=${nextRow}    col_num=4    value=${numOfOppsOnNS}
         Save Excel Document    ${resultFilePath}
     END
-    Get List Of Opps Only Have One Item From The Master Opp Report    ${reportFilePath}
+
+    Open Excel Document    ${ssFilePath}    MasterOppSource
+    ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssFilePath}
+    Open Excel Document    ${reportFilePath}    MasterOppReport
+    ${numOfRowsOnReport}    Get Number Of Rows In Excel    ${reportFilePath}
+    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}
+        Switch Current Excel Document    doc_id=MasterOppSource
+        ${oppColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
+        ${trackedOppColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=3
+        ${oppLinkColOnSS}                       Read Excel Cell    row_num=${rowIndexOnSS}    col_num=4
+        ${oemGroupColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=6
+        ${samColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=7
+        ${saleRepColOnSS}                       Read Excel Cell    row_num=${rowIndexOnSS}    col_num=8
+        ${tmColOnSS}                            Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
+        ${oppDiscoveryPersonColOnSS}            Read Excel Cell    row_num=${rowIndexOnSS}    col_num=10
+        ${bizDevSupportColOnSS}                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+        ${pnColOnSS}                            Read Excel Cell    row_num=${rowIndexOnSS}    col_num=12
+        ${qtyColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=13
+        ${projectTotalColOnSS}                  Read Excel Cell    row_num=${rowIndexOnSS}    col_num=14
+        ${probabilityColOnSS}                   Read Excel Cell    row_num=${rowIndexOnSS}    col_num=15
+        ${oppStageColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=16
+        ${oppCategoryColOnSS}                   Read Excel Cell    row_num=${rowIndexOnSS}    col_num=17
+        ${expSampleShipDateColOnSS}             Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
+        ${expQualApprovedDateColOnSS}           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=19
+        ${expDWDateColOnSS}                     Read Excel Cell    row_num=${rowIndexOnSS}    col_num=20
+        ${1PPODateColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=21
+        ${DWDateColOnSS}                        Read Excel Cell    row_num=${rowIndexOnSS}    col_num=22
+        ${DWStatusColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=23
+        ${customerPNColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=24
+        ${subSegmentColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=25
+        ${programNameColOnSS}                   Read Excel Cell    row_num=${rowIndexOnSS}    col_num=26
+        ${applicationColOnSS}                   Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
+        ${functionColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
+        ${countRowOnReport}     Set Variable    4
+        Log To Console    OPP: ${oppColOnSS}
+        FOR    ${rowIndexOnReport}    IN RANGE    5    ${numOfRowsOnReport}+1
+            Switch Current Excel Document    doc_id=MasterOppReport            
+            ${oppColOnReport}               Read Excel Cell    row_num=${rowIndexOnReport}    col_num=1
+            IF    '${oppColOnReport}' == '${oppColOnSS}'
+                 BREAK
+            END
+            ${countRowOnReport}     Evaluate    ${countRowOnReport}+1
+        END
+        Log To Console    countRow: ${countRowOnReport}
+        Log To Console    Number of Rows On Report: ${numOfRowsOnReport}
+        IF    '${countRowOnReport}' == '${numOfRowsOnReport}'
+             Switch Current Excel Document    doc_id=MasterOppResult
+             ${latestRowInResultFile}   Get Number Of Rows In Excel    ${resultFilePath}
+             ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+             Write Excel Cell    row_num=${nextRow}    col_num=1    value=${oppColOnSS}
+             Write Excel Cell    row_num=${nextRow}    col_num=2    value=OPP
+             Write Excel Cell    row_num=${nextRow}    col_num=3    value=${EMPTY}
+             Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppColOnSS}
+             Save Excel Document    ${resultFilePath}
+        END
+    END
     
 
 Get List Of Opps From The SS Of Master Opp Report On NS

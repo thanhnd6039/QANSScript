@@ -33,9 +33,9 @@ Validating Detailed Data For Master Opp Report
 #    Export Excel Data From The Save Search Of Master Opp Report On NS
 #    Sleep    5s
 #    File Should Exist    ${DOWNLOAD_DIR}MasterOppSource.xlsx
-#    Compare Data Between Master Opp Report And SS On NS     ${DOWNLOAD_DIR}Opportunity Report.xlsx      ${DOWNLOAD_DIR}MasterOppSource.xlsx
+    Compare Data Between Master Opp Report And SS On NS     ${DOWNLOAD_DIR}Opportunity Report.xlsx      ${DOWNLOAD_DIR}MasterOppSource.xlsx
 #    Get List Of Opps Have Multi Items From The Master Opp Report     ${DOWNLOAD_DIR}Opportunity Report.xlsx
-    Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ${DOWNLOAD_DIR}MasterOppSource.xlsx
+#    Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ${DOWNLOAD_DIR}MasterOppSource.xlsx
 
 
 
