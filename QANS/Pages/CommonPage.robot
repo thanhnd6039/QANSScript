@@ -12,8 +12,8 @@ Resource    UtilityPage.robot
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
-${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads\\
-${OUTPUT_DIR}       C:\\RobotFramework\\
+${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads
+${OUTPUT_DIR}       C:\\RobotFramework
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
 
