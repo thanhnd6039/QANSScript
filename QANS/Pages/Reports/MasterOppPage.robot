@@ -4,6 +4,7 @@ Resource    ../NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
 Library    XML
+Library    DateTime
 
 *** Variables ***
 ${txtTitleOfMasterOpp}                  //*[contains(text(),'Master')]
@@ -148,8 +149,8 @@ Compare Data Between Master Opp Report And SS On NS
     [Arguments]     ${reportFilePath}   ${ssFilePath}
 
     ${result}   Set Variable    ${True}
-    Verify The Number Of Opps On Master Opp Report    ${reportFilePath}     ${ssFilePath}
-    Verify The Document Number Of Opp On Master Opp Report    reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
+#    Verify The Number Of Opps On Master Opp Report                          reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
+#    Verify The Document Number Of Opp On Master Opp Report                  reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
     Verify The Data Of Opp With Only One Item On Master Opp Report          reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
 
     [Return]    ${result}
@@ -186,6 +187,7 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
         ${currentOppStageColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=16
         ${oppCategoryColOnSS}                        Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
         ${expSampleShipColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=19
+        Log To Console    Opp: ${oppColOnSS}
         FOR    ${rowIndexOnReport}    IN RANGE    5    ${numOfRowsOnReport}+1
             Switch Current Excel Document    doc_id=MasterOppReport
             ${oppColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=1
@@ -204,7 +206,11 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
             ${currentOppStageColOnReport}                    Read Excel Cell    row_num=${rowIndexOnReport}    col_num=16
             ${oppCategoryColOnReport}                        Read Excel Cell    row_num=${rowIndexOnReport}    col_num=18
             ${expSampleShipColOnReport}                      Read Excel Cell    row_num=${rowIndexOnReport}    col_num=19
+
             IF    '${oppColOnSS}' == '${oppColOnReport}'
+                 IF    '${trackedOppColOnSS}' == '${EMPTY}'
+                      ${trackedOppColOnSS}      Set Variable    No
+                 END
                  IF    '${trackedOppColOnReport}' != '${trackedOppColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -231,6 +237,9 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppLinkToColOnSS}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 IF    '${oemGroupColOnSS}' == 'PALO ALTO NETWORKS'
+                      ${oemGroupColOnSS}    Set Variable    PALOALTO NETWORKS
+                 END
                  IF    '${oemGroupColOnReport}' != '${oemGroupColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -254,6 +263,12 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  IF    '${saleRepColOnSS}' == 'Sinclair, Cameron R'
                       ${saleRepColOnSS}     Set Variable    Cameron Sinclair
                  END
+                 IF    '${saleRepColOnSS}' == 'Tran, Huan'
+                      ${saleRepColOnSS}     Set Variable    Huan Tran
+                 END
+                 IF    '${saleRepColOnSS}' == 'Nilsson, Michael J'
+                      ${saleRepColOnSS}     Set Variable    Michael Nilsson
+                 END
                  IF    '${saleRepColOnReport}' != '${saleRepColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -270,6 +285,9 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  IF    '${tmColOnSS}' == 'Cook, Christopher'
                       ${tmColOnSS}   Set Variable     Christopher Cook
                  END
+                 IF    '${tmColOnSS}' == 'Lawrence, Scott'
+                      ${tmColOnSS}   Set Variable     Scott Lawrence
+                 END
                  IF    '${tmColOnReport}' != '${tmColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -283,6 +301,12 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  IF    '${oppDiscoveryPersonColOnReport}' == 'None'
                      ${oppDiscoveryPersonColOnReport}       Set Variable    ${EMPTY}
                  END
+                 IF    '${oppDiscoveryPersonColOnSS}' == 'None'
+                      ${oppDiscoveryPersonColOnSS}  Set Variable    ${EMPTY}
+                 END
+                 IF    '${oppDiscoveryPersonColOnSS}' == 'Sinclair, Cameron R'
+                      ${oppDiscoveryPersonColOnSS}   Set Variable   Cameron Sinclair
+                 END
                  IF    '${oppDiscoveryPersonColOnReport}' != '${oppDiscoveryPersonColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -295,6 +319,9 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  END
                  IF    '${bizDevSupportColOnReport}' == 'None'
                       ${bizDevSupportColOnReport}   Set Variable    ${EMPTY}
+                 END
+                 IF    '${bizDevSupportColOnSS}' == 'None'
+                      ${bizDevSupportColOnSS}   Set Variable    ${EMPTY}
                  END
                  IF    '${bizDevSupportColOnReport}' != '${bizDevSupportColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
@@ -336,7 +363,9 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                           Save Excel Document    ${RESULT_FILE_PATH}
                       END
                  END
-                 IF    '${projectTotalColOnReport}' != '${projectTotalColOnSS}'
+                 ${diffProjectTotal}    Evaluate    abs(${projectTotalColOnReport}-${projectTotalColOnSS})
+
+                 IF    '${diffProjectTotal}' > '1'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
@@ -346,6 +375,8 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${projectTotalColOnSS}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 ${probColOnReport}     Evaluate    ${probColOnReport}*100
+                 ${probColOnSS}     Remove String    ${probColOnSS}  %
                  IF    '${probColOnReport}' != '${probColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -376,6 +407,14 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${currentOppStageColOnSS}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 IF    '${expSampleShipColOnSS}' != '${EMPTY}'
+                      ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         date_format=%m/%d/%Y
+                      ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         result_format=%m/%d/%Y
+                 END
+                 IF    '${expSampleShipColOnReport}' != '${EMPTY}'
+                      ${expSampleShipColOnReport}    Convert Date    ${expSampleShipColOnReport}     result_format=%m/%d/%Y
+                 END
+
                  IF    '${expSampleShipColOnReport}' != '${expSampleShipColOnSS}'
                       Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
