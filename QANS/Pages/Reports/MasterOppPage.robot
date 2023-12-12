@@ -158,6 +158,7 @@ Compare Data Between Master Opp Report And SS On NS
 Verify The Data Of Opp With Only One Item On Master Opp Report
     [Arguments]     ${reportFilePath}   ${ssFilePath}
     ${result}   Set Variable    ${True}
+    @{listOfOppsCheckedOnReport}    Create List
     @{listOfOppsHaveMultiItemsOnNS}     Create List
     ${listOfOppsHaveMultiItemsOnNS}     Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ssFilePath=${ssFilePath}
 
@@ -191,6 +192,19 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
         FOR    ${rowIndexOnReport}    IN RANGE    5    ${numOfRowsOnReport}+1
             Switch Current Excel Document    doc_id=MasterOppReport
             ${oppColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=1
+            ${isOppCheckedOnReport}     Set Variable    ${False}
+            FOR    ${oppCheckedOnReport}    IN    @{listOfOppsCheckedOnReport}
+                IF    '${oppColOnReport}' == '${oppCheckedOnReport}'
+                    ${isOppCheckedOnReport}     Set Variable    ${True}
+                    BREAK
+                END
+            END
+            IF    '${isOppCheckedOnReport}' == '${True}'
+                 Continue For Loop
+            END
+            IF    '${oppColOnSS}' != '${oppColOnReport}'
+                Continue For Loop
+            END
             ${trackedOppColOnReport}                         Read Excel Cell    row_num=${rowIndexOnReport}    col_num=2
             ${oppLinkToColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=3
             ${oemGroupColOnReport}                           Read Excel Cell    row_num=${rowIndexOnReport}    col_num=5
@@ -407,6 +421,12 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${currentOppStageColOnSS}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 IF    '${expSampleShipColOnSS}' == 'None'
+                      ${expSampleShipColOnSS}   Set Variable    ${EMPTY}
+                 END
+                 IF    '${expSampleShipColOnReport}' == 'None'
+                      ${expSampleShipColOnReport}   Set Variable    ${EMPTY}
+                 END
                  IF    '${expSampleShipColOnSS}' != '${EMPTY}'
                       ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         date_format=%m/%d/%Y
                       ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         result_format=%m/%d/%Y
@@ -425,6 +445,7 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expSampleShipColOnSS}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 Append To List    ${listOfOppsCheckedOnReport}     ${oppColOnSS}
                  BREAK
             END
         END
