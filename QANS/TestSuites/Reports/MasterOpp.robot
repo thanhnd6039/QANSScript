@@ -34,6 +34,7 @@ Validating Detailed Data For Master Opp Report
     Sleep    5s
     File Should Exist    ${DOWNLOAD_DIR}\\MasterOppSource.xlsx
     Compare Data Between Master Opp Report And SS On NS     ${DOWNLOAD_DIR}\\Opportunity Report.xlsx      ${DOWNLOAD_DIR}\\MasterOppSource.xlsx
+    TearDown
 
 
 
