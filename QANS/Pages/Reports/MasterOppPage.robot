@@ -27,6 +27,20 @@ ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerContro
 ${RESULT_FILE_PATH}                       ${OUTPUT_DIR}\\Results\\MasterOpp\\MasterOppResult.xlsx
 
 *** Keywords ***
+Insert Data
+    [Arguments]    ${array}    ${row}    ${column}    ${value}
+    Set To Dictionary    ${array}[${row}][${column}]    ${value}
+
+Create 2D Array
+    [Arguments]    ${rows}    ${columns}
+    ${array} =    Evaluate    [[None]*${columns} for _ in range(${rows})]
+    [Return]    ${array}
+
+Get Value From 2D Array
+    [Arguments]    ${array}    ${row}    ${column}
+    ${value} =    Set Variable    ${array}[${row}][${column}]
+    [Return]    ${value}
+
 Navigate To Master Opp Report
     ${configFileObject}     Load Json From File    ${CONFIG_FILE}
     ${username}             Get Value From Json    ${configFileObject}    $.accounts[0].username
