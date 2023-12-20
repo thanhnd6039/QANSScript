@@ -172,17 +172,18 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
 
     FOR    ${rowIndexOnSSTable}    IN RANGE    0    ${numOfRowsOnSSTable}
         ${oppColOnSSTable}          Set Variable        ${ssTable}[${rowIndexOnSSTable}][0]
-        ${trackedOppColOnSSTable}   Set Variable        ${ssTable}[${rowIndexOnSSTable}][1]
         Log To Console    Opp: ${oppColOnSSTable}
         FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
             ${oppColOnReportTable}  Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
-            IF    '${oppColOnReportTable}' != '${oppColOnSSTable}'
-                 Continue For Loop
-            END
-            ${trackedOppColOnReportTable}   Set Variable    ${reportTable}[${rowIndexOnReportTable}][1]
             IF    '${oppColOnReportTable}' == '${oppColOnSSTable}'
+                 ${trackedOppColOnSSTable}   Set Variable        ${ssTable}[${rowIndexOnSSTable}][1]
+                 ${oppLinkToColOnSSTable}    Set Variable        ${ssTable}[${rowIndexOnSSTable}][2]
+                 ${oemGroupColOnSSTable}     Set Variable        ${ssTable}[${rowIndexOnSSTable}][3]
+
+                 ${trackedOppColOnReportTable}   Set Variable    ${reportTable}[${rowIndexOnReportTable}][1]
+                 ${oppLinkToColOnReportTable}    Set Variable    ${reportTable}[${rowIndexOnReportTable}][2]
+                 ${oemGroupColOnReportTable}     Set Variable    ${reportTable}[${rowIndexOnReportTable}][3]
                  IF    '${trackedOppColOnReportTable}' != '${trackedOppColOnSSTable}'
-                      Switch Current Excel Document    doc_id=MasterOppResult
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
                       Write Excel Cell    row_num=${nextRow}    col_num=1    value=TRACKED OPP
@@ -191,10 +192,31 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${trackedOppColOnSSTable}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 IF    '${oppLinkToColOnReportTable}' != '${oppLinkToColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP LINK TO
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppLinkToColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppLinkToColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${oemGroupColOnReportTable}' != '${oemGroupColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OEM GROUP
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oemGroupColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 Remove From List    ${reportTable}    ${rowIndexOnReportTable}
+                 ${numOfRowsOnReportTable}   Get Length    ${reportTable}
                  BREAK
             END
         END
     END
+    Close All Excel Documents
 
 Sort Table By Column
     [Arguments]     ${table}    ${colIndex}
@@ -217,10 +239,16 @@ Create Table From The SS Of Master Opp Report On NS
     FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
         ${oppColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
         ${trackedOppColOnSS}                         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=3
-        IF    '${oppColOnSS}' == '${EMPTY}'
-             Continue For Loop
-        END
-        ${rowOnTable}   Create List     ${oppColOnSS}   ${trackedOppColOnSS}
+        ${oppLinkToColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=4
+        ${oemGroupColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=6
+        IF    '${oemGroupColOnSS}' == 'PALO ALTO NETWORKS'
+             ${oemGroupColOnSS}     Set Variable    PALOALTO NETWORKS
+        END       
+        ${rowOnTable}   Create List
+        ...             ${oppColOnSS}
+        ...             ${trackedOppColOnSS}
+        ...             ${oppLinkToColOnSS}
+        ...             ${oemGroupColOnSS}
         Append To List    ${table}   ${rowOnTable}
         ${rowOnTable}   Remove Values From List    ${rowOnTable}
     END
@@ -239,10 +267,13 @@ Create Table For Master Opp Report
     FOR    ${rowIndexOnReport}    IN RANGE    5    ${numOfRowsOnReport}+1
         ${oppColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=1
         ${trackedOppColOnReport}                         Read Excel Cell    row_num=${rowIndexOnReport}    col_num=2
-        IF    '${oppColOnReport}' == '${EMPTY}'
-             Continue For Loop
-        END
-        ${rowOnTable}   Create List     ${oppColOnReport}   ${trackedOppColOnReport}
+        ${oppLinkToColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=3
+        ${oemGroupColOnReport}                           Read Excel Cell    row_num=${rowIndexOnReport}    col_num=5
+        ${rowOnTable}   Create List
+        ...             ${oppColOnReport}
+        ...             ${trackedOppColOnReport}
+        ...             ${oppLinkToColOnReport}
+        ...             ${oemGroupColOnReport}
         Append To List    ${table}   ${rowOnTable}
         ${rowOnTable}   Remove Values From List    ${rowOnTable}
     END
