@@ -176,13 +176,50 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
         FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
             ${oppColOnReportTable}  Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
             IF    '${oppColOnReportTable}' == '${oppColOnSSTable}'
-                 ${trackedOppColOnSSTable}   Set Variable        ${ssTable}[${rowIndexOnSSTable}][1]
-                 ${oppLinkToColOnSSTable}    Set Variable        ${ssTable}[${rowIndexOnSSTable}][2]
-                 ${oemGroupColOnSSTable}     Set Variable        ${ssTable}[${rowIndexOnSSTable}][3]
+                 ${trackedOppColOnSSTable}                   Set Variable        ${ssTable}[${rowIndexOnSSTable}][1]
+                 ${oppLinkToColOnSSTable}                    Set Variable        ${ssTable}[${rowIndexOnSSTable}][2]
+                 ${oemGroupColOnSSTable}                     Set Variable        ${ssTable}[${rowIndexOnSSTable}][3]
+                 ${samColOnSSTable}                          Set Variable        ${ssTable}[${rowIndexOnSSTable}][4]
+                 ${saleRepColOnSSTable}                      Set Variable        ${ssTable}[${rowIndexOnSSTable}][5]
+                 ${tmColOnSSTable}                           Set Variable        ${ssTable}[${rowIndexOnSSTable}][6]
+                 ${oppDiscoveryPersonColOnSSTable}           Set Variable        ${ssTable}[${rowIndexOnSSTable}][7]
+                 ${bizDevSupportColOnSSTable}                Set Variable        ${ssTable}[${rowIndexOnSSTable}][8]
+                 ${pnColOnSSTable}                           Set Variable        ${ssTable}[${rowIndexOnSSTable}][9]
+                 ${qtyColOnSSTable}                          Set Variable        ${ssTable}[${rowIndexOnSSTable}][10]
+                 ${projectTotalColOnSSTable}                 Set Variable        ${ssTable}[${rowIndexOnSSTable}][11]
+                 ${probColOnSSTable}                         Set Variable        ${ssTable}[${rowIndexOnSSTable}][12]
+                 ${oppStageColOnSSTable}                     Set Variable        ${ssTable}[${rowIndexOnSSTable}][13]
+                 ${oppCategoryColOnSSTable}                  Set Variable        ${ssTable}[${rowIndexOnSSTable}][14]
+                 ${expSampleShipColOnSSTable}                Set Variable        ${ssTable}[${rowIndexOnSSTable}][15]
+                 ${expQualApprovedColOnSSTable}              Set Variable        ${ssTable}[${rowIndexOnSSTable}][16]
+                 ${expDWDateColOnSSTable}                    Set Variable        ${ssTable}[${rowIndexOnSSTable}][17]
+                 ${1PPODateColOnSSTable}                     Set Variable        ${ssTable}[${rowIndexOnSSTable}][18]
+                 ${DWDateColOnSSTable}                       Set Variable        ${ssTable}[${rowIndexOnSSTable}][19]
+                 ${DWColOnSSTable}                           Set Variable        ${ssTable}[${rowIndexOnSSTable}][20]
+                 ${customerPNColOnSSTable}                   Set Variable        ${ssTable}[${rowIndexOnSSTable}][21]
 
-                 ${trackedOppColOnReportTable}   Set Variable    ${reportTable}[${rowIndexOnReportTable}][1]
-                 ${oppLinkToColOnReportTable}    Set Variable    ${reportTable}[${rowIndexOnReportTable}][2]
-                 ${oemGroupColOnReportTable}     Set Variable    ${reportTable}[${rowIndexOnReportTable}][3]
+                 ${trackedOppColOnReportTable}                   Set Variable    ${reportTable}[${rowIndexOnReportTable}][1]
+                 ${oppLinkToColOnReportTable}                    Set Variable    ${reportTable}[${rowIndexOnReportTable}][2]
+                 ${oemGroupColOnReportTable}                     Set Variable    ${reportTable}[${rowIndexOnReportTable}][3]
+                 ${samColOnReportTable}                          Set Variable    ${reportTable}[${rowIndexOnReportTable}][4]
+                 ${saleRepColOnReportTable}                      Set Variable    ${reportTable}[${rowIndexOnReportTable}][5]
+                 ${tmColOnReportTable}                           Set Variable    ${reportTable}[${rowIndexOnReportTable}][6]
+                 ${oppDiscoveryPersonColOnReportTable}           Set Variable    ${reportTable}[${rowIndexOnReportTable}][7]
+                 ${bizDevSupportColOnReportTable}                Set Variable    ${reportTable}[${rowIndexOnReportTable}][8]
+                 ${pnColOnReportTable}                           Set Variable    ${reportTable}[${rowIndexOnReportTable}][9]
+                 ${qtyColOnReportTable}                          Set Variable    ${reportTable}[${rowIndexOnReportTable}][10]
+                 ${projectTotalColOnReportTable}                 Set Variable    ${reportTable}[${rowIndexOnReportTable}][11]
+                 ${probColOnReportTable}                         Set Variable    ${reportTable}[${rowIndexOnReportTable}][12]
+                 ${oppStageColOnReportTable}                     Set Variable    ${reportTable}[${rowIndexOnReportTable}][13]
+                 ${oppCategoryColOnReportTable}                  Set Variable    ${reportTable}[${rowIndexOnReportTable}][14]
+                 ${expSampleShipColOnReportTable}                Set Variable    ${reportTable}[${rowIndexOnReportTable}][15]
+                 ${expQualApprovedColOnReportTable}              Set Variable    ${reportTable}[${rowIndexOnReportTable}][16]
+                 ${expDWDateColOnReportTable}                    Set Variable    ${reportTable}[${rowIndexOnReportTable}][17]
+                 ${1PPODateColOnReportTable}                     Set Variable    ${reportTable}[${rowIndexOnReportTable}][18]
+                 ${DWDateColOnReportTable}                       Set Variable    ${reportTable}[${rowIndexOnReportTable}][19]
+                 ${DWColOnReportTable}                           Set Variable    ${reportTable}[${rowIndexOnReportTable}][20]
+                 ${customerPNColOnReportTable}                   Set Variable    ${reportTable}[${rowIndexOnReportTable}][21]
+
                  IF    '${trackedOppColOnReportTable}' != '${trackedOppColOnSSTable}'
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
@@ -210,6 +247,154 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSSTable}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+                 IF    '${samColOnReportTable}' != '${samColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=SAM
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${samColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${samColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${saleRepColOnReportTable}' != '${saleRepColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=SALES REP
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${saleRepColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${saleRepColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${tmColOnReportTable}' != '${tmColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=TECHNICAL MARKETING
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${tmColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${tmColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${oppDiscoveryPersonColOnReportTable}' != '${oppDiscoveryPersonColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP DISCOVERY PERSON
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppDiscoveryPersonColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppDiscoveryPersonColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${bizDevSupportColOnReportTable}' != '${bizDevSupportColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=BIZ DEV SUPPORT
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${bizDevSupportColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${bizDevSupportColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 ${diffProjectTotal}    Evaluate    abs(${projectTotalColOnReportTable}-${projectTotalColOnSSTable})
+                 IF    '${diffProjectTotal}' > '1'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=PROJECT TOTAL
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${projectTotalColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${projectTotalColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+
+                 ${diffProb}    Evaluate    abs(${probColOnReportTable}-${probColOnSSTable})
+                 IF    '${diffProb}' >= '1'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=PROB
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${probColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${probColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${oppStageColOnReportTable}' != '${oppStageColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=CURRENT OPP STAGE
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppStageColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppStageColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${oppCategoryColOnReportTable}' != '${oppCategoryColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP CATEGORY
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppCategoryColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppCategoryColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${expSampleShipColOnReportTable}' != '${expSampleShipColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP SAMPLE SHIP
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expSampleShipColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expSampleShipColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${expQualApprovedColOnReportTable}' != '${expQualApprovedColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP QUAL APP'D
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expQualApprovedColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expQualApprovedColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${expDWDateColOnReportTable}' != '${expDWDateColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP DW DATE
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expDWDateColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expDWDateColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${1PPODateColOnReportTable}' != '${1PPODateColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=1PPO DATE
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${1PPODateColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${1PPODateColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${DWDateColOnReportTable}' != '${DWDateColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=DW DATE
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${DWDateColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${DWDateColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${DWColOnReportTable}' != '${DWColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=DESIGN WIN
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${DWColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${DWColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 IF    '${customerPNColOnReportTable}' != '${customerPNColOnSSTable}'
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=CUSTOMER PN
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${customerPNColOnReportTable}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${customerPNColOnSSTable}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                 END
+                 
                  Remove From List    ${reportTable}    ${rowIndexOnReportTable}
                  ${numOfRowsOnReportTable}   Get Length    ${reportTable}
                  BREAK
@@ -241,14 +426,109 @@ Create Table From The SS Of Master Opp Report On NS
         ${trackedOppColOnSS}                         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=3
         ${oppLinkToColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=4
         ${oemGroupColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=6
-        IF    '${oemGroupColOnSS}' == 'PALO ALTO NETWORKS'
-             ${oemGroupColOnSS}     Set Variable    PALOALTO NETWORKS
-        END       
+        ${isOEMGroupContainsColon}  Set Variable    ${False}
+        ${isOEMGroupContainsColon}  Evaluate   ":" in """${oemGroupColOnSS}"""
+        IF    '${isOEMGroupContainsColon}' == '${True}'
+            ${strArrTemp}   Split String    ${oemGroupColOnSS}  :
+            ${oemGroupColOnSS}    Set Variable    ${strArrTemp}[1]
+            ${oemGroupColOnSS}    Set Variable    ${oemGroupColOnSS.strip()}
+        END
+        ${samColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=7
+        ${saleRepColOnSS}                            Read Excel Cell    row_num=${rowIndexOnSS}    col_num=8
+        IF    '${saleRepColOnSS}' == 'Sinclair, Cameron R'
+             ${saleRepColOnSS}      Set Variable    Cameron Sinclair
+        END
+        IF    '${saleRepColOnSS}' == 'Tran, Huan'
+             ${saleRepColOnSS}      Set Variable    Huan Tran
+        END
+        IF    '${saleRepColOnSS}' == 'Nilsson, Michael J'
+             ${saleRepColOnSS}      Set Variable    Michael Nilsson
+        END
+        ${tmColOnSS}                                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
+        IF    '${tmColOnSS}' == 'Cook, Christopher'
+             ${tmColOnSS}   Set Variable    Christopher Cook
+        END
+        IF    '${tmColOnSS}' == 'Ting, Darren'
+             ${tmColOnSS}   Set Variable    Darren Ting
+        END
+        IF    '${tmColOnSS}' == 'Lawrence, Scott'
+             ${tmColOnSS}   Set Variable    Scott Lawrence
+        END
+        ${oppDiscoveryPersonColOnSS}                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=10
+        IF    '${oppDiscoveryPersonColOnSS}' == 'Sinclair, Cameron R'
+             ${oppDiscoveryPersonColOnSS}      Set Variable    Cameron Sinclair
+        END
+        IF    '${oppDiscoveryPersonColOnSS}' == 'Ting, Darren'
+             ${oppDiscoveryPersonColOnSS}   Set Variable    Darren Ting
+        END
+        IF    '${oppDiscoveryPersonColOnSS}' == 'Tran, Huan'
+             ${oppDiscoveryPersonColOnSS}      Set Variable    Huan Tran
+        END
+        IF    '${oppDiscoveryPersonColOnSS}' == 'Nilsson, Michael J'
+             ${oppDiscoveryPersonColOnSS}      Set Variable    Michael Nilsson
+        END
+        IF    '${oppDiscoveryPersonColOnSS}' == 'Phillips, Scott W'
+             ${oppDiscoveryPersonColOnSS}      Set Variable    Scott Phillips
+        END
+        ${bizDevSupportColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+        ${pnColOnSS}                                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=12
+        ${qtyColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=13
+        ${projectTotalColOnSS}                       Read Excel Cell    row_num=${rowIndexOnSS}    col_num=14
+        ${probColOnSS}                               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=15
+        ${probColOnSS}  Remove String    ${probColOnSS}  %
+        ${probColOnSS}  Convert To Number    ${probColOnSS}
+        ${currentOppStageColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=16
+        ${oppCategoryColOnSS}                        Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
+        ${expSampleShipColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=19
+        IF    '${expSampleShipColOnSS}' != 'None'
+             ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         date_format=%m/%d/%Y
+             ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         result_format=%m/%d/%Y
+        END
+        ${expQualApprovedColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=20
+        IF    '${expQualApprovedColOnSS}' != 'None'
+             ${expQualApprovedColOnSS}        Convert Date    ${expQualApprovedColOnSS}         date_format=%m/%d/%Y
+             ${expQualApprovedColOnSS}        Convert Date    ${expQualApprovedColOnSS}         result_format=%m/%d/%Y
+        END
+        ${expDWDateColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=21
+        IF    '${expDWDateColOnSS}' != 'None'
+             ${expDWDateColOnSS}        Convert Date    ${expDWDateColOnSS}         date_format=%m/%d/%Y
+             ${expDWDateColOnSS}        Convert Date    ${expDWDateColOnSS}         result_format=%m/%d/%Y
+        END
+        ${1PPODateColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=22
+        IF    '${1PPODateColOnSS}' != 'None'
+             ${1PPODateColOnSS}        Convert Date    ${1PPODateColOnSS}         date_format=%m/%d/%Y
+             ${1PPODateColOnSS}        Convert Date    ${1PPODateColOnSS}         result_format=%m/%d/%Y
+        END
+        ${DWDateColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=23
+        IF    '${DWDateColOnSS}' != 'None'
+             ${DWDateColOnSS}        Convert Date    ${DWDateColOnSS}         date_format=%m/%d/%Y
+             ${DWDateColOnSS}        Convert Date    ${DWDateColOnSS}         result_format=%m/%d/%Y
+        END
+        ${DWColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=24
+        ${customerPNColOnSS}                  Read Excel Cell    row_num=${rowIndexOnSS}    col_num=25
         ${rowOnTable}   Create List
         ...             ${oppColOnSS}
         ...             ${trackedOppColOnSS}
         ...             ${oppLinkToColOnSS}
         ...             ${oemGroupColOnSS}
+        ...             ${samColOnSS}
+        ...             ${saleRepColOnSS}
+        ...             ${tmColOnSS}
+        ...             ${oppDiscoveryPersonColOnSS}
+        ...             ${bizDevSupportColOnSS}
+        ...             ${pnColOnSS}
+        ...             ${qtyColOnSS}
+        ...             ${projectTotalColOnSS}
+        ...             ${probColOnSS}
+        ...             ${currentOppStageColOnSS}
+        ...             ${oppCategoryColOnSS}
+        ...             ${expSampleShipColOnSS}
+        ...             ${expQualApprovedColOnSS}
+        ...             ${expDWDateColOnSS}
+        ...             ${1PPODateColOnSS}
+        ...             ${DWDateColOnSS}
+        ...             ${DWColOnSS}
+        ...             ${customerPNColOnSS}
         Append To List    ${table}   ${rowOnTable}
         ${rowOnTable}   Remove Values From List    ${rowOnTable}
     END
@@ -269,11 +549,64 @@ Create Table For Master Opp Report
         ${trackedOppColOnReport}                         Read Excel Cell    row_num=${rowIndexOnReport}    col_num=2
         ${oppLinkToColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=3
         ${oemGroupColOnReport}                           Read Excel Cell    row_num=${rowIndexOnReport}    col_num=5
+        ${samColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=7
+        ${saleRepColOnReport}                            Read Excel Cell    row_num=${rowIndexOnReport}    col_num=8
+        ${tmColOnReport}                                 Read Excel Cell    row_num=${rowIndexOnReport}    col_num=9
+        ${oppDiscoveryPersonColOnReport}                 Read Excel Cell    row_num=${rowIndexOnReport}    col_num=10
+        ${bizDevSupportColOnReport}                      Read Excel Cell    row_num=${rowIndexOnReport}    col_num=11
+        ${pnColOnReport}                                 Read Excel Cell    row_num=${rowIndexOnReport}    col_num=12
+        ${qtyColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=13
+        ${projectTotalColOnReport}                       Read Excel Cell    row_num=${rowIndexOnReport}    col_num=14
+        ${probColOnReport}                               Read Excel Cell    row_num=${rowIndexOnReport}    col_num=15
+        ${probColOnReport}      Evaluate    ${probColOnReport}*100
+        ${currentOppStageColOnReport}                    Read Excel Cell    row_num=${rowIndexOnReport}    col_num=16
+        ${oppCategoryColOnReport}                        Read Excel Cell    row_num=${rowIndexOnReport}    col_num=18
+        ${expSampleShipColOnReport}                      Read Excel Cell    row_num=${rowIndexOnReport}    col_num=19
+        IF    '${expSampleShipColOnReport}' != 'None'
+             ${expSampleShipColOnReport}    Convert Date    ${expSampleShipColOnReport}     result_format=%m/%d/%Y
+        END
+        ${expQualApprovedColOnReport}                    Read Excel Cell    row_num=${rowIndexOnReport}    col_num=20
+        IF    '${expQualApprovedColOnReport}' != 'None'
+             ${expQualApprovedColOnReport}    Convert Date    ${expQualApprovedColOnReport}     result_format=%m/%d/%Y
+        END
+        ${expDWDateColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=21
+        IF    '${expDWDateColOnReport}' != 'None'
+             ${expDWDateColOnReport}    Convert Date    ${expDWDateColOnReport}     result_format=%m/%d/%Y
+        END
+        ${1PPODateColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=22
+        IF    '${1PPODateColOnReport}' != 'None'
+             ${1PPODateColOnReport}    Convert Date    ${1PPODateColOnReport}     result_format=%m/%d/%Y
+        END
+        ${DWDateColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=23
+        IF    '${DWDateColOnReport}' != 'None'
+             ${DWDateColOnReport}    Convert Date    ${DWDateColOnReport}     result_format=%m/%d/%Y
+        END
+        ${DWColOnReport}                          Read Excel Cell    row_num=${rowIndexOnReport}    col_num=24
+        ${customerPNColOnReport}                  Read Excel Cell    row_num=${rowIndexOnReport}    col_num=41
+
         ${rowOnTable}   Create List
         ...             ${oppColOnReport}
         ...             ${trackedOppColOnReport}
         ...             ${oppLinkToColOnReport}
         ...             ${oemGroupColOnReport}
+        ...             ${samColOnReport}
+        ...             ${saleRepColOnReport}
+        ...             ${tmColOnReport}
+        ...             ${oppDiscoveryPersonColOnReport}
+        ...             ${bizDevSupportColOnReport}
+        ...             ${pnColOnReport}
+        ...             ${qtyColOnReport}
+        ...             ${projectTotalColOnReport}
+        ...             ${probColOnReport}
+        ...             ${currentOppStageColOnReport}
+        ...             ${oppCategoryColOnReport}
+        ...             ${expSampleShipColOnReport}
+        ...             ${expQualApprovedColOnReport}
+        ...             ${expDWDateColOnReport}
+        ...             ${1PPODateColOnReport}
+        ...             ${DWDateColOnReport}
+        ...             ${DWColOnReport}
+        ...             ${customerPNColOnReport}
         Append To List    ${table}   ${rowOnTable}
         ${rowOnTable}   Remove Values From List    ${rowOnTable}
     END
