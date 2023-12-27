@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    CommonPage.robot
+Library    Collections
 Library    OperatingSystem
 
 *** Keywords ***
@@ -15,5 +15,15 @@ Get Fully File Name From Given Name
         END
     END
     [Return]    ${fullyFileName}
+
+Sort Table By Column
+    [Arguments]     ${table}    ${colIndex}
+    @{sortedRows}   Evaluate    sorted(${table}, key=lambda x: x[${colIndex}])
+    ${sortedTable}  Create List
+    FOR    ${row}    IN    @{sortedRows}
+        Append To List    ${sortedTable}    ${row}
+    END
+
+    [Return]    ${sortedTable}
 
 

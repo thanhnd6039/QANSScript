@@ -2,18 +2,24 @@
 Library     SeleniumLibrary
 Library     JSONLibrary
 Library     ExcelLibrary
+Library     Collections
+Library     String
+Library     XML
+Library     DateTime
+
 Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
 Library     ../Libs/CBrowser.py
-Library     Collections
-Library     String
+
 Resource    UtilityPage.robot
+
 
 *** Variables ***
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
 ${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads
 ${OUTPUT_DIR}       C:\\RobotFramework
+${RESULT_DIR}       C:\\RobotFramework\\Results
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
 
