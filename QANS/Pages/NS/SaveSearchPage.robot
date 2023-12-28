@@ -34,7 +34,7 @@ Set Date Create On SS
          Press Keys     None    TAB
     END
 
-Select OPP Stage On NS
+
 
 
 

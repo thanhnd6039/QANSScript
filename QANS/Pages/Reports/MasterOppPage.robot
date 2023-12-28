@@ -176,9 +176,13 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
     ${numOfRowsOnSSTable}       Get Length    ${ssTable}
 
     Open Excel Document    ${RESULT_FILE_PATH}    doc_id=MasterOppResult
-
+    ${previousOpp}  Set Variable    ${EMPTY}
     FOR    ${rowIndexOnSSTable}    IN RANGE    0    ${numOfRowsOnSSTable}
         ${oppColOnSSTable}          Set Variable        ${ssTable}[${rowIndexOnSSTable}][0]
+        IF    '${oppColOnSSTable}' == '${previousOpp}'
+             Continue For Loop
+        END
+        Log To Console    OPP: ${oppColOnSSTable}
         FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
             ${oppColOnReportTable}  Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
             IF    '${oppColOnReportTable}' == '${oppColOnSSTable}'
@@ -554,6 +558,7 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  IF    '${customerPNColOnReportTable}' == 'None'
                       ${customerPNColOnReportTable}     Set Variable    ${EMPTY}
                  END
+
                  IF    '${customerPNColOnReportTable}' != '${customerPNColOnSSTable}'
                       ${result}   Set Variable      ${False}
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -580,7 +585,19 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       Write Excel Cell    row_num=${nextRow}    col_num=4    value=${subSegmentColOnSSTable}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
-                 IF    '${programColOnSSTable}' == '- None -'
+
+                 ${isProgramColOnReportTableContainsApostrophe}     Set Variable    ${False}
+                 ${isProgramColOnReportTableContainsApostrophe}     Evaluate   "'" in """${programColOnReportTable}"""
+                 IF    '${isProgramColOnReportTableContainsApostrophe}' == '${True}'
+                      ${programColOnReportTable}    Remove String    ${programColOnReportTable}   '
+                 END
+                 ${isProgramColOnSSTableContainsApostrophe}     Set Variable    ${False}
+                 ${isProgramColOnSSTableContainsApostrophe}     Evaluate   "'" in """${programColOnSSTable}"""
+                 IF    '${isProgramColOnSSTableContainsApostrophe}' == '${True}'
+                      ${programColOnSSTable}    Remove String    ${programColOnSSTable}   '
+                 END
+
+                 IF    '${programColOnSSTable}' == 'None'
                       ${programColOnSSTable}     Set Variable    ${EMPTY}
                  END
                  IF    '${programColOnReportTable}' == 'None'
@@ -633,6 +650,7 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  BREAK
             END
         END
+        ${previousOpp}      Set Variable    ${oppColOnSSTable}
     END
     Close All Excel Documents
     
@@ -1109,7 +1127,12 @@ Verify The Document Number Of Opp On Master Opp Report
         END
     END
     Close All Excel Documents
-
+    FOR    ${item}    IN    @{listOfOppsOnReport}
+        Remove Values From List    ${listOfOppsOnReport}    ${item}
+    END
+    FOR    ${item}    IN    @{listOfOppsOnNS}
+        Remove Values From List    ${listOfOppsOnNS}    ${item}
+    END
     [Return]    ${result}
 
 Verify The Number Of Opps On Master Opp Report
@@ -1136,6 +1159,12 @@ Verify The Number Of Opps On Master Opp Report
          Save Excel Document    ${RESULT_FILE_PATH}
     END
     Close All Excel Documents
+    FOR    ${item}    IN    @{listOfOppsOnReport}
+        Remove Values From List    ${listOfOppsOnReport}    ${item}
+    END
+    FOR    ${item}    IN    @{listOfOppsOnNS}
+        Remove Values From List    ${listOfOppsOnNS}    ${item}
+    END
     [Return]    ${result}
 
 Get List Of Opps From The SS Of Master Opp Report On NS
