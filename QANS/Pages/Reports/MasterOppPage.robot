@@ -245,7 +245,6 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
         IF    '${oppColOnSSTable}' == '${previousOpp}'
              Continue For Loop
         END
-        Log To Console    OPP: ${oppColOnSSTable}
         FOR    ${rowIndexOnReportTable}    IN RANGE    ${rowIndexOnReportTableTemp}    ${numOfRowsOnReportTable}
             ${oppColOnReportTable}  Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
             IF    '${oppColOnReportTable}' == '${oppColOnSSTable}'
