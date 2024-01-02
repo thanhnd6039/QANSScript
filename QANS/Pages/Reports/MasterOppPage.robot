@@ -151,10 +151,72 @@ Compare Data Between Master Opp Report And SS On NS
     ${verifyNumOfOPPs}                          Verify The Number Of Opps On Master Opp Report                          reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
     ${verifyDocumentNumberOfOPP}                Verify The Document Number Of Opp On Master Opp Report                  reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
     ${verifyDetailedDataOfOPPWithOnlyOneItem}   Verify The Data Of Opp With Only One Item On Master Opp Report          reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
+    ${verifyOPPsHaveMultiItems}                 Verify The OPPs Have Multi Items On Master Opp Report    reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
 
-    IF    '${verifyNumOfOPPs}' == '${False}' or '${verifyDocumentNumberOfOPP}' == '${False}' or '${verifyDetailedDataOfOPPWithOnlyOneItem}' == '${False}'
+    IF    '${verifyNumOfOPPs}' == '${False}' or '${verifyDocumentNumberOfOPP}' == '${False}' or '${verifyDetailedDataOfOPPWithOnlyOneItem}' == '${False}' or '${verifyOPPsHaveMultiItems}' == '${False}'
          ${result}  Set Variable    ${False}
          Fail   The data betwwen Master Opp Report and NS is difference
+    END
+
+    [Return]    ${result}
+
+Verify The OPPs Have Multi Items On Master Opp Report
+    [Arguments]     ${reportFilePath}   ${ssFilePath}
+    @{listOfOppsHaveMultiItemsOnNS}     Create List
+    ${result}   Set Variable    ${True}
+    
+    ${listOfOppsHaveMultiItemsOnNS}     Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ssFilePath=${ssFilePath}
+
+    File Should Exist    ${ssFilePath}
+    Open Excel Document    ${ssFilePath}    doc_id=MasterOppSource
+    ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssFilePath}
+
+    File Should Exist    ${reportFilePath}
+    Open Excel Document    ${reportFilePath}    doc_id=MasterOppReport
+    ${numOfRowsOnReport}    Get Number Of Rows In Excel    ${reportFilePath}
+
+    File Should Exist    ${RESULT_FILE_PATH}
+    Open Excel Document    ${RESULT_FILE_PATH}    doc_id=MasterOppResult
+
+
+    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
+            ${isFound}      Set Variable    ${False}
+            Switch Current Excel Document    MasterOppSource
+            ${oppColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=1
+            ${pnColOnSS}                                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+            ${qtyColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=12
+            ${isOppInListOfOppsHaveMultiItemsOnNS}    Set Variable    ${False}
+            
+             FOR    ${opp}    IN    @{listOfOppsHaveMultiItemsOnNS}
+                  IF    '${oppColOnSS}' == '${opp}'
+                       ${isOppInListOfOppsHaveMultiItemsOnNS}    Set Variable    ${True}
+                       BREAK
+                  END
+             END
+             IF    '${isOppInListOfOppsHaveMultiItemsOnNS}' == '${True}'
+                  Switch Current Excel Document    MasterOppReport
+                  FOR    ${rowIndexOnReport}    IN RANGE    5    ${numOfRowsOnReport}+1
+                       ${oppColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=1
+                       ${pnColOnReport}                                 Read Excel Cell    row_num=${rowIndexOnReport}    col_num=12
+                       ${qtyColOnReport}                                Read Excel Cell    row_num=${rowIndexOnReport}    col_num=13
+                       IF    '${oppColOnSS}' == '${oppColOnReport}' and '${pnColOnSS}' == '${pnColOnReport}' and '${qtyColOnSS}' == '${qtyColOnReport}'
+                            ${isFound}  Set Variable    ${True}
+                            BREAK
+                       END
+                  END
+                  IF    '${isFound}' == '${False}'
+                      Switch Current Excel Document    MasterOppResult
+                      ${result}   Set Variable      ${False}
+                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=MULTI ITEMS
+                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSS}
+                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${EMPTY}
+                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${pnColOnSS}
+                      Save Excel Document    ${RESULT_FILE_PATH}
+                  END
+             END
+
     END
 
     [Return]    ${result}
