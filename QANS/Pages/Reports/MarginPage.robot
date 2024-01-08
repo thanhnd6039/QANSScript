@@ -4,34 +4,87 @@ Resource    ../NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
 *** Keywords ***
-Create Table From The SS Of Margin Report On NS
-    [Arguments]     ${ssFilePath}    ${type}    ${year}     ${quarter}
+Create Table From The SS Revenue Cost Dump For Margin Report Source
+    [Arguments]     ${ssRevenueCostDumpFilePath}   ${type}    ${year}     ${quarter}
     @{table}    Create List
+    @{listOfOEMGroups}  Create List
+    @{listOfPNs}  Create List
 
-    File Should Exist    ${ssFilePath}
-    Open Excel Document    ${ssFilePath}    MarginReportSource
-    ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssFilePath}
+    ${listOfOEMGroups}      Get List Of OEM Groups From SS Revenue Cost Dump    ${ssRevenueCostDumpFilePath}
+    ${listOfPNs}    Get List Of PNS From SS Revenue Cost Dump    ${ssRevenueCostDumpFilePath}
     
-    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
-        ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
-        IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
-            ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
-            IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
-                 ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
-                 ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
-                 IF    '${type}' == 'R'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
-                 END
-            END
+    File Should Exist    ${ssRevenueCostDumpFilePath}
+    Open Excel Document    ${ssRevenueCostDumpFilePath}    SSRevenueCostDump
+    ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssRevenueCostDumpFilePath}
 
-
+    FOR    ${oemGroup}    IN    @{listOfOEMGroups}
+        FOR    ${pn}    IN    @{listOfPNs}
+              ${sumQty}   Set Variable    0
+              FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
+                    ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
+                    IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
+                        ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
+                        IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
+                             ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
+                             ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+                             IF    '${type}' == 'R'
+                                  ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
+                                  ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
+                                  ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
+                                  IF    '${oemGroupColOnSS}' == '${oemGroup}' and '${pnColOnSS}' == '${pn}'
+                                       ${sumQty}    Evaluate    ${sumQty}+${qtyColOnSS}
+                                  END
+#                                  Log To Console    OEM Group: ${oemGroupColOnSS}; PN: ${pnColOnSS}; QTY: ${qtyColOnSS}; REV: ${revColOnSS}; COST: ${costColOnSS}
+                             END
+                        END
+                    END
+              END
+              Log To Console    OEM Group: ${oemGroup}; PN: ${pn}; QTY: ${sumQty}
         END
-#        ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
-        
+    END
+
+    
+
+
+    
+    [Return]    ${table}
+
+Get List Of OEM Groups From SS Revenue Cost Dump
+    [Arguments]     ${ssRevenueCostDumpFilePath}
+    @{listOfOEMGroups}    Create List
+
+    File Should Exist    ${ssRevenueCostDumpFilePath}
+    Open Excel Document    ${ssRevenueCostDumpFilePath}    SSRevenueCostDump
+    ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssRevenueCostDumpFilePath}
+
+    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
+        ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
+        IF    '${oemGroupColOnSS}' != '${EMPTY}'
+             Append To List    ${listOfOEMGroups}    ${oemGroupColOnSS}
+        END
+    END
+    ${listOfOEMGroups}      Remove Duplicates    ${listOfOEMGroups}
+    Close All Excel Documents
+    [Return]    ${listOfOEMGroups}
+
+Get List Of PNS From SS Revenue Cost Dump
+    [Arguments]     ${ssRevenueCostDumpFilePath}
+    @{listOfPNs}    Create List
+
+    File Should Exist    ${ssRevenueCostDumpFilePath}
+    Open Excel Document    ${ssRevenueCostDumpFilePath}    SSRevenueCostDump
+    ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssRevenueCostDumpFilePath}
+
+    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
+        ${pnColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+        IF    '${pnColOnSS}' != '${EMPTY}'
+             Append To List    ${listOfPNs}    ${pnColOnSS}
+        END
 
     END
-    [Return]    ${table}
+    ${listOfPNs}      Remove Duplicates    ${listOfPNs}
+    Close All Excel Documents
+    [Return]    ${listOfPNs}
     
 Create Table For Margin Report
     [Arguments]     ${reportFilePath}   ${type}
@@ -77,7 +130,7 @@ Create Table For Margin Report
     [Return]    ${table}
     
 Compare Data Between Margin Report And SS On NS
-    [Arguments]     ${reportFilePath}   ${ssFilePath}
+    [Arguments]     ${reportFilePath}   ${ssRevenueCostDumpFilePath}
     ${result}   Set Variable    ${True}
     @{reportTable}       Create List
     @{ssTable}           Create List
@@ -85,9 +138,6 @@ Compare Data Between Margin Report And SS On NS
 
 #    ${reportTable}  Create Table For Margin Report    reportFilePath=${reportFilePath}    type=${type}
 #    ${numOfRowsOnReportTable}   Get Length    ${reportTable}
-    ${ssTable}  Create Table From The SS Of Margin Report On NS    ssFilePath=${ssFilePath}    type=${type}     year=2024   quarter=1
+    ${ssTable}  Create Table From The SS Revenue Cost Dump For Margin Report Source    ssRevenueCostDumpFilePath=${ssRevenueCostDumpFilePath}     type=${type}     year=2024   quarter=1
 
-    
-
-    
     [Return]    ${result}
