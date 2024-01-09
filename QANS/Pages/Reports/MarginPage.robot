@@ -16,6 +16,9 @@ Create Table From The SS Revenue Cost Dump For Margin Report Source
     File Should Exist    ${ssRevenueCostDumpFilePath}
     Open Excel Document    ${ssRevenueCostDumpFilePath}    SSRevenueCostDump
     ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssRevenueCostDumpFilePath}
+    ${sumQty}    Set Variable    0
+    ${sumRev}    Set Variable    0
+    ${sumCost}   Set Variable    0
 
     FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
         ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
@@ -24,49 +27,34 @@ Create Table From The SS Revenue Cost Dump For Margin Report Source
             IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
                  ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
                  ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+                 ${nextRowIndexOnSS}    Evaluate    ${rowIndexOnSS}+1
+                 ${nextOemGroupColOnNS}     Read Excel Cell    row_num=${nextRowIndexOnSS}    col_num=2
+                 ${nextPNColOnNS}           Read Excel Cell    row_num=${nextRowIndexOnSS}    col_num=11
                  IF    '${type}' == 'R'
                       ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
                       ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
                       ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
-                      IF    '${oemGroupColOnSS}' == '${oemGroup}' and '${pnColOnSS}' == '${pn}'
-                           ${sumQty}    Evaluate    ${sumQty}+${qtyColOnSS}
-                      END
-#                                  Log To Console    OEM Group: ${oemGroupColOnSS}; PN: ${pnColOnSS}; QTY: ${qtyColOnSS}; REV: ${revColOnSS}; COST: ${costColOnSS}
                  END
+                 ${sumQty}      Evaluate    ${sumQty}+${qtyColOnSS}
+                 ${sumRev}      Evaluate    ${sumRev}+${revColOnSS}
+                 ${sumCost}     Evaluate    ${sumCost}+${costColOnSS}
+                 IF    '${oemGroupColOnSS}' == '${nextOemGroupColOnNS}' and '${pnColOnSS}' == '${nextPNColOnNS}'
+                      Continue For Loop
+                 END
+                 Log To Console    OEM Group: ${oemGroupColOnSS}; PN: ${pnColOnSS}; QTY: ${sumQty}
+                 ${rowOnTable}   Create List
+                 ...             ${oemGroupColOnSS}
+                 ...             ${pnColOnSS}
+                 ...             ${sumQty}
+                 ...             ${sumRev}
+                 ...             ${sumCost}
+                 Append To List    ${table}   ${rowOnTable}
+                 ${sumQty}    Set Variable    0
+
             END
         END
     END
 
-#    FOR    ${oemGroup}    IN    @{listOfOEMGroups}
-#        FOR    ${pn}    IN    @{listOfPNs}
-#              ${sumQty}   Set Variable    0
-#              FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
-#                    ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
-#                    IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
-#                        ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
-#                        IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
-#                             ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
-#                             ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
-#                             IF    '${type}' == 'R'
-#                                  ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
-#                                  ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
-#                                  ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
-#                                  IF    '${oemGroupColOnSS}' == '${oemGroup}' and '${pnColOnSS}' == '${pn}'
-#                                       ${sumQty}    Evaluate    ${sumQty}+${qtyColOnSS}
-#                                  END
-##                                  Log To Console    OEM Group: ${oemGroupColOnSS}; PN: ${pnColOnSS}; QTY: ${qtyColOnSS}; REV: ${revColOnSS}; COST: ${costColOnSS}
-#                             END
-#                        END
-#                    END
-#              END
-#              Log To Console    OEM Group: ${oemGroup}; PN: ${pn}; QTY: ${sumQty}
-#        END
-#    END
-
-    
-
-
-    
     [Return]    ${table}
 
 Get List Of OEM Groups From SS Revenue Cost Dump
