@@ -7,41 +7,61 @@ Resource    ../NS/SaveSearchPage.robot
 Create Table From The SS Revenue Cost Dump For Margin Report Source
     [Arguments]     ${ssRevenueCostDumpFilePath}   ${type}    ${year}     ${quarter}
     @{table}    Create List
-    @{listOfOEMGroups}  Create List
-    @{listOfPNs}  Create List
+#    @{listOfOEMGroups}  Create List
+#    @{listOfPNs}  Create List
 
-    ${listOfOEMGroups}      Get List Of OEM Groups From SS Revenue Cost Dump    ${ssRevenueCostDumpFilePath}
-    ${listOfPNs}    Get List Of PNS From SS Revenue Cost Dump    ${ssRevenueCostDumpFilePath}
+#    ${listOfOEMGroups}      Get List Of OEM Groups From SS Revenue Cost Dump    ${ssRevenueCostDumpFilePath}
+#    ${listOfPNs}    Get List Of PNS From SS Revenue Cost Dump    ${ssRevenueCostDumpFilePath}
     
     File Should Exist    ${ssRevenueCostDumpFilePath}
     Open Excel Document    ${ssRevenueCostDumpFilePath}    SSRevenueCostDump
     ${numOfRowsOnSS}    Get Number Of Rows In Excel    ${ssRevenueCostDumpFilePath}
 
-    FOR    ${oemGroup}    IN    @{listOfOEMGroups}
-        FOR    ${pn}    IN    @{listOfPNs}
-              ${sumQty}   Set Variable    0
-              FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
-                    ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
-                    IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
-                        ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
-                        IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
-                             ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
-                             ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
-                             IF    '${type}' == 'R'
-                                  ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
-                                  ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
-                                  ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
-                                  IF    '${oemGroupColOnSS}' == '${oemGroup}' and '${pnColOnSS}' == '${pn}'
-                                       ${sumQty}    Evaluate    ${sumQty}+${qtyColOnSS}
-                                  END
+    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
+        ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
+        IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
+            ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
+            IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
+                 ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
+                 ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+                 IF    '${type}' == 'R'
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
+                      IF    '${oemGroupColOnSS}' == '${oemGroup}' and '${pnColOnSS}' == '${pn}'
+                           ${sumQty}    Evaluate    ${sumQty}+${qtyColOnSS}
+                      END
 #                                  Log To Console    OEM Group: ${oemGroupColOnSS}; PN: ${pnColOnSS}; QTY: ${qtyColOnSS}; REV: ${revColOnSS}; COST: ${costColOnSS}
-                             END
-                        END
-                    END
-              END
-              Log To Console    OEM Group: ${oemGroup}; PN: ${pn}; QTY: ${sumQty}
+                 END
+            END
         END
     END
+
+#    FOR    ${oemGroup}    IN    @{listOfOEMGroups}
+#        FOR    ${pn}    IN    @{listOfPNs}
+#              ${sumQty}   Set Variable    0
+#              FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
+#                    ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
+#                    IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
+#                        ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
+#                        IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
+#                             ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
+#                             ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+#                             IF    '${type}' == 'R'
+#                                  ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
+#                                  ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
+#                                  ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
+#                                  IF    '${oemGroupColOnSS}' == '${oemGroup}' and '${pnColOnSS}' == '${pn}'
+#                                       ${sumQty}    Evaluate    ${sumQty}+${qtyColOnSS}
+#                                  END
+##                                  Log To Console    OEM Group: ${oemGroupColOnSS}; PN: ${pnColOnSS}; QTY: ${qtyColOnSS}; REV: ${revColOnSS}; COST: ${costColOnSS}
+#                             END
+#                        END
+#                    END
+#              END
+#              Log To Console    OEM Group: ${oemGroup}; PN: ${pn}; QTY: ${sumQty}
+#        END
+#    END
 
     
 
