@@ -37,8 +37,10 @@ Create Table From The SS Revenue Cost Dump For Margin Report Source
                       ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=31
                       ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=33
                       ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=32
+                      IF    '${costColOnSS}' == '${EMPTY}'
+                           ${costColOnSS}   Set Variable    0
+                      END
 
-                      Log To Console    OEM: ${oemGroupColOnSS}; COST: ${costColOnSS}
                  END
                  IF    '${type}' == 'CF'
                       ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=40
@@ -204,7 +206,7 @@ Compare Data Between Margin Report And SS On NS
 #     Write The Report Table To Excel    ${reportTable}
 #    ${numOfRowsOnReportTable}   Get Length    ${reportTable}
     ${ssTable}  Create Table From The SS Revenue Cost Dump For Margin Report Source    ssRevenueCostDumpFilePath=${ssRevenueCostDumpFilePath}     type=${type}     year=${year}   quarter=${quarter}
-    Write The Report Table To Excel    ${ssTable}
+#    Write The Report Table To Excel    ${ssTable}
 
     [Return]    ${result}
 
