@@ -36,7 +36,6 @@ Create Table From The SS Revenue Cost Dump For Margin Report Source
              ${nextPNColOnDaTable}               Set Variable   ${dataTableFromSSRevenueCostDump}[${nextRowIndexOnDaTable}][1]
         END
 
-
         ${sumQty}      Evaluate    ${sumQty}+${qtyColOnDaTable}
         ${sumRev}      Evaluate    ${sumRev}+${revColOnDaTable}
         ${sumCost}     Evaluate    ${sumCost}+${costColOnDaTable}
@@ -46,8 +45,9 @@ Create Table From The SS Revenue Cost Dump For Margin Report Source
                     Continue For Loop
              END
         END
+
         ${sumRev}   Evaluate  "%.2f" % ${sumRev}
-        ${sumRev}   Evaluate  "%.2f" % ${sumRev}
+        ${sumCost}   Evaluate  "%.2f" % ${sumCost}
 
         ${rowOnTable}   Create List
         ...             ${oemGroupColOnDaTable}
@@ -186,6 +186,8 @@ Create Table For Margin Report
               Continue For Loop
         END
 
+        ${revColOnReport}   Evaluate  "%.2f" % ${revColOnReport}
+        ${costColOnReport}   Evaluate  "%.2f" % ${costColOnReport}
         ${rowOnTable}   Create List
         ...             ${oemGroupColOnReport}
         ...             ${pnColOnReport}
@@ -203,17 +205,17 @@ Compare Data Between Margin Report And SS On NS
     ${result}   Set Variable    ${True}
     @{reportTable}       Create List
     @{sourceTable}       Create List
-    @{listOfItemsChecked}      Create List
-    ${type}     Set Variable    R
+    @{listOfOEMGRoupAndPNChecked}      Create List
+    ${type}     Set Variable    CF
     ${year}     Set Variable    2024
-    ${quarter}  Set Variable    1
+    ${quarter}  Set Variable    2
 
     ${reportTable}  Create Table For Margin Report    reportFilePath=${reportFilePath}    type=${type}  year=${year}   quarter=${quarter}
     ${numOfRowsOnReportTable}   Get Length    ${reportTable}
-#     Write The Report Table To Excel    ${reportTable}
+
     ${sourceTable}  Create Table From The SS Revenue Cost Dump For Margin Report Source    ssRevenueCostDumpFilePath=${ssRevenueCostDumpFilePath}     type=${type}     year=${year}   quarter=${quarter}
     ${numOfRowsOnSourceTable}   Get Length    ${sourceTable}
-    Log To Console    numOfRowsOnReportTable: ${numOfRowsOnReportTable}; numOfRowsOnSourceTable: ${numOfRowsOnSourceTable}
+
     Open Excel Document    ${RESULT_FILE_PATH}    MarginReportResult
     FOR    ${rowIndexOnSourceTable}    IN RANGE    0    ${numOfRowsOnSourceTable}
         ${oemGroupColOnSourceTable}    Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][0]
@@ -253,6 +255,7 @@ Compare Data Between Margin Report And SS On NS
                       Write Excel Cell    row_num=${nextRow}    col_num=7    value=${qtyColOnSourceTable}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+
                  ${diffRev}     Evaluate    ${revColOnSourceTable}-${revColOnReportTable}
                  IF    '${diffRev}' >= '1'
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
@@ -274,9 +277,9 @@ Compare Data Between Margin Report And SS On NS
                       Write Excel Cell    row_num=${nextRow}    col_num=7    value=${revColOnSourceTable}
                       Save Excel Document    ${RESULT_FILE_PATH}
                  END
+
                  ${diffCost}    Evaluate    ${costColOnSourceTable}-${costColOnReportTable}
                  IF    '${diffCost}' >= '1'
-
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
                       Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
@@ -299,8 +302,8 @@ Compare Data Between Margin Report And SS On NS
                  END
                  BREAK
             END
-            ${checkedItems}     Set Variable    ${oemGroupColOnSourceTable}_${pnColOnSourceTable}
-            Append To List    ${listOfItemsChecked}
+            ${oemGroupAndPNChecked}     Set Variable    ${oemGroupColOnSourceTable}_${pnColOnSourceTable}
+            Append To List    ${listOfOEMGRoupAndPNChecked}     ${oemGroupAndPNChecked}
             ${countTemp}    Evaluate    ${countTemp}+1
         END
         IF    '${countTemp}' == '${numOfRowsOnReportTable}'
@@ -322,15 +325,17 @@ Compare Data Between Margin Report And SS On NS
               Write Excel Cell    row_num=${nextRow}    col_num=6    value=${EMPTY}
               Write Excel Cell    row_num=${nextRow}    col_num=7    value=${EMPTY}
               Save Excel Document    ${RESULT_FILE_PATH}
+              ${oemGroupAndPNChecked}     Set Variable    ${oemGroupColOnSourceTable}_${pnColOnSourceTable}
+              Append To List    ${listOfOEMGRoupAndPNChecked}     ${oemGroupAndPNChecked}
         END
     END
     FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
         ${oemGroupColOnReportTable}    Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
         ${pnColOnReportTable}          Set Variable   ${reportTable}[${rowIndexOnReportTable}][1]
-        ${itemsInReportTable}   Set Variable    ${oemGroupColOnReportTable}_${pnColOnReportTable}
+        ${oemGroupAndPNInReportTable}   Set Variable    ${oemGroupColOnReportTable}_${pnColOnReportTable}
         ${countTemp}    Set Variable    0
-        FOR    ${itemChecked}    IN    @{listOfItemsChecked}
-            IF    '${itemsInReportTable}' == '${itemChecked}'
+        FOR    ${oemGroupAndPNChecked}    IN    @{listOfOEMGRoupAndPNChecked}
+            IF    '${oemGroupAndPNInReportTable}' == '${oemGroupAndPNChecked}'
                  BREAK
             END
             ${countTemp}    Evaluate    ${countTemp}+1
