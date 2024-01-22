@@ -70,29 +70,29 @@ Get Data From The SS Revenue Cost Dump For Every Quarter
     ${numOfRowsOnSS}       Get Number Of Rows In Excel    ${ssRevenueCostDumpFilePath}
 
     FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
-        ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
+        ${quarterColOnSS}          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=17
         IF    '${quarterColOnSS}' == 'Q${quarter}-${year}'
-            ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
+            ${parentClassColOnSS}      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=8
             IF    '${parentClassColOnSS}' == 'MEM' or '${parentClassColOnSS}' == 'STORAGE' or '${parentClassColOnSS}' == 'COMPONENTS' or '${parentClassColOnSS}' == 'NI'
-                 ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
-                 ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
+                 ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=1
+                 ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=10
                  IF    '${type}' == 'R'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
-                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=26
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=29
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
                  END
                  IF    '${type}' == 'B'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=31
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=33
-                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=32
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=32
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=31
                       IF    '${costColOnSS}' == '${EMPTY}'
                            ${costColOnSS}   Set Variable    0
                       END
                  END
                  IF    '${type}' == 'CF'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=40
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=42
-                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=41
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=39
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=41
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=40
                  END
                  IF    ${qtyColOnSS} == 0 and ${revColOnSS} == 0 and ${costColOnSS} == 0
                       Continue For Loop
@@ -204,9 +204,10 @@ Compare Data Between Margin Report And SS On NS
     @{reportTable}       Create List
     @{sourceTable}       Create List
     @{listOfOEMGRoupAndPNChecked}      Create List
+
     ${type}     Set Variable    CF
     ${year}     Set Variable    2024
-    ${quarter}  Set Variable    2
+    ${quarter}  Set Variable    4
 
     ${reportTable}  Create Table For Margin Report    reportFilePath=${reportFilePath}    type=${type}  year=${year}   quarter=${quarter}
     ${numOfRowsOnReportTable}   Get Length    ${reportTable}
@@ -235,6 +236,7 @@ Compare Data Between Margin Report And SS On NS
                  ${diffQty}    Evaluate    ${qtyColOnSourceTable}-${qtyColOnReportTable}
                  ${diffQty}    Evaluate     abs(${diffQty})
                  IF    ${diffQty} >= 1
+                      ${result}   Set Variable    ${False}
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
                       Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
@@ -258,6 +260,7 @@ Compare Data Between Margin Report And SS On NS
                  ${diffRev}     Evaluate    ${revColOnSourceTable}-${revColOnReportTable}
                  ${diffRev}     Evaluate    abs(${diffRev})
                  IF    ${diffRev} >= 1
+                      ${result}   Set Variable    ${False}
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
                       Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
@@ -281,6 +284,7 @@ Compare Data Between Margin Report And SS On NS
                  ${diffCost}    Evaluate    ${costColOnSourceTable}-${costColOnReportTable}
                  ${diffCost}    Evaluate    abs(${diffCost})
                  IF    ${diffCost} >= 1
+                      ${result}   Set Variable    ${False}
                       ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
                       ${nextRow}     Evaluate    ${latestRowInResultFile}+1
                       Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
@@ -307,6 +311,7 @@ Compare Data Between Margin Report And SS On NS
         END
         #Check whether the Items is in Report or not
         IF    ${countTemp} == ${numOfRowsOnReportTable}
+              ${result}   Set Variable    ${False}
               ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
               ${nextRow}     Evaluate    ${latestRowInResultFile}+1
               Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
@@ -346,6 +351,7 @@ Compare Data Between Margin Report And SS On NS
             END
         END
         IF    '${isOEMGroupAndPNChecked}' == '${False}'
+             ${result}   Set Variable    ${False}
              ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
               ${nextRow}     Evaluate    ${latestRowInResultFile}+1
               Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
@@ -367,6 +373,9 @@ Compare Data Between Margin Report And SS On NS
         END
     END
     Close All Excel Documents
+    IF    '${result}' == '${False}'
+         Fail   The data between the Margin Report and SS Revenue Cost Dump is different
+    END
     [Return]    ${result}
 
  Write The Report Table To Excel
