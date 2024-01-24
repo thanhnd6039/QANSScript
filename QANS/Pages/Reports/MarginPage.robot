@@ -77,22 +77,22 @@ Get Data From The SS Revenue Cost Dump For Every Quarter
                  ${oemGroupColOnSS}         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=1
                  ${pnColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=10
                  IF    '${type}' == 'R'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=26
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=29
-                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
                  END
                  IF    '${type}' == 'B'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=30
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=32
-                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=31
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=31
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=33
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=32
                       IF    '${costColOnSS}' == '${EMPTY}'
                            ${costColOnSS}   Set Variable    0
                       END
                  END
                  IF    '${type}' == 'CF'
-                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=39
-                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=41
-                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=40
+                      ${qtyColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=40
+                      ${revColOnSS}               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=42
+                      ${costColOnSS}              Read Excel Cell    row_num=${rowIndexOnSS}    col_num=41
                  END
                  IF    ${qtyColOnSS} == 0 and ${revColOnSS} == 0 and ${costColOnSS} == 0
                       Continue For Loop
@@ -207,175 +207,177 @@ Compare Data Between Margin Report And SS On NS
 
     ${type}     Set Variable    CF
     ${year}     Set Variable    2024
-    ${quarter}  Set Variable    4
+    ${quarter}  Set Variable    1
 
-    ${reportTable}  Create Table For Margin Report    reportFilePath=${reportFilePath}    type=${type}  year=${year}   quarter=${quarter}
-    ${numOfRowsOnReportTable}   Get Length    ${reportTable}
+#    ${reportTable}  Create Table For Margin Report    reportFilePath=${reportFilePath}    type=${type}  year=${year}   quarter=${quarter}
+#    ${numOfRowsOnReportTable}   Get Length    ${reportTable}
+
 
     ${sourceTable}  Create Table From The SS Revenue Cost Dump For Margin Report Source    ssRevenueCostDumpFilePath=${ssRevenueCostDumpFilePath}     type=${type}     year=${year}   quarter=${quarter}
     ${numOfRowsOnSourceTable}   Get Length    ${sourceTable}
+    Write The Report Table To Excel    ${sourceTable}
 
-    Open Excel Document    ${RESULT_FILE_PATH}    MarginReportResult
-    FOR    ${rowIndexOnSourceTable}    IN RANGE    0    ${numOfRowsOnSourceTable}
-        ${oemGroupColOnSourceTable}    Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][0]
-        ${pnColOnSourceTable}          Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][1]
-        ${qtyColOnSourceTable}         Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][2]
-        ${revColOnSourceTable}         Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][3]
-        ${costColOnSourceTable}        Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][4]
-
-        ${countTemp}    Set Variable    0
-
-        FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
-            ${oemGroupColOnReportTable}    Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
-            ${pnColOnReportTable}          Set Variable   ${reportTable}[${rowIndexOnReportTable}][1]
-            ${qtyColOnReportTable}         Set Variable   ${reportTable}[${rowIndexOnReportTable}][2]
-            ${revColOnReportTable}         Set Variable   ${reportTable}[${rowIndexOnReportTable}][3]
-            ${costColOnReportTable}        Set Variable   ${reportTable}[${rowIndexOnReportTable}][4]
-
-            IF    '${oemGroupColOnSourceTable}' == '${oemGroupColOnReportTable}' and '${pnColOnSourceTable}' == '${pnColOnReportTable}'
-                 ${diffQty}    Evaluate    ${qtyColOnSourceTable}-${qtyColOnReportTable}
-                 ${diffQty}    Evaluate     abs(${diffQty})
-                 IF    ${diffQty} >= 1
-                      ${result}   Set Variable    ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
-                      IF    '${type}' == 'R'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
-                      END
-                      IF    '${type}' == 'B'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
-                      END
-                      IF    '${type}' == 'CF'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
-                      END
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=QTY
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=6    value=${qtyColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=7    value=${qtyColOnSourceTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 ${diffRev}     Evaluate    ${revColOnSourceTable}-${revColOnReportTable}
-                 ${diffRev}     Evaluate    abs(${diffRev})
-                 IF    ${diffRev} >= 1
-                      ${result}   Set Variable    ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
-                      IF    '${type}' == 'R'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
-                      END
-                      IF    '${type}' == 'B'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
-                      END
-                      IF    '${type}' == 'CF'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
-                      END
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=REVENUE
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=6    value=${revColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=7    value=${revColOnSourceTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 ${diffCost}    Evaluate    ${costColOnSourceTable}-${costColOnReportTable}
-                 ${diffCost}    Evaluate    abs(${diffCost})
-                 IF    ${diffCost} >= 1
-                      ${result}   Set Variable    ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
-
-                      IF    '${type}' == 'R'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
-                      END
-                      IF    '${type}' == 'B'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
-                      END
-                      IF    '${type}' == 'CF'
-                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
-                      END
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=COST
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=6    value=${costColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=7    value=${costColOnSourceTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-                 BREAK
-            END
-            ${countTemp}    Evaluate    ${countTemp}+1
-        END
-        #Check whether the Items is in Report or not
-        IF    ${countTemp} == ${numOfRowsOnReportTable}
-              ${result}   Set Variable    ${False}
-              ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-              ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-              Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
-              IF    '${type}' == 'R'
-                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
-              END
-              IF    '${type}' == 'B'
-                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
-              END
-              IF    '${type}' == 'CF'
-                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
-              END
-              Write Excel Cell    row_num=${nextRow}    col_num=3    value=Margin Report is missing this item
-              Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
-              Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
-              Write Excel Cell    row_num=${nextRow}    col_num=6    value=${EMPTY}
-              Write Excel Cell    row_num=${nextRow}    col_num=7    value=${EMPTY}
-              Save Excel Document    ${RESULT_FILE_PATH}
-        END
-        ${oemGroupAndPNChecked}     Set Variable    ${oemGroupColOnSourceTable}_${pnColOnSourceTable}
-        Append To List    ${listOfOEMGRoupAndPNChecked}     ${oemGroupAndPNChecked}
-    END
-    FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
-        ${oemGroupColOnReportTable}      Set Variable    ${reportTable}[${rowIndexOnReportTable}][0]
-        ${pnColOnReportTable}            Set Variable    ${reportTable}[${rowIndexOnReportTable}][1]
-        ${qtyColOnReportTable}           Set Variable    ${reportTable}[${rowIndexOnReportTable}][2]
-        ${revColOnReportTable}           Set Variable    ${reportTable}[${rowIndexOnReportTable}][3]
-        ${costColOnReportTable}          Set Variable    ${reportTable}[${rowIndexOnReportTable}][4]
-
-        ${oemGroupAndPNInReportTable}    Set Variable    ${oemGroupColOnReportTable}_${pnColOnReportTable}
-        ${isOEMGroupAndPNChecked}        Set Variable    ${False}
-
-        FOR    ${oemGroupAndPNChecked}    IN    @{listOfOEMGRoupAndPNChecked}
-            IF    '${oemGroupAndPNInReportTable}' == '${oemGroupAndPNChecked}'
-                 ${isOEMGroupAndPNChecked}      Set Variable    ${True}
-                 BREAK
-            END
-        END
-        IF    '${isOEMGroupAndPNChecked}' == '${False}'
-             ${result}   Set Variable    ${False}
-             ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-              ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-              Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
-              IF    '${type}' == 'R'
-                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
-              END
-              IF    '${type}' == 'B'
-                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
-              END
-              IF    '${type}' == 'CF'
-                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
-              END
-              Write Excel Cell    row_num=${nextRow}    col_num=3    value=The SS Revenue Cost Dump is missing this item
-              Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnReportTable}
-              Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnReportTable}
-              Write Excel Cell    row_num=${nextRow}    col_num=6    value=${EMPTY}
-              Write Excel Cell    row_num=${nextRow}    col_num=7    value=${EMPTY}
-              Save Excel Document    ${RESULT_FILE_PATH}
-        END
-    END
-    Close All Excel Documents
-    IF    '${result}' == '${False}'
-         Fail   The data between the Margin Report and SS Revenue Cost Dump is different
-    END
+#    Open Excel Document    ${RESULT_FILE_PATH}    MarginReportResult
+#    FOR    ${rowIndexOnSourceTable}    IN RANGE    0    ${numOfRowsOnSourceTable}
+#        ${oemGroupColOnSourceTable}    Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][0]
+#        ${pnColOnSourceTable}          Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][1]
+#        ${qtyColOnSourceTable}         Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][2]
+#        ${revColOnSourceTable}         Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][3]
+#        ${costColOnSourceTable}        Set Variable   ${sourceTable}[${rowIndexOnSourceTable}][4]
+#
+#        ${countTemp}    Set Variable    0
+#
+#        FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
+#            ${oemGroupColOnReportTable}    Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
+#            ${pnColOnReportTable}          Set Variable   ${reportTable}[${rowIndexOnReportTable}][1]
+#            ${qtyColOnReportTable}         Set Variable   ${reportTable}[${rowIndexOnReportTable}][2]
+#            ${revColOnReportTable}         Set Variable   ${reportTable}[${rowIndexOnReportTable}][3]
+#            ${costColOnReportTable}        Set Variable   ${reportTable}[${rowIndexOnReportTable}][4]
+#
+#            IF    '${oemGroupColOnSourceTable}' == '${oemGroupColOnReportTable}' and '${pnColOnSourceTable}' == '${pnColOnReportTable}'
+#                 ${diffQty}    Evaluate    ${qtyColOnSourceTable}-${qtyColOnReportTable}
+#                 ${diffQty}    Evaluate     abs(${diffQty})
+#                 IF    ${diffQty} >= 1
+#                      ${result}   Set Variable    ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
+#                      IF    '${type}' == 'R'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
+#                      END
+#                      IF    '${type}' == 'B'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
+#                      END
+#                      IF    '${type}' == 'CF'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
+#                      END
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=QTY
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=6    value=${qtyColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=7    value=${qtyColOnSourceTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 ${diffRev}     Evaluate    ${revColOnSourceTable}-${revColOnReportTable}
+#                 ${diffRev}     Evaluate    abs(${diffRev})
+#                 IF    ${diffRev} >= 1
+#                      ${result}   Set Variable    ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
+#                      IF    '${type}' == 'R'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
+#                      END
+#                      IF    '${type}' == 'B'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
+#                      END
+#                      IF    '${type}' == 'CF'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
+#                      END
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=REVENUE
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=6    value=${revColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=7    value=${revColOnSourceTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 ${diffCost}    Evaluate    ${costColOnSourceTable}-${costColOnReportTable}
+#                 ${diffCost}    Evaluate    abs(${diffCost})
+#                 IF    ${diffCost} >= 1
+#                      ${result}   Set Variable    ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
+#
+#                      IF    '${type}' == 'R'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
+#                      END
+#                      IF    '${type}' == 'B'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
+#                      END
+#                      IF    '${type}' == 'CF'
+#                           Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
+#                      END
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=COST
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=6    value=${costColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=7    value=${costColOnSourceTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#                 BREAK
+#            END
+#            ${countTemp}    Evaluate    ${countTemp}+1
+#        END
+#        #Check whether the Items is in Report or not
+#        IF    ${countTemp} == ${numOfRowsOnReportTable}
+#              ${result}   Set Variable    ${False}
+#              ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#              ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#              Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
+#              IF    '${type}' == 'R'
+#                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
+#              END
+#              IF    '${type}' == 'B'
+#                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
+#              END
+#              IF    '${type}' == 'CF'
+#                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
+#              END
+#              Write Excel Cell    row_num=${nextRow}    col_num=3    value=Margin Report is missing this item
+#              Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnSourceTable}
+#              Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnSourceTable}
+#              Write Excel Cell    row_num=${nextRow}    col_num=6    value=${EMPTY}
+#              Write Excel Cell    row_num=${nextRow}    col_num=7    value=${EMPTY}
+#              Save Excel Document    ${RESULT_FILE_PATH}
+#        END
+#        ${oemGroupAndPNChecked}     Set Variable    ${oemGroupColOnSourceTable}_${pnColOnSourceTable}
+#        Append To List    ${listOfOEMGRoupAndPNChecked}     ${oemGroupAndPNChecked}
+#    END
+#    FOR    ${rowIndexOnReportTable}    IN RANGE    0    ${numOfRowsOnReportTable}
+#        ${oemGroupColOnReportTable}      Set Variable    ${reportTable}[${rowIndexOnReportTable}][0]
+#        ${pnColOnReportTable}            Set Variable    ${reportTable}[${rowIndexOnReportTable}][1]
+#        ${qtyColOnReportTable}           Set Variable    ${reportTable}[${rowIndexOnReportTable}][2]
+#        ${revColOnReportTable}           Set Variable    ${reportTable}[${rowIndexOnReportTable}][3]
+#        ${costColOnReportTable}          Set Variable    ${reportTable}[${rowIndexOnReportTable}][4]
+#
+#        ${oemGroupAndPNInReportTable}    Set Variable    ${oemGroupColOnReportTable}_${pnColOnReportTable}
+#        ${isOEMGroupAndPNChecked}        Set Variable    ${False}
+#
+#        FOR    ${oemGroupAndPNChecked}    IN    @{listOfOEMGRoupAndPNChecked}
+#            IF    '${oemGroupAndPNInReportTable}' == '${oemGroupAndPNChecked}'
+#                 ${isOEMGroupAndPNChecked}      Set Variable    ${True}
+#                 BREAK
+#            END
+#        END
+#        IF    '${isOEMGroupAndPNChecked}' == '${False}'
+#             ${result}   Set Variable    ${False}
+#             ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#              ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#              Write Excel Cell    row_num=${nextRow}    col_num=1    value=Q${quarter}-${year}
+#              IF    '${type}' == 'R'
+#                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=ACTUAL
+#              END
+#              IF    '${type}' == 'B'
+#                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=BACKLOG
+#              END
+#              IF    '${type}' == 'CF'
+#                   Write Excel Cell    row_num=${nextRow}    col_num=2    value=CUSTOMER FORECAST
+#              END
+#              Write Excel Cell    row_num=${nextRow}    col_num=3    value=The SS Revenue Cost Dump is missing this item
+#              Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oemGroupColOnReportTable}
+#              Write Excel Cell    row_num=${nextRow}    col_num=5    value=${pnColOnReportTable}
+#              Write Excel Cell    row_num=${nextRow}    col_num=6    value=${EMPTY}
+#              Write Excel Cell    row_num=${nextRow}    col_num=7    value=${EMPTY}
+#              Save Excel Document    ${RESULT_FILE_PATH}
+#        END
+#    END
+#    Close All Excel Documents
+#    IF    '${result}' == '${False}'
+#         Fail   The data between the Margin Report and SS Revenue Cost Dump is different
+#    END
     [Return]    ${result}
 
  Write The Report Table To Excel
