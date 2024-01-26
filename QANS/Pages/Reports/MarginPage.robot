@@ -205,7 +205,7 @@ Compare Data Between Margin Report And SS On NS
     @{sourceTable}       Create List
     @{listOfOEMGRoupAndPNChecked}      Create List
 
-    ${type}     Set Variable    B
+    ${type}     Set Variable    R
     ${year}     Set Variable    2024
     ${quarter}  Set Variable    1
 
