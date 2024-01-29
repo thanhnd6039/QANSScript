@@ -150,8 +150,8 @@ Compare Data Between Master Opp Report And SS On NS
 
 #    ${verifyNumOfOPPs}                          Verify The Number Of Opps On Master Opp Report                          reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
 #    ${verifyDocumentNumberOfOPP}                Verify The Document Number Of Opp On Master Opp Report                  reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
-#    ${verifyDetailedDataOfOPPWithOnlyOneItem}   Verify The Data Of Opp With Only One Item On Master Opp Report          reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
-    ${verifyOPPsHaveMultiItems}                 Verify The OPPs Have Multi Items On Master Opp Report    reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
+    ${verifyOPPsWithOnlyOneItem}                Verify OPPs With Only One Item On Master Opp Report                     reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
+#    ${verifyOPPsHaveMultiItems}                 Verify The OPPs Have Multi Items On Master Opp Report    reportFilePath=${reportFilePath}    ssFilePath=${ssFilePath}
 
 #    IF    '${verifyNumOfOPPs}' == '${False}' or '${verifyDocumentNumberOfOPP}' == '${False}' or '${verifyDetailedDataOfOPPWithOnlyOneItem}' == '${False}' or '${verifyOPPsHaveMultiItems}' == '${False}'
 #         ${result}  Set Variable    ${False}
@@ -160,12 +160,12 @@ Compare Data Between Master Opp Report And SS On NS
 
     [Return]    ${result}
 
-Verify The OPPs Have Multi Items On Master Opp Report
-    [Arguments]     ${reportFilePath}   ${ssFilePath}
-    @{listOfOppsHaveMultiItemsOnNS}     Create List
-    ${result}   Set Variable    ${True}
-    
-    ${listOfOppsHaveMultiItemsOnNS}     Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ssFilePath=${ssFilePath}
+#Verify The OPPs Have Multi Items On Master Opp Report
+#    [Arguments]     ${reportFilePath}   ${ssFilePath}
+#    @{listOfOppsHaveMultiItemsOnNS}     Create List
+#    ${result}   Set Variable    ${True}
+#
+#    ${listOfOppsHaveMultiItemsOnNS}     Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ssFilePath=${ssFilePath}
 
 #    File Should Exist    ${ssFilePath}
 #    Open Excel Document    ${ssFilePath}    doc_id=MasterOppSource
@@ -218,16 +218,16 @@ Verify The OPPs Have Multi Items On Master Opp Report
 #             END
 #    END
 
-    [Return]    ${result}
+#    [Return]    ${result}
 
-Verify The Data Of Opp With Only One Item On Master Opp Report
+Verify OPPs With Only One Item On Master Opp Report
     [Arguments]     ${reportFilePath}   ${ssFilePath}
     ${result}                           Set Variable    ${True}
     @{reportTable}                      Create List
     @{ssTable}                          Create List
     @{listOfOppsHaveMultiItemsOnNS}     Create List
 
-    ${listOfOppsHaveMultiItemsOnNS}     Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS    ssFilePath=${ssFilePath}
+    ${listOfOppsHaveMultiItemsOnNS}     Get List Of Opps Have Multi Items From The Master Opp Source                 ssFilePath=${ssFilePath}
     ${reportTable}                      Create Table For Master Opp Report                                          ${reportFilePath}
     ${ssTable}                          Create Table From The SS Of Master Opp Report On NS                         ${ssFilePath}
 
@@ -244,9 +244,10 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
         IF    '${oppColOnSSTable}' == '${previousOpp}'
              Continue For Loop
         END
+        Log To Console    OPP: ${oppColOnSSTable}
         FOR    ${rowIndexOnReportTable}    IN RANGE    ${rowIndexOnReportTableTemp}    ${numOfRowsOnReportTable}
             ${oppColOnReportTable}  Set Variable   ${reportTable}[${rowIndexOnReportTable}][0]
-            Log To Console    OPP: ${oppColOnReportTable}
+
             IF    '${oppColOnReportTable}' == '${oppColOnSSTable}'
                  ${trackedOppColOnSSTable}                   Set Variable        ${ssTable}[${rowIndexOnSSTable}][1]
                  ${oppLinkToColOnSSTable}                    Set Variable        ${ssTable}[${rowIndexOnSSTable}][2]
@@ -378,8 +379,9 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                  END
 
                  ${isOppInListOfOppsHaveMultiItemsOnNS}    Set Variable    ${False}
+
                  FOR    ${opp}    IN    @{listOfOppsHaveMultiItemsOnNS}
-                     IF    '${oppColOnSSTable}' == '${opp}'
+                     IF    '${oppColOnSSTable}' == '${opp[0]}'
                           ${isOppInListOfOppsHaveMultiItemsOnNS}    Set Variable    ${True}
                           BREAK
                      END
@@ -408,183 +410,183 @@ Verify The Data Of Opp With Only One Item On Master Opp Report
                       END
                  END
 
-                 IF    '${bizDevSupportColOnReportTable}' != '${bizDevSupportColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=BIZ DEV SUPPORT
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${bizDevSupportColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${bizDevSupportColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 ${diffProjectTotal}    Evaluate    abs(${projectTotalColOnReportTable}-${projectTotalColOnSSTable})
-                 IF    ${diffProjectTotal} > 1
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=PROJECT TOTAL
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${projectTotalColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${projectTotalColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 ${diffProb}    Evaluate    abs(${probColOnReportTable}-${probColOnSSTable})
-                 IF    ${diffProb} >= 1
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=PROB
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${probColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${probColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${oppStageColOnReportTable}' != '${oppStageColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=CURRENT OPP STAGE
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppStageColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppStageColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${oppCategoryColOnReportTable}' != '${oppCategoryColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP CATEGORY
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppCategoryColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppCategoryColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${expSampleShipColOnReportTable}' != '${expSampleShipColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP SAMPLE SHIP
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expSampleShipColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expSampleShipColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${expQualApprovedColOnReportTable}' != '${expQualApprovedColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP QUAL APP'D
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expQualApprovedColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expQualApprovedColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${expDWDateColOnReportTable}' != '${expDWDateColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP DW DATE
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expDWDateColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expDWDateColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${1PPODateColOnReportTable}' != '${1PPODateColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=1PPO DATE
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${1PPODateColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${1PPODateColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${DWDateColOnReportTable}' != '${DWDateColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=DW DATE
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${DWDateColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${DWDateColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${DWColOnReportTable}' != '${DWColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=DESIGN WIN
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${DWColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${DWColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${customerPNColOnReportTable}' != '${customerPNColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=CUSTOMER PN
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${customerPNColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${customerPNColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${subSegmentColOnReportTable}' != '${subSegmentColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=SUB-SEGMENT
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${subSegmentColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${subSegmentColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${programColOnReportTable}' != '${programColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP PG NAME
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${programColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${programColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${applicationColOnReportTable}' != '${applicationColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=APPLICATION
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${applicationColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${applicationColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
-
-                 IF    '${functionColOnReportTable}' != '${functionColOnSSTable}'
-                      ${result}   Set Variable      ${False}
-                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
-                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
-                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=FUNCTION
-                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${functionColOnReportTable}
-                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${functionColOnSSTable}
-                      Save Excel Document    ${RESULT_FILE_PATH}
-                 END
+#                 IF    '${bizDevSupportColOnReportTable}' != '${bizDevSupportColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=BIZ DEV SUPPORT
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${bizDevSupportColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${bizDevSupportColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 ${diffProjectTotal}    Evaluate    abs(${projectTotalColOnReportTable}-${projectTotalColOnSSTable})
+#                 IF    ${diffProjectTotal} > 1
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=PROJECT TOTAL
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${projectTotalColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${projectTotalColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 ${diffProb}    Evaluate    abs(${probColOnReportTable}-${probColOnSSTable})
+#                 IF    ${diffProb} >= 1
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=PROB
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${probColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${probColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${oppStageColOnReportTable}' != '${oppStageColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=CURRENT OPP STAGE
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppStageColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppStageColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${oppCategoryColOnReportTable}' != '${oppCategoryColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP CATEGORY
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${oppCategoryColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${oppCategoryColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${expSampleShipColOnReportTable}' != '${expSampleShipColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP SAMPLE SHIP
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expSampleShipColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expSampleShipColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${expQualApprovedColOnReportTable}' != '${expQualApprovedColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP QUAL APP'D
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expQualApprovedColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expQualApprovedColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${expDWDateColOnReportTable}' != '${expDWDateColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=EXP DW DATE
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${expDWDateColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${expDWDateColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${1PPODateColOnReportTable}' != '${1PPODateColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=1PPO DATE
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${1PPODateColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${1PPODateColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${DWDateColOnReportTable}' != '${DWDateColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=DW DATE
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${DWDateColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${DWDateColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${DWColOnReportTable}' != '${DWColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=DESIGN WIN
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${DWColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${DWColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${customerPNColOnReportTable}' != '${customerPNColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=CUSTOMER PN
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${customerPNColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${customerPNColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${subSegmentColOnReportTable}' != '${subSegmentColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=SUB-SEGMENT
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${subSegmentColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${subSegmentColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${programColOnReportTable}' != '${programColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=OPP PG NAME
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${programColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${programColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${applicationColOnReportTable}' != '${applicationColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=APPLICATION
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${applicationColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${applicationColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
+#
+#                 IF    '${functionColOnReportTable}' != '${functionColOnSSTable}'
+#                      ${result}   Set Variable      ${False}
+#                      ${latestRowInResultFile}   Get Number Of Rows In Excel    ${RESULT_FILE_PATH}
+#                      ${nextRow}     Evaluate    ${latestRowInResultFile}+1
+#                      Write Excel Cell    row_num=${nextRow}    col_num=1    value=FUNCTION
+#                      Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oppColOnSSTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=3    value=${functionColOnReportTable}
+#                      Write Excel Cell    row_num=${nextRow}    col_num=4    value=${functionColOnSSTable}
+#                      Save Excel Document    ${RESULT_FILE_PATH}
+#                 END
                  ${rowIndexOnReportTableTemp}   Set Variable    ${rowIndexOnReportTable}
                  BREAK
             END
@@ -1038,64 +1040,67 @@ Get List Of Opps Have Multi Items From The Master Opp Report
     Sort List    ${listOfOpps}
     [Return]    ${listOfOpps}
 
-Get List Of Opps Have Multi Items From The SS Of Master Opp Report On NS
+Get List Of Opps Have Multi Items From The Master Opp Source
     [Arguments]     ${ssFilePath}
-    @{table}   Create List
+    @{table}     Create List
     ${sumQty}    Set Variable    0
 
     File Should Exist    ${ssFilePath}
     Open Excel Document    ${ssFilePath}    MasterOppSource
-    ${numOfRows}    Get Number Of Rows In Excel    ${ssFilePath}
-    ${lastRow}     Evaluate    ${numOfRows}-1
-    ${isOPPHaveMultilItems}     Set Variable    ${False}
-    Log To Console    lastRow: ${lastRow}
 
-    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}
+    ${numOfRows}    Get Number Of Rows In Excel    ${ssFilePath}
+    ${isOPPHaveMultilItems}     Set Variable    ${False}
+
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}+1
         ${oppCol}    Read Excel Cell    ${rowIndex}    1
         ${pnCol}     Read Excel Cell    ${rowIndex}    11
         ${qtyCol}    Read Excel Cell    ${rowIndex}    12
 
-        IF    ${rowIndex} < ${lastRow}
+        ${sumQty}      Evaluate    ${sumQty}+${qtyCol}
+
+        IF    ${rowIndex} < ${numOfRows}
             ${nextRow}         Evaluate           ${rowIndex}+1
             ${nextOppCol}      Read Excel Cell    ${nextRow}    1
             ${nextPNCol}       Read Excel Cell    ${nextRow}    11
-        END
 
-        IF    '${oppCol}' == '${nextOppCol}'
-            ${sumQty}      Evaluate    ${sumQty}+${qtyCol}
-            ${isOPPHaveMultilItems}     Set Variable    ${True}
-        END
+            IF    '${oppCol}' == '${nextOppCol}'
+                ${isOPPHaveMultilItems}     Set Variable    ${True}
+            END
 
-        IF    ${rowIndex} < ${lastRow}
-             IF    '${pnCol}' == '${nextPNCol}'
+            IF    '${pnCol}' == '${nextPNCol}'
                  Continue For Loop
-             END
+            END
         END
-        
+
         IF    '${isOPPHaveMultilItems}' == '${True}'
              ${rowOnTable}   Create List
              ...             ${oppCol}
              ...             ${pnCol}
              ...             ${sumQty}
              Append To List    ${table}   ${rowOnTable}
-             ${sumQty}    Set Variable    0
+
         END
+        ${sumQty}    Set Variable    0
         IF    '${oppCol}' != '${nextOppCol}'
              ${isOPPHaveMultilItems}     Set Variable    ${False}
         END
 
     END
     Close All Excel Documents
-    ${numofRowsOfTable}     Get Length    ${table}
-    FOR    ${rowIndexOnTable}    IN RANGE    0    ${numOfRows}
-        ${opp}       Set Variable   ${table}[${rowIndexOnTable}][0]
-        ${pn}        Set Variable   ${table}[${rowIndexOnTable}][1]
-        ${qty}       Set Variable   ${table}[${rowIndexOnTable}][2]
-        Log To Console    Opp: ${opp}; PN: ${pn}; QTY: ${qty}
-    END
 
     [Return]    ${table}
 
+Write The Master Opp Table To Excel
+    [Arguments]     ${table}    ${outputFilePath}
 
+    ${numOfRowsOnTable}     Get Length    ${table}
+    Open Excel Document    ${outputFilePath}    OutputFile
+    FOR    ${rowIndexOnTable}    IN RANGE    0    ${numOfRowsOnTable}
+        ${oppColOnTable}    Set Variable    ${table}[${rowIndexOnTable}][0]
+        ${rowIndexTemp}    Evaluate    ${rowIndexOnTable}+2
+        Write Excel Cell    row_num=${rowIndexTemp}    col_num=1    value=${oppColOnTable}
+        Save Excel Document    ${outputFilePath}
+    END
+    Close All Excel Documents
 
 

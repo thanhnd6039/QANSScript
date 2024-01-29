@@ -3,7 +3,7 @@ Resource    ../../Pages/Reports/MasterOppPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
 
 *** Test Cases ***
-Validating Detailed Data For Master Opp Report
+Validating The Detailed Data Of Master Opp Report
 #    Remove All Files in Specified Directory    ${DOWNLOAD_DIR}\\
 #    Setup    Chrome
 #    Navigate To Master Opp Report
