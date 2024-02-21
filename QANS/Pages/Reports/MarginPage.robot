@@ -205,9 +205,9 @@ Compare Data Between Margin Report And SS On NS
     @{sourceTable}       Create List
     @{listOfOEMGRoupAndPNChecked}      Create List
 
-    ${type}     Set Variable    CF
+    ${type}     Set Variable    B
     ${year}     Set Variable    2024
-    ${quarter}  Set Variable    4
+    ${quarter}  Set Variable    1
 
     ${reportTable}  Create Table For Margin Report    reportFilePath=${reportFilePath}    type=${type}  year=${year}   quarter=${quarter}
     ${numOfRowsOnReportTable}   Get Length    ${reportTable}
