@@ -89,6 +89,218 @@ Compare The Prev Quarter Ship Data For The Strategic Table Between WoW Change Re
     END
     Close All Excel Documents
 
+Compare The Current Quarter Budget Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report
+    [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}
+    ${result}   Set Variable    ${True}
+
+    File Should Exist    ${wowChangeReportFilePath}
+    Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
+
+    File Should Exist    ${sgWeeklyActionDBReportFilePath}
+    Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
+
+#   Verify the Pre Quarter Ship data
+    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    6
+        Switch Current Excel Document    doc_id=WoWChangeReport
+        ${oemGroupColOnWoWChangeReport}           Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+        ${currentQBudgetColOnWoWChangeReport}     Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=3
+        Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+        ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
+        FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+            ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+            ${budgetColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=3
+            IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
+                 IF    ${currentQBudgetColOnWoWChangeReport} != ${budgetColOnSGWeeklyActionDBReport}
+                      ${result}     Set Variable    ${False}
+                      Write The Test Result Of WoW Change Report To Excel    Current Q Budget    ${oemGroupColOnWoWChangeReport}    ${currentQBudgetColOnWoWChangeReport}    ${budgetColOnSGWeeklyActionDBReport}
+                 END
+                 BREAK
+            END
+        END
+    END
+#   Verify the Total data
+    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+    ${budgetTotalOnSGWeeklyActionDBReport}  Set Variable    0
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${budgetColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=3
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             ${budgetTotalOnSGWeeklyActionDBReport}     Evaluate    ${budgetTotalOnSGWeeklyActionDBReport}+${budgetColOnSGWeeklyActionDBReport}
+        END
+    END
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${currentQBudgetTotalOnWoWchangeReport}   Read Excel Cell    row_num=7    col_num=3
+    IF    ${currentQBudgetTotalOnWoWchangeReport} != ${budgetTotalOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    Current Q Budget   Strategic Total    ${currentQBudgetTotalOnWoWchangeReport}    ${budgetTotalOnSGWeeklyActionDBReport}
+    END
+ #  Verify the Others data
+    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+    ${budgetOthersOnSGWeeklyActionDBReport}  Set Variable    0
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${oemGroupColOnSGWeeklyActionDBReport}             Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${budgetColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=3
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
+                  ${budgetOthersOnSGWeeklyActionDBReport}     Evaluate    ${budgetOthersOnSGWeeklyActionDBReport}+${budgetColOnSGWeeklyActionDBReport}
+             END
+        END
+    END
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${currentQBudgetOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=3
+    IF    ${currentQBudgetOthersOnWoWChangeReport} != ${budgetOthersOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    Current Q Budget    Strategic Others    ${currentQBudgetOthersOnWoWChangeReport}    ${budgetOthersOnSGWeeklyActionDBReport}
+    END
+
+    IF    '${result}' == '${False}'
+         Fail   The Current Q Budget data between the WoW Change Report and SG Weekly Action Report is different
+    END
+    Close All Excel Documents
+
+Compare The Ships Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report
+    [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}
+    ${result}   Set Variable    ${True}
+
+    File Should Exist    ${wowChangeReportFilePath}
+    Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
+
+    File Should Exist    ${sgWeeklyActionDBReportFilePath}
+    Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
+
+#   Verify the Ships data
+    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    6
+        Switch Current Excel Document    doc_id=WoWChangeReport
+        ${oemGroupColOnWoWChangeReport}           Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+        ${shipsColOnWoWChangeReport}              Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=6
+        Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+        ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
+        FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+            ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+            ${revColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=5
+            IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
+                 IF    ${shipsColOnWoWChangeReport} != ${revColOnSGWeeklyActionDBReport}
+                      ${result}     Set Variable    ${False}
+                      Write The Test Result Of WoW Change Report To Excel    Ships    ${oemGroupColOnWoWChangeReport}    ${shipsColOnWoWChangeReport}    ${revColOnSGWeeklyActionDBReport}
+                 END
+                 BREAK
+            END
+        END
+    END
+#   Verify the Ships Total data
+    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+    ${revTotalOnSGWeeklyActionDBReport}  Set Variable    0
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${revColOnSGWeeklyActionDBReport}                  Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=5
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             ${revTotalOnSGWeeklyActionDBReport}     Evaluate    ${revTotalOnSGWeeklyActionDBReport}+${revColOnSGWeeklyActionDBReport}
+        END
+    END
+    ${revTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${revTotalOnSGWeeklyActionDBReport}
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${shipsTotalOnWoWchangeReport}   Read Excel Cell    row_num=7    col_num=6
+    IF    ${shipsTotalOnWoWchangeReport} != ${revTotalOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    Ships   Strategic Total    ${shipsTotalOnWoWchangeReport}    ${revTotalOnSGWeeklyActionDBReport}
+    END
+ #  Verify the Ships Others data
+    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+    ${revOthersOnSGWeeklyActionDBReport}  Set Variable    0
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${oemGroupColOnSGWeeklyActionDBReport}             Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${revColOnSGWeeklyActionDBReport}                  Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=5
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
+                  ${revOthersOnSGWeeklyActionDBReport}     Evaluate    ${revOthersOnSGWeeklyActionDBReport}+${revColOnSGWeeklyActionDBReport}
+             END
+        END
+    END
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${shipsOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=6
+    IF    ${shipsOthersOnWoWChangeReport} != ${revOthersOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    Ships    Strategic Others    ${shipsOthersOnWoWChangeReport}    ${revOthersOnSGWeeklyActionDBReport}
+    END
+
+    IF    '${result}' == '${False}'
+         Fail   The Ships data between the WoW Change Report and SG Weekly Action Report is different
+    END
+    Close All Excel Documents
+
+Compare The Backlog Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report
+    [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}
+    ${result}   Set Variable    ${True}
+
+    File Should Exist    ${wowChangeReportFilePath}
+    Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
+
+    File Should Exist    ${sgWeeklyActionDBReportFilePath}
+    Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
+
+#   Verify the Backlog data
+    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    6
+        Switch Current Excel Document    doc_id=WoWChangeReport
+        ${oemGroupColOnWoWChangeReport}           Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+        ${backlogColOnWoWChangeReport}            Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=8
+        Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+        ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
+        FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+            ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+            ${backlogColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=6
+            IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
+                 IF    ${backlogColOnWoWChangeReport} != ${backlogColOnSGWeeklyActionDBReport}
+                      ${result}     Set Variable    ${False}
+                      Write The Test Result Of WoW Change Report To Excel    Backlog    ${oemGroupColOnWoWChangeReport}    ${backlogColOnWoWChangeReport}    ${backlogColOnSGWeeklyActionDBReport}
+                 END
+                 BREAK
+            END
+        END
+    END
+#   Verify the Backlog Total data
+    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+    ${backlogTotalOnSGWeeklyActionDBReport}  Set Variable    0
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${backlogColOnSGWeeklyActionDBReport}              Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=6
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             ${backlogTotalOnSGWeeklyActionDBReport}     Evaluate    ${backlogTotalOnSGWeeklyActionDBReport}+${backlogColOnSGWeeklyActionDBReport}
+        END
+    END
+    ${backlogTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${backlogTotalOnSGWeeklyActionDBReport}
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${backlogTotalOnWoWchangeReport}   Read Excel Cell    row_num=7    col_num=8
+    IF    ${backlogTotalOnWoWchangeReport} != ${backlogTotalOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    Backlog   Strategic Total    ${backlogTotalOnWoWchangeReport}    ${backlogTotalOnSGWeeklyActionDBReport}
+    END
+ #  Verify the Backlog Others data
+    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+    ${backlogOthersOnSGWeeklyActionDBReport}  Set Variable    0
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${oemGroupColOnSGWeeklyActionDBReport}             Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${backlogColOnSGWeeklyActionDBReport}                  Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=6
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
+                  ${backlogOthersOnSGWeeklyActionDBReport}     Evaluate    ${backlogOthersOnSGWeeklyActionDBReport}+${backlogColOnSGWeeklyActionDBReport}
+             END
+        END
+    END
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${backlogOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=8
+    IF    ${backlogOthersOnWoWChangeReport} != ${backlogOthersOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    Backlog    Strategic Others    ${backlogOthersOnWoWChangeReport}    ${backlogOthersOnSGWeeklyActionDBReport}
+    END
+
+    IF    '${result}' == '${False}'
+         Fail   The Backlog data between the WoW Change Report and SG Weekly Action Report is different
+    END
+    Close All Excel Documents
+
 Compare The Prev Quarter Ship Data For The OEM East Table Between WoW Change Report And SG Weekly Action DB Report
     [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}
     ${result}   Set Variable    ${True}
@@ -230,76 +442,3 @@ Compare The Prev Quarter Ship Data For The OEM West Table Between WoW Change Rep
     Close All Excel Documents
 
 
-
-
-
-
-Compare The Current Quarter Budget Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report
-    [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}
-    ${result}   Set Variable    ${True}
-
-    File Should Exist    ${wowChangeReportFilePath}
-    Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
-
-    File Should Exist    ${sgWeeklyActionDBReportFilePath}
-    Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
-
-#   Verify the Pre Quarter Ship data
-    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    6
-        Switch Current Excel Document    doc_id=WoWChangeReport
-        ${oemGroupColOnWoWChangeReport}           Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
-        ${currentQBudgetColOnWoWChangeReport}     Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=3
-        Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-        ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
-        FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-            ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
-            ${budgetColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=3
-            IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
-                 IF    ${currentQBudgetColOnWoWChangeReport} != ${budgetColOnSGWeeklyActionDBReport}
-                      ${result}     Set Variable    ${False}
-                      Write The Test Result Of WoW Change Report To Excel    Current Q Budget    ${oemGroupColOnWoWChangeReport}    ${currentQBudgetColOnWoWChangeReport}    ${budgetColOnSGWeeklyActionDBReport}
-                 END
-                 BREAK
-            END
-        END
-    END
-#   Verify the Total data
-    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${budgetTotalOnSGWeeklyActionDBReport}  Set Variable    0
-    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-        ${budgetColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=3
-        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
-             ${budgetTotalOnSGWeeklyActionDBReport}     Evaluate    ${budgetTotalOnSGWeeklyActionDBReport}+${budgetColOnSGWeeklyActionDBReport}
-        END
-    END
-    Switch Current Excel Document    doc_id=WoWChangeReport
-    ${currentQBudgetTotalOnWoWchangeReport}   Read Excel Cell    row_num=7    col_num=3
-    IF    ${currentQBudgetTotalOnWoWchangeReport} != ${budgetTotalOnSGWeeklyActionDBReport}
-         ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    Current Q Budget   Strategic Total    ${currentQBudgetTotalOnWoWchangeReport}    ${budgetTotalOnSGWeeklyActionDBReport}
-    END
- #  Verify the Others data
-    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${budgetOthersOnSGWeeklyActionDBReport}  Set Variable    0
-    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-        ${oemGroupColOnSGWeeklyActionDBReport}             Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
-        ${mainSalesRepColOnSGWeeklyActionDBReport}         Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-        ${budgetColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=3
-        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
-             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
-                  ${budgetOthersOnSGWeeklyActionDBReport}     Evaluate    ${budgetOthersOnSGWeeklyActionDBReport}+${budgetColOnSGWeeklyActionDBReport}
-             END
-        END
-    END
-    Switch Current Excel Document    doc_id=WoWChangeReport
-    ${currentQBudgetOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=3
-    IF    ${currentQBudgetOthersOnWoWChangeReport} != ${budgetOthersOnSGWeeklyActionDBReport}
-         ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    Current Q Budget    Strategic Others    ${currentQBudgetOthersOnWoWChangeReport}    ${budgetOthersOnSGWeeklyActionDBReport}
-    END
-
-    IF    '${result}' == '${False}'
-         Fail   The Current Q Budget data between the WoW Change Report and SG Weekly Action Report is different
-    END
-    Close All Excel Documents

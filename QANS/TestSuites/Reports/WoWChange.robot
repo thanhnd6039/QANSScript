@@ -11,14 +11,24 @@ Verify The Prev Quarter Ship Data For The Strategic Table On The WoW Change Repo
     [Tags]  WoWChangeReport_0001
     Compare The Prev Quarter Ship Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}
 
-Verify The Prev Quarter Ship Data For The OEM East Table On The WoW Change Report
+Verify The Current Quarter Budget Data For The Strategic Table On The WoW Change Report
     [Tags]  WoWChangeReport_0002
+    Compare The Current Quarter Budget Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}
+
+Verify The Ships Data For The Strategic Table On The WoW Change Report
+    [Tags]  WoWChangeReport_0003
+    Compare The Ships Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}
+
+Verify The Backlog Data For The Strategic Table On The WoW Change Report
+    [Tags]  WoWChangeReport_0004
+    Compare The Backlog Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}
+
+Verify The Prev Quarter Ship Data For The OEM East Table On The WoW Change Report
+#    [Tags]  WoWChangeReport_0002
     Compare The Prev Quarter Ship Data For The OEM East Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}
 
 Verify The Prev Quarter Ship Data For The OEM West Table On The WoW Change Report
-    [Tags]  WoWChangeReport_0003
+#    [Tags]  WoWChangeReport_0003
     Compare The Prev Quarter Ship Data For The OEM West Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}
 
-Verify The Current Quarter Budget Data For The Strategic Table On The WoW Change Report
-    [Tags]  WoWChangeReport_0004
-    Compare The Current Quarter Budget Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}
+
