@@ -88,6 +88,7 @@ Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Act
     END
 
     IF    '${result}' == '${False}'
+         Close All Excel Documents
          Fail   The ${nameOfCol} data between the WoW Change Report and SG Weekly Action Report is different
     END
     Close All Excel Documents
@@ -161,6 +162,7 @@ Compare Data For The OEM East Table Between WoW Change Report And SG Weekly Acti
     END
 
     IF    '${result}' == '${False}'
+         Close All Excel Documents
          Fail   The ${nameOfCol} data for the OEM East table between the WoW Change Report and SG Weekly Action Report is different
     END
     Close All Excel Documents
@@ -234,6 +236,7 @@ Compare Data For The OEM West Table Between WoW Change Report And SG Weekly Acti
     END
 
     IF    '${result}' == '${False}'
+         Close All Excel Documents
          Fail   The ${nameOfCol} data for the OEM West table between the WoW Change Report and SG Weekly Action Report is different
     END
     Close All Excel Documents
@@ -262,6 +265,7 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
                 ELSE IF  '${nameOfCol}' == 'Comments'
                      ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfColOnWoWChangeReport}
                 ELSE
+                   Close All Excel Documents
                    Fail  The name of column ${nameOfCol} is not valid
                 END
 
@@ -305,6 +309,7 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
                 ELSE IF  '${nameOfCol}' == 'Comments'
                      ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfColOnWoWChangeReport}
                 ELSE
+                   Close All Excel Documents
                    Fail  The name of column ${nameOfCol} is not valid
                 END
 
@@ -347,6 +352,7 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
                 ELSE IF  '${nameOfCol}' == 'Comments'
                      ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfColOnWoWChangeReport}
                 ELSE
+                   Close All Excel Documents
                    Fail  The name of column ${nameOfCol} is not valid
                 END
 
@@ -376,6 +382,7 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
     END
 
     IF    '${result}' == '${False}'
+         Close All Excel Documents
          Fail   The ${nameOfCol} data for the ${table} table between the WoW Change Report and WoW Change Report On VDC is different
     END
     Close All Excel Documents
@@ -485,6 +492,7 @@ Verify The WoW Data On WoW Change Report
     END
 
     IF    '${result}' == '${False}'
+         Close All Excel Documents
          Fail   The ${nameOfCol} data for the ${table} table is wrong
     END
     Close All Excel Documents
