@@ -10,6 +10,7 @@ Library     DateTime
 Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
 Library     ../Libs/CBrowser.py
+Library     ../Libs/CDateTime.py
 
 Resource    UtilityPage.robot
 

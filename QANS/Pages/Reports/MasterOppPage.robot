@@ -25,6 +25,48 @@ ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerContro
 ${RESULT_FILE_PATH}                                  ${RESULT_DIR}\\MasterOpp\\MasterOppResult.xlsx
 
 *** Keywords ***
+Compare The REV Data Between The Master OPP Report And Sales Dashboard By PN
+    [Arguments]     ${masterOPPReportFilePath}  ${salesDashboardByPNReportFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
+
+    File Should Exist    ${masterOPPReportFilePath}
+    Open Excel Document    ${masterOPPReportFilePath}    doc_id=MasterOPPReport
+
+    File Should Exist    ${salesDashboardByPNReportFilePath}
+    Open Excel Document    ${salesDashboardByPNReportFilePath}    doc_id=SalesDashboardByPNReport
+
+    File Should Exist    ${ssMasterOPPFilePath}
+    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
+
+    Switch Current Excel Document    doc_id=SSMasterOPP
+    ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
+
+    Switch Current Excel Document    doc_id=MasterOPPReport
+    ${yearStrOnMasterOPPReport}  Get Substring    ${year}    2  4
+    ${searchStrREVColOnMasterOPPReport}   Set Variable    ${yearStrOnMasterOPPReport}-Q${quarter} REV
+    ${startRowOnMasterOPPReport}    Convert To Number    4
+    ${posOfColREVOnMasterOPPReport}    Get Position Of Column    ${masterOPPReportFilePath}    ${startRowOnMasterOPPReport}    ${searchStrREVColOnMasterOPPReport}
+    ${numOfRowsOnMasterOPPReport}   Get Number Of Rows In Excel    ${masterOPPReportFilePath}
+    ${rowIndexOnSSMasterOPP}    Set Variable    2
+    FOR    ${rowIndexOnMasterOPPReport}    IN RANGE    5    ${numOfRowsOnMasterOPPReport}+1
+        ${oppColOnMasterOPPReport}  Read Excel Cell    row_num=${rowIndexOnMasterOPPReport}    col_num=1       
+        ${revColOnMasterOPPReport}  Read Excel Cell    row_num=${rowIndexOnMasterOPPReport}    col_num=${posOfColREVOnMasterOPPReport}
+        ${isMapRevColOnMasterOPPReport}     Set Variable    ${EMPTY}
+        Switch Current Excel Document    doc_id=SSMasterOPP
+        ${isMapRevColOnSSMasterOPP}  Read Excel Cell    ${rowIndexOnSSMasterOPP}    4
+        ${isMapRevColOnMasterOPPReport}     Set Variable    ${isMapRevColOnSSMasterOPP}
+        ${rowIndexOnSSMasterOPP}    Evaluate    ${rowIndexOnSSMasterOPP}+1
+
+        IF    '${isMapRevColOnMasterOPPReport}' == 'No' or '${isMapRevColOnMasterOPPReport}' == '${EMPTY}'
+             IF    '${revColOnMasterOPPReport}' != 'None'
+                  Log To Console    OPP:${oppColOnMasterOPPReport},REV:${revColOnMasterOPPReport}
+             END
+        END        
+        Switch Current Excel Document    doc_id=MasterOPPReport
+    END
+    
+    
+    
+
 Navigate To Master Opp Report
     ${configFileObject}     Load Json From File    ${CONFIG_FILE}
     ${username}             Get Value From Json    ${configFileObject}    $.accounts[0].username

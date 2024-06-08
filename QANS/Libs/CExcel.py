@@ -10,14 +10,12 @@ class CExcel(object):
         file = load_workbook(filePath)
         sheet = file.active
         numOfCols = sheet.max_column
-        file.close()
         return numOfCols
     def get_number_of_rows_in_excel(self, filePath):
         numOfRows = 0
         file = load_workbook(filePath)
         sheet = file.active
         numOfRows = sheet.max_row
-        file.close()
         return numOfRows
     def convert_csv_to_xlsx(self, csvFilePath, xlsxFilePath):
         # logger.console(csvFilePath)
@@ -37,7 +35,6 @@ class CExcel(object):
             if valueOfCell == searchStr:
                 posOfColumn = colIndex
                 break
-        file.close()
         return posOfColumn
 
 
