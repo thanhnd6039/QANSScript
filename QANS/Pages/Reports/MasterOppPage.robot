@@ -27,7 +27,7 @@ ${RESULT_FILE_PATH}                                  ${RESULT_DIR}\\MasterOpp\\M
 *** Keywords ***
 Check The REV Data
     [Arguments]     ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
-    Create Source Table To Verify REV For Each Quarter In The PAST    ${ssMasterOPPFilePath}    ${salesDashboardByPNFilePath}    ${year}    ${quarter}
+    Create Source Table To Verify REV For Each Quarter    ${ssMasterOPPFilePath}    ${salesDashboardByPNFilePath}    ${year}    ${quarter}
 
 #    File Should Exist    ${masterOPPReportFilePath}
 #    Open Excel Document    ${masterOPPReportFilePath}    doc_id=MasterOPPReport
@@ -66,7 +66,7 @@ Check The REV Data
 #        Switch Current Excel Document    doc_id=MasterOPPReport
 #    END
     
-Create Source Table To Verify REV For Each Quarter In The PAST
+Create Source Table To Verify REV For Each Quarter
     [Arguments]     ${ssMasterOPPFilePath}   ${salesDashboardByPN}      ${year}     ${quarter}
     @{table}        Create List
     ${headerRowOnTable}     Create List
@@ -117,23 +117,24 @@ Create Source Table To Verify REV For Each Quarter In The PAST
             END
         END
         
-#        ${oppCol}       Set Variable    ${oppColOnSSMasterOPP}
-#        ${isMapREVCol}  Set Variable    ${isMapREVColOnSSMasterOPP}
-#        ${oemGroupCol}  Set Variable    ${oemGroupColOnSSMasterOPP}
-#        ${pnCol}        Set Variable    ${pnColOnSSMasterOPP}
-#        ${revCol}       Set Variable    ${revColOnSalesDashboardByPN}
-#
-#        ${rowOnTable}   Create List
-#        ...             ${oppCol}
-#        ...             ${isMapREVCol}
-#        ...             ${oemGroupCol}
-#        ...             ${pnCol}
-#        ...             ${revCol}
-#        Append To List    ${table}  ${rowOnTable}
+        ${oppCol}       Set Variable    ${oppColOnSSMasterOPP}
+        ${isMapREVCol}  Set Variable    ${isMapREVColOnSSMasterOPP}
+        ${oemGroupCol}  Set Variable    ${oemGroupColOnSSMasterOPP}
+        ${pnCol}        Set Variable    ${pnColOnSSMasterOPP}
+        ${revCol}       Set Variable    ${revColOnSalesDashboardByPN}
+        Log To Console    REV:${revCol}
+
+        ${rowOnTable}   Create List
+        ...             ${oppCol}
+        ...             ${isMapREVCol}
+        ...             ${oemGroupCol}
+        ...             ${pnCol}
+        ...             ${revCol}
+        Append To List    ${table}  ${rowOnTable}
         Switch Current Excel Document    doc_id=SSMasterOPP
     END
-#    ${numOfRowsOnTable}     Get Length    ${table}
-#    Log To Console    numOfRowsOnTable:${numOfRowsOnTable}
+    ${numOfRowsOnTable}     Get Length    ${table}
+    Log To Console    numOfRowsOnTable:${numOfRowsOnTable}
 
 
     [Return]    ${table}
