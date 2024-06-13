@@ -25,5 +25,8 @@ Sort Table By Column
     END
 
     [Return]    ${sortedTable}
+    
+Write Table To Excel
+    Log To Console    Prepair to do
 
 

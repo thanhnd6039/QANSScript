@@ -25,8 +25,9 @@ ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerContro
 ${RESULT_FILE_PATH}                                  ${RESULT_DIR}\\MasterOpp\\MasterOppResult.xlsx
 
 *** Keywords ***
-Compare The REV Data Between The Master OPP Report And Sales Dashboard By PN
-    [Arguments]     ${masterOPPReportFilePath}  ${salesDashboardByPNReportFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
+Check The REV Data
+    [Arguments]     ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
+    Create Source Table To Verify REV For Each Quarter In The PAST    ${ssMasterOPPFilePath}    ${salesDashboardByPNFilePath}    ${year}    ${quarter}
 
 #    File Should Exist    ${masterOPPReportFilePath}
 #    Open Excel Document    ${masterOPPReportFilePath}    doc_id=MasterOPPReport
@@ -34,11 +35,11 @@ Compare The REV Data Between The Master OPP Report And Sales Dashboard By PN
 #    File Should Exist    ${salesDashboardByPNReportFilePath}
 #    Open Excel Document    ${salesDashboardByPNReportFilePath}    doc_id=SalesDashboardByPNReport
 
-    File Should Exist    ${ssMasterOPPFilePath}
-    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
-
-    Switch Current Excel Document    doc_id=SSMasterOPP
-    ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
+#    File Should Exist    ${ssMasterOPPFilePath}
+#    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
+#
+#    Switch Current Excel Document    doc_id=SSMasterOPP
+#    ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
 
 
 #    Switch Current Excel Document    doc_id=MasterOPPReport
@@ -65,21 +66,75 @@ Compare The REV Data Between The Master OPP Report And Sales Dashboard By PN
 #        Switch Current Excel Document    doc_id=MasterOPPReport
 #    END
     
-Create Table For SS Master OPP To Verify REV
-    [Arguments]     ${ssMasterOPPFilePath}      ${year}     ${quarter}
+Create Source Table To Verify REV For Each Quarter In The PAST
+    [Arguments]     ${ssMasterOPPFilePath}   ${salesDashboardByPN}      ${year}     ${quarter}
     @{table}        Create List
-    ${oppCol}       Set Variable    ${EMPTY}
-    ${isMapREVCol}  Set Variable    ${EMPTY}
-    ${revCol}       Set Variable    ${EMPTY}
-
-    File Should Exist    ${ssMasterOPPFilePath}
+    ${headerRowOnTable}     Create List
+    ...                     OPP
+    ...                     IS MAP REV
+    ...                     OEM GROUP
+    ...                     PN
+    ...                     ${year}.Q${quarter}
+    Append To List    ${table}  ${headerRowOnTable}
+    
+    File Should Exist      ${ssMasterOPPFilePath}
     Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
     ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
-
-    FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    2    ${numOfRowsOnSSMasterOPP}+1
-        Log    ${counter}
-
+    
+    File Should Exist      ${salesDashboardByPN}
+    Open Excel Document    ${salesDashboardByPN}    doc_id=SalesDashboardByPN
+    Switch Current Excel Document    doc_id=SalesDashboardByPN
+    ${numOfRowsOnSalesDashboardByPN}    Get Number Of Rows In Excel    ${salesDashboardByPN}
+    ${searchStrForREVColOnSalesDashboardByPN}   Set Variable    ${year}.Q${quarter}
+    ${rowIndexOfHeaderOnSalesDashboardByPN}     Convert To Number    1
+    ${posOfREVColOnSalesDashboardByPN}   Get Position Of Column    ${salesDashboardByPN}    ${rowIndexOfHeaderOnSalesDashboardByPN}    ${searchStrForREVColOnSalesDashboardByPN}
+    IF    ${posOfREVColOnSalesDashboardByPN} == 0
+         Fail   The quarter parameter or year is invalid
     END
+
+    Switch Current Excel Document    doc_id=SSMasterOPP
+    FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    2    ${numOfRowsOnSSMasterOPP}+1 
+        ${oppCol}       Set Variable    ${EMPTY}
+        ${isMapREVCol}  Set Variable    ${EMPTY}
+        ${oemGroupCol}  Set Variable    ${EMPTY}
+        ${pnCol}        Set Variable    ${EMPTY}
+        ${revCol}       Set Variable    ${EMPTY}  
+        
+        ${oppColOnSSMasterOPP}        Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=2
+        ${isMapREVColOnSSMasterOPP}   Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=4
+        ${oemGroupColOnSSMasterOPP}   Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=6
+        ${pnColOnSSMasterOPP}         Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=12
+        Switch Current Excel Document    doc_id=SalesDashboardByPN
+        FOR    ${rowIndexOnSalesDashboardByPN}    IN RANGE    2    ${numOfRowsOnSalesDashboardByPN}
+            ${oemGroupColOnSalesDashboardByPN}  Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=3
+            ${pnColOnSalesDashboardByPN}        Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=1
+
+            IF    '${oemGroupColOnSSMasterOPP}' == '${oemGroupColOnSalesDashboardByPN}' and '${pnColOnSSMasterOPP}' == '${pnColOnSalesDashboardByPN}'
+                 ${revColOnSalesDashboardByPN}    Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=${posOfREVColOnSalesDashboardByPN}
+                 BREAK
+            ELSE
+                ${revColOnSalesDashboardByPN}   Set Variable    ${EMPTY}
+            END
+        END
+        
+#        ${oppCol}       Set Variable    ${oppColOnSSMasterOPP}
+#        ${isMapREVCol}  Set Variable    ${isMapREVColOnSSMasterOPP}
+#        ${oemGroupCol}  Set Variable    ${oemGroupColOnSSMasterOPP}
+#        ${pnCol}        Set Variable    ${pnColOnSSMasterOPP}
+#        ${revCol}       Set Variable    ${revColOnSalesDashboardByPN}
+#
+#        ${rowOnTable}   Create List
+#        ...             ${oppCol}
+#        ...             ${isMapREVCol}
+#        ...             ${oemGroupCol}
+#        ...             ${pnCol}
+#        ...             ${revCol}
+#        Append To List    ${table}  ${rowOnTable}
+        Switch Current Excel Document    doc_id=SSMasterOPP
+    END
+#    ${numOfRowsOnTable}     Get Length    ${table}
+#    Log To Console    numOfRowsOnTable:${numOfRowsOnTable}
+
 
     [Return]    ${table}
 

@@ -3,13 +3,13 @@ Resource    ../../Pages/Reports/MasterOppPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
 
 *** Variables ***
-${masterOPPReportFilePath}                       C:\\RobotFramework\\Downloads\\Opportunity Report.xlsx
-${salesDashboardByPNReportFilePath}              C:\\RobotFramework\\Downloads\\Sales Dashboard by PN.xlsx
-${ssMasterOPPFilePath}                           C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
+${masterOPPFilePath}                       C:\\RobotFramework\\Downloads\\Opportunity Report.xlsx
+${salesDashboardByPNFilePath}              C:\\RobotFramework\\Downloads\\Sales Dashboard by PN.xlsx
+${ssMasterOPPFilePath}                     C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
 
 *** Test Cases ***
 Verify The REV Data For Every Quarter On Master OPP Report
-    Compare The REV Data Between The Master OPP Report And Sales Dashboard By PN    ${masterOPPReportFilePath}  ${salesDashboardByPNReportFilePath}  ${ssMasterOPPFilePath}  2022  1
+    Check The REV Data    ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  2022  1
 #Validating The Detailed Data Of Master Opp Report
 #    Remove All Files in Specified Directory    ${DOWNLOAD_DIR}\\
 #    Setup    Chrome
