@@ -65,77 +65,76 @@ Check The REV Data
 #        END
 #        Switch Current Excel Document    doc_id=MasterOPPReport
 #    END
-    
+
+Create Sales Dashboard By PN Table
+    [Arguments]     ${salesDashboardByPN}
+
 Create Source Table To Verify REV For Each Quarter
     [Arguments]     ${ssMasterOPPFilePath}   ${salesDashboardByPN}      ${year}     ${quarter}
     @{table}        Create List
-    ${headerRowOnTable}     Create List
-    ...                     OPP
-    ...                     IS MAP REV
-    ...                     OEM GROUP
-    ...                     PN
-    ...                     ${year}.Q${quarter}
-    Append To List    ${table}  ${headerRowOnTable}
-    
-    File Should Exist      ${ssMasterOPPFilePath}
-    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
-    ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
-    
-    File Should Exist      ${salesDashboardByPN}
-    Open Excel Document    ${salesDashboardByPN}    doc_id=SalesDashboardByPN
-    Switch Current Excel Document    doc_id=SalesDashboardByPN
-    ${numOfRowsOnSalesDashboardByPN}    Get Number Of Rows In Excel    ${salesDashboardByPN}
-    ${searchStrForREVColOnSalesDashboardByPN}   Set Variable    ${year}.Q${quarter}
-    ${rowIndexOfHeaderOnSalesDashboardByPN}     Convert To Number    1
-    ${posOfREVColOnSalesDashboardByPN}   Get Position Of Column    ${salesDashboardByPN}    ${rowIndexOfHeaderOnSalesDashboardByPN}    ${searchStrForREVColOnSalesDashboardByPN}
-    IF    ${posOfREVColOnSalesDashboardByPN} == 0
-         Fail   The quarter parameter or year is invalid
-    END
 
-    Switch Current Excel Document    doc_id=SSMasterOPP
-    FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    2    ${numOfRowsOnSSMasterOPP}+1 
-        ${oppCol}       Set Variable    ${EMPTY}
-        ${isMapREVCol}  Set Variable    ${EMPTY}
-        ${oemGroupCol}  Set Variable    ${EMPTY}
-        ${pnCol}        Set Variable    ${EMPTY}
-        ${revCol}       Set Variable    ${EMPTY}  
-        
-        ${oppColOnSSMasterOPP}        Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=2
-        ${isMapREVColOnSSMasterOPP}   Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=4
-        ${oemGroupColOnSSMasterOPP}   Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=6
-        ${pnColOnSSMasterOPP}         Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=12
-        Switch Current Excel Document    doc_id=SalesDashboardByPN
-        FOR    ${rowIndexOnSalesDashboardByPN}    IN RANGE    2    ${numOfRowsOnSalesDashboardByPN}
-            ${oemGroupColOnSalesDashboardByPN}  Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=3
-            ${pnColOnSalesDashboardByPN}        Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=1
-
-            IF    '${oemGroupColOnSSMasterOPP}' == '${oemGroupColOnSalesDashboardByPN}' and '${pnColOnSSMasterOPP}' == '${pnColOnSalesDashboardByPN}'
-                 ${revColOnSalesDashboardByPN}    Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=${posOfREVColOnSalesDashboardByPN}
-                 BREAK
-            ELSE
-                ${revColOnSalesDashboardByPN}   Set Variable    ${EMPTY}
-            END
-        END
-        
-        ${oppCol}       Set Variable    ${oppColOnSSMasterOPP}
-        ${isMapREVCol}  Set Variable    ${isMapREVColOnSSMasterOPP}
-        ${oemGroupCol}  Set Variable    ${oemGroupColOnSSMasterOPP}
-        ${pnCol}        Set Variable    ${pnColOnSSMasterOPP}
-        ${revCol}       Set Variable    ${revColOnSalesDashboardByPN}
-        Log To Console    REV:${revCol}
-
-        ${rowOnTable}   Create List
-        ...             ${oppCol}
-        ...             ${isMapREVCol}
-        ...             ${oemGroupCol}
-        ...             ${pnCol}
-        ...             ${revCol}
-        Append To List    ${table}  ${rowOnTable}
-        Switch Current Excel Document    doc_id=SSMasterOPP
-    END
-    ${numOfRowsOnTable}     Get Length    ${table}
-    Log To Console    numOfRowsOnTable:${numOfRowsOnTable}
-
+#    File Should Exist      ${ssMasterOPPFilePath}
+#    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
+#    ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
+#
+#    File Should Exist      ${salesDashboardByPN}
+#    Open Excel Document    ${salesDashboardByPN}    doc_id=SalesDashboardByPN
+#    Switch Current Excel Document    doc_id=SalesDashboardByPN
+#    ${numOfRowsOnSalesDashboardByPN}    Get Number Of Rows In Excel    ${salesDashboardByPN}
+#    ${searchStrForREVColOnSalesDashboardByPN}   Set Variable    ${year}.Q${quarter}
+#    ${rowIndexOfHeaderOnSalesDashboardByPN}     Convert To Number    1
+#    ${posOfREVColOnSalesDashboardByPN}   Get Position Of Column    ${salesDashboardByPN}    ${rowIndexOfHeaderOnSalesDashboardByPN}    ${searchStrForREVColOnSalesDashboardByPN}
+#    IF    ${posOfREVColOnSalesDashboardByPN} == 0
+#         Fail   The quarter parameter or year is invalid
+#    END
+#
+#    Switch Current Excel Document    doc_id=SSMasterOPP
+#    FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    2    ${numOfRowsOnSSMasterOPP}+1
+#        ${oppCol}       Set Variable    ${EMPTY}
+#        ${isMapREVCol}  Set Variable    ${EMPTY}
+#        ${oemGroupCol}  Set Variable    ${EMPTY}
+#        ${pnCol}        Set Variable    ${EMPTY}
+#        ${revCol}       Set Variable    ${EMPTY}
+#
+#        ${oppColOnSSMasterOPP}        Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=2
+#        ${oemGroupColOnSSMasterOPP}   Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=3
+#        ${pnColOnSSMasterOPP}         Read Excel Cell    row_num=${rowIndexOnSSMasterOPP}    col_num=4
+#        ${str1}     Set Variable    ${oemGroupColOnSSMasterOPP}${pnColOnSSMasterOPP}
+#
+#        Switch Current Excel Document    doc_id=SalesDashboardByPN
+#        FOR    ${rowIndexOnSalesDashboardByPN}    IN RANGE    2    ${numOfRowsOnSalesDashboardByPN}
+#            ${oemGroupColOnSalesDashboardByPN}  Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=3
+#            ${pnColOnSalesDashboardByPN}        Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=1
+#            ${str2}     Set Variable    ${oemGroupColOnSalesDashboardByPN}${pnColOnSalesDashboardByPN}
+#            IF    '${str1}' == '${str2}'
+#                 ${revColOnSalesDashboardByPN}    Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=${posOfREVColOnSalesDashboardByPN}
+#                 IF    ${revColOnSalesDashboardByPN} != 0
+#                      Log To Console    OEM:${oemGroupColOnSSMasterOPP},PN:${pnColOnSSMasterOPP},REV:${revColOnSalesDashboardByPN}
+#                 END
+#                 BREAK
+#            END
+##            IF    '${oemGroupColOnSSMasterOPP}' == '${oemGroupColOnSalesDashboardByPN}' and '${pnColOnSSMasterOPP}' == '${pnColOnSalesDashboardByPN}'
+##                 ${revColOnSalesDashboardByPN}    Read Excel Cell    row_num=${rowIndexOnSalesDashboardByPN}    col_num=${posOfREVColOnSalesDashboardByPN}
+##                 IF    ${revColOnSalesDashboardByPN} != 0
+##                      Log To Console    OEM:${oemGroupColOnSSMasterOPP},PN:${pnColOnSSMasterOPP},REV:${revColOnSalesDashboardByPN}
+##                 END
+##                 BREAK
+##            END
+#        END
+#
+##        ${oppCol}       Set Variable    ${oppColOnSSMasterOPP}
+##        ${oemGroupCol}  Set Variable    ${oemGroupColOnSSMasterOPP}
+##        ${pnCol}        Set Variable    ${pnColOnSSMasterOPP}
+##        ${revCol}       Set Variable    ${revColOnSalesDashboardByPN}
+##
+##        ${rowOnTable}   Create List
+##        ...             ${oppCol}
+##        ...             ${oemGroupCol}
+##        ...             ${pnCol}
+##        ...             ${revCol}
+##        Append To List    ${table}  ${rowOnTable}
+#        Switch Current Excel Document    doc_id=SSMasterOPP
+#    END
 
     [Return]    ${table}
 
