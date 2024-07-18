@@ -10,23 +10,23 @@ ${sgWeeklyActionDBReportCurQFilePath}   C:\\RobotFramework\\Downloads\\SalesGap 
 *** Test Cases ***
 Verify The Prev Quarter Ship Data For The Strategic Table On The WoW Change Report
     [Tags]  WoWChangeReport_0001
-    Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}  2   7   Pre Q Ships
+    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}  2   7   Pre Q Ships
 
 Verify The Current Quarter Budget Data For The Strategic Table On The WoW Change Report
     [Tags]  WoWChangeReport_0002
-    Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  3   3   Current Q Budget
+    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  3   3   Current Q Budget
 
 Verify The Ships Data For The Strategic Table On The WoW Change Report
     [Tags]  WoWChangeReport_0003
-    Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  6   5   Ships
+    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  6   5   Ships
 
 Verify The Backlog Data For The Strategic Table On The WoW Change Report
     [Tags]  WoWChangeReport_0004
-    Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  8   6   Backlog
+    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  8   6   Backlog
 
 Verify The LOS Data For The Strategic Table On The WoW Change Report
     [Tags]  WoWChangeReport_0005
-    Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  9   7   LOS
+    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  9   7   LOS
 
 Verify The Prev Quarter Ship Data For The OEM East Table On The WoW Change Report
     [Tags]  WoWChangeReport_0006

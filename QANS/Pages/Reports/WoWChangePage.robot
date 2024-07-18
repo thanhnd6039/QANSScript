@@ -19,9 +19,10 @@ Write The Test Result Of WoW Change Report To Excel
     Save Excel Document    ${wowChangeReportResultFilePath}
     Close Current Excel Document
 
-Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Action DB Report
+Check Data For The Strategic Table
     [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}   ${posOfColOnWoWChangeReport}    ${posOfColOnSGWeeklyActionDBReport}     ${nameOfCol}
     ${result}   Set Variable    ${True}
+    ${totalData}    Set Variable    0
     
     File Should Exist    ${wowChangeReportFilePath}
     Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
@@ -34,6 +35,7 @@ Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Act
         Switch Current Excel Document    doc_id=WoWChangeReport
         ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
         ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+        ${totalData}    Evaluate    ${totalData}+${dataColOnWoWChangeReport}
         Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
         ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
         FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
@@ -50,42 +52,43 @@ Compare Data For The Strategic Table Between WoW Change Report And SG Weekly Act
         END
     END
 #   Verify the Total data
-    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${dataTotalOnSGWeeklyActionDBReport}  Set Variable    0
-    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
-        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
-             ${dataTotalOnSGWeeklyActionDBReport}     Evaluate    ${dataTotalOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
-        END
-    END
-    ${dataTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataTotalOnSGWeeklyActionDBReport}
+#    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+#    ${dataTotalOnSGWeeklyActionDBReport}  Set Variable    0
+#    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+#        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+#        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
+#        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+#             ${dataTotalOnSGWeeklyActionDBReport}     Evaluate    ${dataTotalOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
+#        END
+#    END
+#    ${dataTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataTotalOnSGWeeklyActionDBReport}
+    ${totalData}   Evaluate  "%.2f" % ${totalData}
     Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataTotalOnWoWchangeReport}   Read Excel Cell    row_num=7    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataTotalOnWoWchangeReport} != ${dataTotalOnSGWeeklyActionDBReport}
+    ${dataTotalOnWoWchangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
+    IF    ${dataTotalOnWoWchangeReport} != ${totalData}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${dataTotalOnWoWchangeReport}    ${dataTotalOnSGWeeklyActionDBReport}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${dataTotalOnWoWchangeReport}    ${totalData}
     END
  #  Verify the Others data
-    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${dataOthersOnSGWeeklyActionDBReport}  Set Variable    0
-    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-        ${oemGroupColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
-        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
-        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
-             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
-                  ${dataOthersOnSGWeeklyActionDBReport}     Evaluate    ${dataOthersOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
-             END
-        END
-    END
-    ${dataOthersOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataOthersOnSGWeeklyActionDBReport}
-    Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataOthersOnWoWChangeReport} != ${dataOthersOnSGWeeklyActionDBReport}
-         ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Others    ${dataOthersOnWoWChangeReport}    ${dataOthersOnSGWeeklyActionDBReport}
-    END
+#    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+#    ${dataOthersOnSGWeeklyActionDBReport}  Set Variable    0
+#    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+#        ${oemGroupColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+#        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+#        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
+#        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+#             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
+#                  ${dataOthersOnSGWeeklyActionDBReport}     Evaluate    ${dataOthersOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
+#             END
+#        END
+#    END
+#    ${dataOthersOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataOthersOnSGWeeklyActionDBReport}
+#    Switch Current Excel Document    doc_id=WoWChangeReport
+#    ${dataOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
+#    IF    ${dataOthersOnWoWChangeReport} != ${dataOthersOnSGWeeklyActionDBReport}
+#         ${result}     Set Variable    ${False}
+#         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Others    ${dataOthersOnWoWChangeReport}    ${dataOthersOnSGWeeklyActionDBReport}
+#    END
 
     IF    '${result}' == '${False}'
          Close All Excel Documents
