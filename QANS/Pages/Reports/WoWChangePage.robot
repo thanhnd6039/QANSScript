@@ -22,7 +22,7 @@ Write The Test Result Of WoW Change Report To Excel
 Check Data For The Strategic Table
     [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}   ${posOfColOnWoWChangeReport}    ${posOfColOnSGWeeklyActionDBReport}     ${nameOfCol}
     ${result}   Set Variable    ${True}
-    ${totalData}    Set Variable    0
+    ${totalDataOnSGWeeklyActionDBReport}    Set Variable    0
     
     File Should Exist    ${wowChangeReportFilePath}
     Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
@@ -35,7 +35,6 @@ Check Data For The Strategic Table
         Switch Current Excel Document    doc_id=WoWChangeReport
         ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
         ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
-        ${totalData}    Evaluate    ${totalData}+${dataColOnWoWChangeReport}
         Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
         ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
         FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
@@ -43,6 +42,7 @@ Check Data For The Strategic Table
             ${dataColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
             ${dataColOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataColOnSGWeeklyActionDBReport}
             IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
+                 ${totalDataOnSGWeeklyActionDBReport}    Evaluate    ${totalDataOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
                  IF    ${dataColOnWoWChangeReport} != ${dataColOnSGWeeklyActionDBReport}
                       ${result}     Set Variable    ${False}
                       Write The Test Result Of WoW Change Report To Excel    ${nameOfCol} for Strategic table    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${dataColOnSGWeeklyActionDBReport}
@@ -51,44 +51,14 @@ Check Data For The Strategic Table
             END
         END
     END
-#   Verify the Total data
-#    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-#    ${dataTotalOnSGWeeklyActionDBReport}  Set Variable    0
-#    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-#        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-#        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
-#        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
-#             ${dataTotalOnSGWeeklyActionDBReport}     Evaluate    ${dataTotalOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
-#        END
-#    END
-#    ${dataTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataTotalOnSGWeeklyActionDBReport}
-    ${totalData}   Evaluate  "%.2f" % ${totalData}
+
+    ${totalDataOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${totalDataOnSGWeeklyActionDBReport}
     Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataTotalOnWoWchangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataTotalOnWoWchangeReport} != ${totalData}
+    ${totalDataOnWoWchangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
+    IF    ${totalDataOnWoWchangeReport} != ${totalDataOnSGWeeklyActionDBReport}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${dataTotalOnWoWchangeReport}    ${totalData}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${totalDataOnWoWchangeReport}    ${totalDataOnSGWeeklyActionDBReport}
     END
- #  Verify the Others data
-#    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-#    ${dataOthersOnSGWeeklyActionDBReport}  Set Variable    0
-#    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-#        ${oemGroupColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
-#        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-#        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
-#        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
-#             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
-#                  ${dataOthersOnSGWeeklyActionDBReport}     Evaluate    ${dataOthersOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
-#             END
-#        END
-#    END
-#    ${dataOthersOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataOthersOnSGWeeklyActionDBReport}
-#    Switch Current Excel Document    doc_id=WoWChangeReport
-#    ${dataOthersOnWoWChangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
-#    IF    ${dataOthersOnWoWChangeReport} != ${dataOthersOnSGWeeklyActionDBReport}
-#         ${result}     Set Variable    ${False}
-#         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Others    ${dataOthersOnWoWChangeReport}    ${dataOthersOnSGWeeklyActionDBReport}
-#    END
 
     IF    '${result}' == '${False}'
          Close All Excel Documents
@@ -96,7 +66,7 @@ Check Data For The Strategic Table
     END
     Close All Excel Documents
 
-Compare Data For The OEM East Table Between WoW Change Report And SG Weekly Action DB Report
+Check Data For The OEM East Table
     [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}   ${posOfColOnWoWChangeReport}    ${posOfColOnSGWeeklyActionDBReport}     ${nameOfCol}
     ${result}   Set Variable    ${True}
 
@@ -107,7 +77,7 @@ Compare Data For The OEM East Table Between WoW Change Report And SG Weekly Acti
     Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
 
 #   Verify the data for each OEM Group
-    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    10    15
+    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    9    14
         Switch Current Excel Document    doc_id=WoWChangeReport
         ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
         ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
@@ -116,6 +86,9 @@ Compare Data For The OEM East Table Between WoW Change Report And SG Weekly Acti
         FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
             ${oemGroupColOnSGWeeklyActionDBReport}       Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
             ${dataColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
+            IF    '${dataColOnSGWeeklyActionDBReport}' == 'None'
+                 Continue For Loop
+            END
             ${dataColOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataColOnSGWeeklyActionDBReport}
             IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
                  IF    ${dataColOnWoWChangeReport} != ${dataColOnSGWeeklyActionDBReport}
@@ -128,40 +101,40 @@ Compare Data For The OEM East Table Between WoW Change Report And SG Weekly Acti
     END
 #   Verify the Total data
     Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${dataTotalOnSGWeeklyActionDBReport}  Set Variable    0
+    ${totalDataOnSGWeeklyActionDBReport}  Set Variable    0
     FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
         ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
         ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
         IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Chris Seitz' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Daniel Schmidt' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Eli Tiomkin' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Michael Pauser'
-             ${dataTotalOnSGWeeklyActionDBReport}     Evaluate    ${dataTotalOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
+             ${totalDataOnSGWeeklyActionDBReport}     Evaluate    ${totalDataOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
         END
     END
-    ${dataTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataTotalOnSGWeeklyActionDBReport}
+    ${totalDataOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${totalDataOnSGWeeklyActionDBReport}
     Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataTotalOnWoWchangeReport}   Read Excel Cell    row_num=16    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataTotalOnWoWchangeReport} != ${dataTotalOnSGWeeklyActionDBReport}
+    ${totalDataOnWoWchangeReport}   Read Excel Cell    row_num=15    col_num=${posOfColOnWoWChangeReport}
+    IF    ${totalDataOnWoWchangeReport} != ${totalDataOnSGWeeklyActionDBReport}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${dataTotalOnWoWchangeReport}    ${dataTotalOnSGWeeklyActionDBReport}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${totalDataOnWoWchangeReport}    ${totalDataOnSGWeeklyActionDBReport}
     END
  #  Verify the Others data
     Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${dataOthersOnSGWeeklyActionDBReport}  Set Variable    0
+    ${othersDataOnSGWeeklyActionDBReport}  Set Variable    0
     FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
         ${oemGroupColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
         ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
         ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
         IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Chris Seitz' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Daniel Schmidt' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Eli Tiomkin' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Michael Pauser'
              IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'ERICSSON WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'MELLANOX GROUP' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CURTISS WRIGHT GROUP' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'JUNIPER NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'KONTRON NORTH AMERICA'
-                  ${dataOthersOnSGWeeklyActionDBReport}     Evaluate    ${dataOthersOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
+                  ${othersDataOnSGWeeklyActionDBReport}     Evaluate    ${othersDataOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
              END
         END
     END
-    ${dataOthersOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataOthersOnSGWeeklyActionDBReport}
+    ${othersDataOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${othersDataOnSGWeeklyActionDBReport}
     Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataOthersOnWoWChangeReport}   Read Excel Cell    row_num=15    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataOthersOnWoWChangeReport} != ${dataOthersOnSGWeeklyActionDBReport}
+    ${othersDataOnWoWChangeReport}   Read Excel Cell    row_num=14    col_num=${posOfColOnWoWChangeReport}
+    IF    ${othersDataOnWoWChangeReport} != ${othersDataOnSGWeeklyActionDBReport}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Others    ${dataOthersOnWoWChangeReport}    ${dataOthersOnSGWeeklyActionDBReport}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Others    ${othersDataOnWoWChangeReport}    ${othersDataOnSGWeeklyActionDBReport}
     END
 
     IF    '${result}' == '${False}'
@@ -170,7 +143,7 @@ Compare Data For The OEM East Table Between WoW Change Report And SG Weekly Acti
     END
     Close All Excel Documents
 
-Compare Data For The OEM West Table Between WoW Change Report And SG Weekly Action DB Report
+Check Data For The OEM West Table
     [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}   ${posOfColOnWoWChangeReport}    ${posOfColOnSGWeeklyActionDBReport}     ${nameOfCol}
     ${result}   Set Variable    ${True}
 
@@ -181,7 +154,8 @@ Compare Data For The OEM West Table Between WoW Change Report And SG Weekly Acti
     Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
 
 #   Verify the data for each OEM Group
-    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    19    26
+    ${totalDataOnSGWeeklyActionDBReport}    Set Variable    0
+    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    18    26
         Switch Current Excel Document    doc_id=WoWChangeReport
         ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
         ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
@@ -192,6 +166,7 @@ Compare Data For The OEM West Table Between WoW Change Report And SG Weekly Acti
             ${dataColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
             ${dataColOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataColOnSGWeeklyActionDBReport}
             IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
+                 ${totalDataOnSGWeeklyActionDBReport}   Evaluate    ${totalDataOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
                  IF    ${dataColOnWoWChangeReport} != ${dataColOnSGWeeklyActionDBReport}
                       ${result}     Set Variable    ${False}
                       Write The Test Result Of WoW Change Report To Excel    ${nameOfCol} for OEM West Table    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${dataColOnSGWeeklyActionDBReport}
@@ -200,42 +175,50 @@ Compare Data For The OEM West Table Between WoW Change Report And SG Weekly Acti
             END
         END
     END
-#   Verify the Total data
-    Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${dataTotalOnSGWeeklyActionDBReport}  Set Variable    0
-    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
-        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Amy Duong' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Caden Douglas' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Michael Nilsson' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Tiger Wang' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Yoda Yasunobu'
-             ${dataTotalOnSGWeeklyActionDBReport}     Evaluate    ${dataTotalOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
-        END
-    END
-    ${dataTotalOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataTotalOnSGWeeklyActionDBReport}
-    Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataTotalOnWoWchangeReport}   Read Excel Cell    row_num=27    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataTotalOnWoWchangeReport} != ${dataTotalOnSGWeeklyActionDBReport}
-         ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Total    ${dataTotalOnWoWchangeReport}    ${dataTotalOnSGWeeklyActionDBReport}
-    END
+
  #  Verify the Others data
     Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-    ${dataOthersOnSGWeeklyActionDBReport}  Set Variable    0
+    ${othersDataOnSGWeeklyActionDBReport}                      Set Variable    0
+    ${othersDataForTheOEMWestTableOnSGWeeklyActionDBReport}    Set Variable    0
+    ${othersDataForTheStrategicTableOnSGWeeklyActionDBReport}  Set Variable    0
     FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
         ${oemGroupColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
         ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
-        ${dataColOnSGWeeklyActionDBReport}               Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
+        ${dataColOnSGWeeklyActionDBReport}              Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
         IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Amy Duong' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Caden Douglas' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Michael Nilsson' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Tiger Wang' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Yoda Yasunobu'
              IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'SCHWEITZER ENGINEERING LABORATORIES (SEL)' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PANASONIC AVIONICS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'RADISYS CORPORATION' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'TEKTRONIX' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'TELEDYNE CONTROLS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'NATIONAL INSTRUMENTS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARROW ELECTRONICS, INC.'
-                  ${dataOthersOnSGWeeklyActionDBReport}     Evaluate    ${dataOthersOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
+                  ${othersDataForTheOEMWestTableOnSGWeeklyActionDBReport}     Evaluate    ${othersDataForTheOEMWestTableOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
              END
         END
     END
-    ${dataOthersOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataOthersOnSGWeeklyActionDBReport}
+
+    FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
+        ${oemGroupColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
+        ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
+        ${dataColOnSGWeeklyActionDBReport}              Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
+        IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Cameron Sinclair' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Huan Tran' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Nicole Lau'
+             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'NOKIA/ALCATEL LUCENT WORLDWIDE' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PALO ALTO NETWORKS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARISTA' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'CIENA GROUP'
+                  ${othersDataForTheStrategicTableOnSGWeeklyActionDBReport}     Evaluate    ${othersDataForTheStrategicTableOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
+             END
+        END
+    END
+    ${othersDataOnSGWeeklyActionDBReport}   Evaluate    ${othersDataForTheOEMWestTableOnSGWeeklyActionDBReport}+${othersDataForTheStrategicTableOnSGWeeklyActionDBReport}
+    ${othersDataOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${othersDataOnSGWeeklyActionDBReport}
     Switch Current Excel Document    doc_id=WoWChangeReport
-    ${dataOthersOnWoWChangeReport}   Read Excel Cell    row_num=26    col_num=${posOfColOnWoWChangeReport}
-    IF    ${dataOthersOnWoWChangeReport} != ${dataOthersOnSGWeeklyActionDBReport}
+    ${othersDataOnWoWChangeReport}   Read Excel Cell    row_num=26    col_num=${posOfColOnWoWChangeReport}
+    IF    ${othersDataOnWoWChangeReport} != ${othersDataOnSGWeeklyActionDBReport}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Others    ${dataOthersOnWoWChangeReport}    ${dataOthersOnSGWeeklyActionDBReport}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Others    ${othersDataOnWoWChangeReport}    ${othersDataOnSGWeeklyActionDBReport}
+    END
+
+    #   Verify the Total data
+    ${totalDataOnSGWeeklyActionDBReport}    Evaluate    ${totalDataOnSGWeeklyActionDBReport}+${othersDataOnSGWeeklyActionDBReport}
+    ${totalDataOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${totalDataOnSGWeeklyActionDBReport}
+    Switch Current Excel Document    doc_id=WoWChangeReport
+    ${totalDataOnWoWchangeReport}   Read Excel Cell    row_num=27    col_num=${posOfColOnWoWChangeReport}
+    IF    ${totalDataOnWoWchangeReport} != ${totalDataOnSGWeeklyActionDBReport}
+         ${result}     Set Variable    ${False}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Total    ${totalDataOnWoWchangeReport}    ${totalDataOnSGWeeklyActionDBReport}
     END
 
     IF    '${result}' == '${False}'
@@ -244,7 +227,7 @@ Compare Data For The OEM West Table Between WoW Change Report And SG Weekly Acti
     END
     Close All Excel Documents
 
-Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change Report On VDC
+Check The LW Commit Or Comment Data
     [Arguments]     ${wowChangeReportFilePath}  ${wowChangeReportOnVDCFilePath}   ${posOfColOnWoWChangeReport}    ${nameOfCol}   ${table}
     ${result}   Set Variable    ${True}
 
@@ -255,12 +238,23 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
     Open Excel Document    ${wowChangeReportOnVDCFilePath}    doc_id=WoWChangeReportOnVDC
 
     IF    '${table}' == 'Strategic'
-         FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    8
+         FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    7
             Switch Current Excel Document    doc_id=WoWChangeReport
-            ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+            ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+            IF    '${nameOfCol}' == 'TW Commit'
+                 ${result}  Set Variable    ${False}
+                 IF    '${dataColOnWoWChangeReport}' != '${EMPTY}'
+                      IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      ELSE
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      END
+                 END
+                 Continue For Loop
+            END
             Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
-            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    2   8
+            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    2   7
                 ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
                 IF    '${nameOfCol}' == 'LW Commit'
                      ${posOfColOnWoWChangeReportOnVDC}   Evaluate    ${posOfColOnWoWChangeReport}+1
@@ -281,12 +275,8 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
                      END
 
                      IF   '${dataColOnWoWChangeReport}' != '${dataColOnWoWChangeReportOnVDC}'
-                         Log To Console    dataColOnWoWChangeReport: ${dataColOnWoWChangeReport}
-                         Log To Console    dataColOnWoWChangeReportOnVDC: ${dataColOnWoWChangeReportOnVDC}
                          ${result}  Set Variable    ${False}
-                         IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
-                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Others    ${dataColOnWoWChangeReport}    ${dataColOnWoWChangeReportOnVDC}
-                         ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+                         IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
                               Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${dataColOnWoWChangeReport}    ${dataColOnWoWChangeReportOnVDC}
                          ELSE
                               Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${dataColOnWoWChangeReportOnVDC}
@@ -299,12 +289,25 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
     END
 
     IF    '${table}' == 'OEM East'
-        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    10    17
+        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    9    16
             Switch Current Excel Document    doc_id=WoWChangeReport
-            ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+            ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+            IF    '${nameOfCol}' == 'TW Commit'
+                 ${result}  Set Variable    ${False}
+                 IF    '${dataColOnWoWChangeReport}' != '${EMPTY}'
+                      IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Others    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      ELSE
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      END
+                 END
+                 Continue For Loop
+            END
             Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
-            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    10   17
+            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    9   16
                 ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
                 IF    '${nameOfCol}' == 'LW Commit'
                      ${posOfColOnWoWChangeReportOnVDC}   Evaluate    ${posOfColOnWoWChangeReport}+1
@@ -342,12 +345,25 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
     END
 
     IF    '${table}' == 'OEM West'
-        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    19    28
+        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    18    28
             Switch Current Excel Document    doc_id=WoWChangeReport
-            ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+            ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+            IF    '${nameOfCol}' == 'TW Commit'
+                 ${result}  Set Variable    ${False}
+                 IF    '${dataColOnWoWChangeReport}' != '${EMPTY}'
+                      IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Others    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Total    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      ELSE
+                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${EMPTY}
+                      END
+                 END
+                 Continue For Loop
+            END
             Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
-            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    19   28
+            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    18   28
                 ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
                 IF    '${nameOfCol}' == 'LW Commit'
                      ${posOfColOnWoWChangeReportOnVDC}   Evaluate    ${posOfColOnWoWChangeReport}+1
@@ -390,7 +406,7 @@ Compare The LW Commit Or Comment Data Between WoW Change Report And WoW Change R
     END
     Close All Excel Documents
 
-Verify The WoW Data On WoW Change Report
+Check The WoW Data
     [Arguments]     ${wowChangeReportFilePath}  ${wowChangeReportOnVDCFilePath}     ${table}    ${posOfColOnWoWChangeReport}    ${nameOfCol}
 
     ${result}   Set Variable    ${True}
@@ -402,14 +418,14 @@ Verify The WoW Data On WoW Change Report
     Open Excel Document    ${wowChangeReportOnVDCFilePath}    doc_id=WoWChangeReportOnVDC
 
     IF    '${table}' == 'Strategic'
-        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    8
+        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    7
             Switch Current Excel Document    doc_id=WoWChangeReport
             ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${wowColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
             ${posOfDataColOnWoWChangeReport}   Evaluate    ${posOfColOnWoWChangeReport}-1
             ${dataColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfDataColOnWoWChangeReport}
             Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
-            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    2   8
+            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    2   7
                 ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
                 IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnWoWChangeReportOnVDC}'
                     ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfDataColOnWoWChangeReport}
@@ -418,9 +434,7 @@ Verify The WoW Data On WoW Change Report
                     ${wowData}   Evaluate  "%.2f" % ${wowData}
                     IF    '${wowColOnWoWChangeReport}' != '${wowData}'
                         ${result}  Set Variable    ${False}
-                         IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
-                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Others    ${wowColOnWoWChangeReport}    ${wowData}
-                         ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+                         IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
                               Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${wowColOnWoWChangeReport}    ${wowData}
                          ELSE
                               Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${wowColOnWoWChangeReport}    ${wowData}
@@ -433,14 +447,14 @@ Verify The WoW Data On WoW Change Report
     END
 
     IF    '${table}' == 'OEM East'
-        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    10    17
+        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    9    16
             Switch Current Excel Document    doc_id=WoWChangeReport
             ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${wowColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
             ${posOfDataColOnWoWChangeReport}   Evaluate    ${posOfColOnWoWChangeReport}-1
             ${dataColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfDataColOnWoWChangeReport}
             Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
-            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    10   17
+            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    9   16
                 ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
                 IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnWoWChangeReportOnVDC}'
                     ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfDataColOnWoWChangeReport}
@@ -464,14 +478,14 @@ Verify The WoW Data On WoW Change Report
     END
 
     IF    '${table}' == 'OEM West'
-        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    19    28
+        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    18    28
             Switch Current Excel Document    doc_id=WoWChangeReport
             ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${wowColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
             ${posOfDataColOnWoWChangeReport}   Evaluate    ${posOfColOnWoWChangeReport}-1
             ${dataColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfDataColOnWoWChangeReport}
             Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
-            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    19   28
+            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    18   28
                 ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
                 IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnWoWChangeReportOnVDC}'
                     ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfDataColOnWoWChangeReport}
@@ -499,6 +513,110 @@ Verify The WoW Data On WoW Change Report
          Fail   The ${nameOfCol} data for the ${table} table is wrong
     END
     Close All Excel Documents
+
+#Check The GAP Data
+#    [Arguments]     ${wowChangeReportFilePath}  ${table}    ${posOfColOnWoWChangeReport}    ${nameOfCol}
+#    ${result}   Set Variable    ${True}
+#
+#    File Should Exist    ${wowChangeReportFilePath}
+#    Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
+#
+#    IF    '${table}' == 'Strategic'
+#        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    7
+#            Switch Current Excel Document    doc_id=WoWChangeReport
+#            ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+#            ${gapColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+#
+#            ${dataColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfDataColOnWoWChangeReport}
+#            Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
+#            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    2   7
+#                ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
+#                IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnWoWChangeReportOnVDC}'
+#                    ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfDataColOnWoWChangeReport}
+#                    ${wowData}  Evaluate    ${dataColOnWoWChangeReport}-${dataColOnWoWChangeReportOnVDC}
+#                    ${wowColOnWoWChangeReport}   Evaluate  "%.2f" % ${wowColOnWoWChangeReport}
+#                    ${wowData}   Evaluate  "%.2f" % ${wowData}
+#                    IF    '${wowColOnWoWChangeReport}' != '${wowData}'
+#                        ${result}  Set Variable    ${False}
+#                         IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${wowColOnWoWChangeReport}    ${wowData}
+#                         ELSE
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${wowColOnWoWChangeReport}    ${wowData}
+#                         END
+#                    END
+#                    BREAK
+#                END
+#            END
+#        END
+#    END
+#
+#    IF    '${table}' == 'OEM East'
+#        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    9    16
+#            Switch Current Excel Document    doc_id=WoWChangeReport
+#            ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+#            ${wowColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+#            ${posOfDataColOnWoWChangeReport}   Evaluate    ${posOfColOnWoWChangeReport}-1
+#            ${dataColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfDataColOnWoWChangeReport}
+#            Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
+#            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    9   16
+#                ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
+#                IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnWoWChangeReportOnVDC}'
+#                    ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfDataColOnWoWChangeReport}
+#                    ${wowData}  Evaluate    ${dataColOnWoWChangeReport}-${dataColOnWoWChangeReportOnVDC}
+#                    ${wowColOnWoWChangeReport}   Evaluate  "%.2f" % ${wowColOnWoWChangeReport}
+#                    ${wowData}   Evaluate  "%.2f" % ${wowData}
+#                    IF    '${wowColOnWoWChangeReport}' != '${wowData}'
+#                        ${result}  Set Variable    ${False}
+#                         IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Others    ${wowColOnWoWChangeReport}    ${wowData}
+#                         ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${wowColOnWoWChangeReport}    ${wowData}
+#                         ELSE
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${wowColOnWoWChangeReport}    ${wowData}
+#                         END
+#                    END
+#                    BREAK
+#                END
+#            END
+#        END
+#    END
+#
+#    IF    '${table}' == 'OEM West'
+#        FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    18    28
+#            Switch Current Excel Document    doc_id=WoWChangeReport
+#            ${oemGroupColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
+#            ${wowColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
+#            ${posOfDataColOnWoWChangeReport}   Evaluate    ${posOfColOnWoWChangeReport}-1
+#            ${dataColOnWoWChangeReport}               Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfDataColOnWoWChangeReport}
+#            Switch Current Excel Document    doc_id=WoWChangeReportOnVDC
+#            FOR    ${rowIndexOnWoWChangeReportOnVDC}    IN RANGE    18   28
+#                ${oemGroupColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=1
+#                IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnWoWChangeReportOnVDC}'
+#                    ${dataColOnWoWChangeReportOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReportOnVDC}    col_num=${posOfDataColOnWoWChangeReport}
+#                    ${wowData}  Evaluate    ${dataColOnWoWChangeReport}-${dataColOnWoWChangeReportOnVDC}
+#                    ${wowColOnWoWChangeReport}   Evaluate  "%.2f" % ${wowColOnWoWChangeReport}
+#                    ${wowData}   Evaluate  "%.2f" % ${wowData}
+#                    IF    '${wowColOnWoWChangeReport}' != '${wowData}'
+#                        ${result}  Set Variable    ${False}
+#                         IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Others    ${wowColOnWoWChangeReport}    ${wowData}
+#                         ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Total    ${wowColOnWoWChangeReport}    ${wowData}
+#                         ELSE
+#                              Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChangeReport}    ${wowColOnWoWChangeReport}    ${wowData}
+#                         END
+#                    END
+#                    BREAK
+#                END
+#            END
+#        END
+#    END
+#
+#    IF    '${result}' == '${False}'
+#         Close All Excel Documents
+#         Fail   The ${nameOfCol} data for the ${table} table is wrong
+#    END
+#    Close All Excel Documents
 
 
 
