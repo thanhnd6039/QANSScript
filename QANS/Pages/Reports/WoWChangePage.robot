@@ -186,7 +186,7 @@ Check Data For The OEM West Table
         ${mainSalesRepColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
         ${dataColOnSGWeeklyActionDBReport}              Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
         IF    '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Amy Duong' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Caden Douglas' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Michael Nilsson' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Tiger Wang' or '${mainSalesRepColOnSGWeeklyActionDBReport}' == 'Yoda Yasunobu'
-             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'SCHWEITZER ENGINEERING LABORATORIES (SEL)' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PANASONIC AVIONICS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'RADISYS CORPORATION' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'TEKTRONIX' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'TELEDYNE CONTROLS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'NATIONAL INSTRUMENTS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARROW ELECTRONICS, INC.'
+             IF    '${oemGroupColOnSGWeeklyActionDBReport}' != 'SCHWEITZER ENGINEERING LABORATORIES (SEL)' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'PANASONIC AVIONICS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'RADISYS CORPORATION' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'TEKTRONIX' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'TELEDYNE CONTROLS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'NATIONAL INSTRUMENTS' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ARROW ELECTRONICS, INC.' and '${oemGroupColOnSGWeeklyActionDBReport}' != 'ASTRONICS CORPORATION'
                   ${othersDataForTheOEMWestTableOnSGWeeklyActionDBReport}     Evaluate    ${othersDataForTheOEMWestTableOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
              END
         END
@@ -243,8 +243,8 @@ Check The LW Commit Or Comment Data
             ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
             IF    '${nameOfCol}' == 'TW Commit'
-                 ${result}  Set Variable    ${False}
                  IF    '${dataColOnWoWChangeReport}' != '${EMPTY}'
+                      ${result}  Set Variable    ${False}
                       IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
                            Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${dataColOnWoWChangeReport}    ${EMPTY}
                       ELSE
@@ -294,8 +294,8 @@ Check The LW Commit Or Comment Data
             ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
             IF    '${nameOfCol}' == 'TW Commit'
-                 ${result}  Set Variable    ${False}
                  IF    '${dataColOnWoWChangeReport}' != '${EMPTY}'
+                      ${result}  Set Variable    ${False}
                       IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
                            Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Others    ${dataColOnWoWChangeReport}    ${EMPTY}
                       ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
@@ -350,8 +350,8 @@ Check The LW Commit Or Comment Data
             ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
             ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
             IF    '${nameOfCol}' == 'TW Commit'
-                 ${result}  Set Variable    ${False}
                  IF    '${dataColOnWoWChangeReport}' != '${EMPTY}'
+                      ${result}  Set Variable    ${False}
                       IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
                            Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Others    ${dataColOnWoWChangeReport}    ${EMPTY}
                       ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
