@@ -21,12 +21,12 @@ Verify the data of Current Quarter Budget column for the Strategic table
 Verfiy the data of LW Commit colmn for the Strategic table
     [Tags]  WoWChangeReport_0003
     [Documentation]     Verify the data of LW Commit column for the Strategic table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   Strategic
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   Strategic
 
 Verify the data of TW Commit column for the Strategic table
     [Tags]  WoWChangeReport_0004
     [Documentation]     Verify the data of TW Commit column for the Strategic table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   Strategic
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   Strategic
 
 Verify the data of Ships column for the Strategic table
     [Tags]  WoWChangeReport_0005
@@ -56,13 +56,12 @@ Verify the data of Wow(WoW of LOS column) column for the Strategic table
 Verify the data of GAP column for the Strategic table
     [Tags]  WoWChangeReport_0010
     [Documentation]     Verify the data of GAP(LOS - Commit) column for the Strategic table
-    Log To Console    To do
-#    Check The GAP Data   ${wowChangeReportFilePath}     Strategic   11   GAP
+    Check The GAP Data   ${wowChangeReportOnVDCFilePath}     ${sgWeeklyActionDBReportCurQFilePath}   ${wowChangeReportFilePath}    Strategic   11   GAP
 
 Verify the data of Comments column for the Strategic table
     [Tags]  WoWChangeReport_0011
     [Documentation]     Verify the data of Comments column for the Strategic table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   Strategic
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   Strategic
 
 Verify the data of Prev Quarter Ship column for the OEM East table
     [Tags]  WoWChangeReport_0012
@@ -77,12 +76,12 @@ Verify the data of Current Quarter Budget column for the OEM East table
 Verify the data of LW Commit column for the OEM East table
      [Tags]  WoWChangeReport_0014
      [Documentation]     Verify the data of LW Commit column for the OEM East table
-     Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   OEM East
+     Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   OEM East
 
 Verify the data of TW Commit column for the OEM East table
     [Tags]  WoWChangeReport_0015
     [Documentation]     Verify the data of TW Commit column for the OEM East table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   OEM East
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   OEM East
 
 Verify the data of Ships column for the OEM East table
     [Tags]  WoWChangeReport_0016
@@ -112,13 +111,12 @@ Verify the data of WoW(WoW of LOS column) column for the OEM East table
 Verify the data of GAP column for the OEM East table
      [Tags]  WoWChangeReport_0021
      [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM East table
-     Log To Console    To do
- #    Check The GAP Data   ${wowChangeReportFilePath}     OEM East   11   GAP
+     Check The GAP Data   ${wowChangeReportOnVDCFilePath}     ${sgWeeklyActionDBReportCurQFilePath}   ${wowChangeReportFilePath}    OEM East   11   GAP
 
 Veify the data of Comments column for the OEM East table
      [Tags]  WoWChangeReport_0022
      [Documentation]     Verify the data of Comments column for the OEM East table
-     Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   OEM East
+     Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   OEM East
 
 Verify the data of Prev Quarter Ship column for the OEM West table
     [Tags]  WoWChangeReport_0023
@@ -133,12 +131,12 @@ Verify the data of Current Quarter Budget column for the OEM West table
 Verify the data of LW Commit column for the OEM West table
     [Tags]  WoWChangeReport_0025
     [Documentation]     Verify the data of LW Commit column for the OEM East table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   OEM West
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   OEM West
 
 Verify the data of TW Commit column for the OEM West table
     [Tags]  WoWChangeReport_0026
     [Documentation]     Verify the data of TW Commit column for the OEM West table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   OEM West
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   OEM West
 
 Verify the data of Ships column for the OEM West table
     [Tags]  WoWChangeReport_0027
@@ -174,7 +172,7 @@ Verify the data of GAP column for the OEM West table
 Verify the data of Comments column for the OEM West table
     [Tags]  WoWChangeReport_0033
     [Documentation]     Verify the data of Comments column for the OEM West table
-    Check The LW Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   OEM West
+    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   OEM West
 
 
 
