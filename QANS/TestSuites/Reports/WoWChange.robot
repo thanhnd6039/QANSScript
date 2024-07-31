@@ -166,8 +166,7 @@ Verify the data of WoW(WoW of LOS column) column for the OEM West table
 Verify the data of GAP column for the OEM West table
      [Tags]  WoWChangeReport_0032
      [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM West table
-     Log To Console    To do
- #    Check The GAP Data   ${wowChangeReportFilePath}     OEM West   11   GAP
+     Check The GAP Data   ${wowChangeReportOnVDCFilePath}     ${sgWeeklyActionDBReportCurQFilePath}   ${wowChangeReportFilePath}    OEM West   11   GAP
 
 Verify the data of Comments column for the OEM West table
     [Tags]  WoWChangeReport_0033
