@@ -432,6 +432,9 @@ Check The WoW Data
                     ${wowData}  Evaluate    ${dataColOnWoWChangeReport}-${dataColOnWoWChangeReportOnVDC}
                     ${wowColOnWoWChangeReport}   Evaluate  "%.2f" % ${wowColOnWoWChangeReport}
                     ${wowData}   Evaluate  "%.2f" % ${wowData}
+                    IF    '${wowColOnWoWChangeReport}' == '-0.00'
+                         ${wowColOnWoWChangeReport}     Set Variable    0.00
+                    END
                     IF    '${wowColOnWoWChangeReport}' != '${wowData}'
                         ${result}  Set Variable    ${False}
                          IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
@@ -461,6 +464,9 @@ Check The WoW Data
                     ${wowData}  Evaluate    ${dataColOnWoWChangeReport}-${dataColOnWoWChangeReportOnVDC}
                     ${wowColOnWoWChangeReport}   Evaluate  "%.2f" % ${wowColOnWoWChangeReport}
                     ${wowData}   Evaluate  "%.2f" % ${wowData}
+                    IF    '${wowColOnWoWChangeReport}' == '-0.00'
+                         ${wowColOnWoWChangeReport}     Set Variable    0.00
+                    END
                     IF    '${wowColOnWoWChangeReport}' != '${wowData}'
                         ${result}  Set Variable    ${False}
                          IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
@@ -492,6 +498,9 @@ Check The WoW Data
                     ${wowData}  Evaluate    ${dataColOnWoWChangeReport}-${dataColOnWoWChangeReportOnVDC}
                     ${wowColOnWoWChangeReport}   Evaluate  "%.2f" % ${wowColOnWoWChangeReport}
                     ${wowData}   Evaluate  "%.2f" % ${wowData}
+                    IF    '${wowColOnWoWChangeReport}' == '-0.00'
+                         ${wowColOnWoWChangeReport}     Set Variable    0.00
+                    END
                     IF    '${wowColOnWoWChangeReport}' != '${wowData}'
                         ${result}  Set Variable    ${False}
                          IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
