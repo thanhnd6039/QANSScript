@@ -2,10 +2,10 @@
 Resource    ../../Pages/Reports/SGPage.robot
 
 *** Variables ***
-${SGNewServerFilePath}      C:\\RobotFramework\\Downloads\\Wow Change [Current Week].xlsx
-${SGOldServerFilePath}      C:\\RobotFramework\\Downloads\\Wow Change [Current Week].xlsx
+${sgReportFilePath}               C:\\RobotFramework\\Downloads\\Wow Change [Current Week].xlsx
+${ssRevenueCostDumpFilePath}      C:\\RobotFramework\\Downloads\\RevenueCostDump.xlsx
 
 *** Test Cases ***
-Validating data
-    Compare REV Data On SG Report Between Old Server And New Server     ${SGNewServerFilePath}   ${SGOldServerFilePath}     2024    1
+Verify REV for every quarter by OEM Group
+    Check data for every quarter by OEM Group     ${sgReportFilePath}   ${ssRevenueCostDumpFilePath}     2024    1   REV
 

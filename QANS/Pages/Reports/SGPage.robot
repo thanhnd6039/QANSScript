@@ -1,6 +1,7 @@
 *** Settings ***
+Resource    ../CommonPage.robot
 
 *** Keywords ***
-Compare REV Data On SG Report Between Old Server And New Server
-    [Arguments]     ${SGNewServerFilePath}   ${SGOldServerFilePath}     ${year}     ${quarter}
+Check data for every quarter by OEM Group
+    [Arguments]     ${sgReportFilePath}   ${ssRevenueCostDumpFilePath}     ${year}     ${quarter}   ${nameOfCol}
     Log To Console    test
