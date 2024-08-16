@@ -2,10 +2,10 @@
 Resource    ../../Pages/Reports/SGPage.robot
 
 *** Variables ***
-${sgReportFilePath}               C:\\RobotFramework\\Downloads\\Wow Change [Current Week].xlsx
-${ssRevenueCostDumpFilePath}      C:\\RobotFramework\\Downloads\\RevenueCostDump.xlsx
+${sgFilePath}         C:\\RobotFramework\\Downloads\\Sales Gap Report NS With SO Forecast v2.xlsx
+${ssRCDFilePath}      C:\\RobotFramework\\Downloads\\RevenueCostDump.xlsx
 
 *** Test Cases ***
 Verify REV for every quarter by OEM Group
-    Check data for every quarter by OEM Group     ${sgReportFilePath}   ${ssRevenueCostDumpFilePath}     2024    1   REV
+    Check Data REV For Every Quarter By OEM Group     ${sgFilePath}   ${ssRCDFilePath}     2018    1
 
