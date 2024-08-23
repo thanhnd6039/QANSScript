@@ -29,18 +29,17 @@ Check Data For Every Quarter By OEM Group
     FOR    ${oemGroupOnSSRCD}    IN    @{listOfOEMGroupOnSSRCD}
         ${hasOEMGroupOnSG}  Set Variable    ${False}
         ${valueOnSSRCD}    Get Value By OEM Group From SSRCD    ssRCDFilePath=${ssRCDFilePath}    year=${year}    quarter=${quarterOnSSRCD}    oemGroup=${oemGroupOnSSRCD}    valueType=REV
+        ${oemGroupOnSSRCD}  Convert To Upper Case    ${oemGroupOnSSRCD}
         FOR    ${oemGroupOnSG}    IN    @{listOfOEMGroupOnSG}
             IF    '${oemGroupOnSSRCD}' == '${oemGroupOnSG}'
                  ${valueOnSG}   Get Value By OEM Group From SG    sgFilePath=${sgFilePath}    year=${year}    quarter=${quarter}    oemGroup=${oemGroupOnSG}    valueType=REV
                  ${hasOEMGroupOnSG}     Set Variable    ${True}
-#                 ${valueOnSSRCD}   Evaluate  "%.0f" % ${valueOnSSRCD}
-                 ${valueOnSG}   Remove String    ${valueOnSG}   $   ,
+                 ${valueOnSG}   Remove String    ${valueOnSG}   $   ,                
                  ${valueOnSSRCD}    Convert To Integer    ${valueOnSSRCD}
-                 ${valueOnSG}       Convert To Integer    ${valueOnSG}
-                 Log To Console    valueOnSSRCD: ${valueOnSSRCD};valueOnSG: ${valueOnSG}
-                 IF    ${valueOnSSRCD} == ${valueOnSG}
-                      Log To Console    OK
-#                      Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSSRCD}    valueOnSGReport=${valueOnSG}    valueOnNS=${valueOnSSRCD}
+                 ${valueOnSG}       Convert To Integer    ${valueOnSG}      
+                 ${diff}    Evaluate    abs(${valueOnSSRCD}-${valueOnSG})
+                 IF    ${diff} > 3
+                      Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSSRCD}    valueOnSGReport=${valueOnSG}    valueOnNS=${valueOnSSRCD}
                  END
                  BREAK
             END            
@@ -50,19 +49,20 @@ Check Data For Every Quarter By OEM Group
         END
     END
 
-#    FOR    ${oemGroupOnSG}    IN    @{listOfOEMGroupOnSG}
-#        ${hasOEMGroupOnSSRCD}   Set Variable    ${False}
-#        FOR    ${oemGroupOnSSRCD}    IN    @{listOfOEMGroupOnSSRCD}
-#            IF    '${oemGroupOnSG}' == '${oemGroupOnSSRCD}'
-#                 ${hasOEMGroupOnSSRCD}  Set Variable    ${True}
-#                 BREAK
-#            END
-#        END
-#        IF    '${hasOEMGroupOnSSRCD}' == '${False}'
-#             ${valueOnSG}   Get Value By OEM Group From SG    sgFilePath=${sgFilePath}    year=${year}    quarter=${quarter}    oemGroup=${oemGroupOnSG}    valueType=REV
-#             Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSG}    valueOnSGReport=${valueOnSG}    valueOnNS=${EMPTY}
-#        END
-#    END
+    FOR    ${oemGroupOnSG}    IN    @{listOfOEMGroupOnSG}
+        ${hasOEMGroupOnSSRCD}   Set Variable    ${False}
+        FOR    ${oemGroupOnSSRCD}    IN    @{listOfOEMGroupOnSSRCD}
+            ${oemGroupOnSSRCD}  Convert To Upper Case    ${oemGroupOnSSRCD}
+            IF    '${oemGroupOnSG}' == '${oemGroupOnSSRCD}'
+                 ${hasOEMGroupOnSSRCD}  Set Variable    ${True}
+                 BREAK
+            END
+        END
+        IF    '${hasOEMGroupOnSSRCD}' == '${False}'
+             ${valueOnSG}   Get Value By OEM Group From SG    sgFilePath=${sgFilePath}    year=${year}    quarter=${quarter}    oemGroup=${oemGroupOnSG}    valueType=REV
+             Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSG}    valueOnSGReport=${valueOnSG}    valueOnNS=${EMPTY}
+        END
+    END
 
 Get Value By OEM Group From SG
     [Arguments]     ${sgFilePath}    ${year}     ${quarter}   ${oemGroup}    ${valueType}
@@ -102,15 +102,19 @@ Get Value By OEM Group From SSRCD
     ${numOfRowsOnSSRCD}     Get Number Of Rows In Excel    ${ssRCDFilePath}
 
     FOR    ${rowIndexOnSSRCD}    IN RANGE    2    ${numOfRowsOnSSRCD}+1
-        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
-        ${yearCol}          Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=17
-        ${quarterCol}       Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+        ${oemGroupCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
+        ${parentClassCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
+        ${yearCol}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=17
+        ${quarterCol}          Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+
         IF    '${valueType}' == 'REV'
              ${valCol}           Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=30            
         END
 
         IF    '${oemGroup}' == '${oemGroupCol}' and '${year}' == '${yearCol}' and '${quarter}' == '${quarterCol}'
-             ${value}   Evaluate    ${value}+${valCol}
+             IF    '${parentClassCol}' == 'COMPONENTS' or '${parentClassCol}' == 'MEM' or '${parentClassCol}' == 'STORAGE' or '${parentClassCol}' == 'NI ITEMS'
+                  ${value}   Evaluate    ${value}+${valCol}
+             END
         END
     END
 
