@@ -7,5 +7,5 @@ ${ssRCDFilePath}                            C:\\RobotFramework\\Downloads\\Reven
 
 *** Test Cases ***
 Verify REV for every quarter by OEM Group
-    Check Data For Every Quarter By OEM Group     ${sgFilePath}   ${ssRCDFilePath}     2024    3
+    Check Data For Every Quarter By OEM Group     ${sgFilePath}   ${ssRCDFilePath}     2024    3    AMOUNT   REV
 
