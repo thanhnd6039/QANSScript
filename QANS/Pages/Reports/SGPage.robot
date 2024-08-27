@@ -122,14 +122,42 @@ Get Value By OEM Group From SSRCD
 
     [Return]    ${value}
 
+Check Parameter Year
+    [Arguments]     ${year}
+    ${result}   Set Variable    ${True}
+
+    [Return]    ${result}
+
 Get List Of OEM Groups From SG
     [Arguments]     ${sgFilePath}    ${year}     ${quarter}     ${attribute}    ${valueType}
     @{listOfOEMGroup}   Create List
-    
-    File Should Exist    ${sgFilePath}
-    Open Excel Document    filename=${sgFilePath}    doc_id=SG
-    ${numOfRowsOnSG}     Get Number Of Rows In Excel    ${sgFilePath}
+
+    ${year}     Convert To Number    ${year}
+    ${year}     Convert To Integer    ${year}
     ${currentYear}  Get Current Year
+    IF    ${year} < 0         
+         Fail   The parameter year ${year} is invalid. It must be Integer number. Please contact with Admin!
+    END
+
+    ${minYear}  Set Variable    2018
+    ${maxYear}  Evaluate    ${currentYear}+1   
+    IF    ${year} < ${minYear} or ${year} > ${maxYear}
+         Fail   The parameter year ${year} is invalid. The range of parameter year is between ${minYear} and ${maxYear}. Please contact with Admin!
+    END
+
+    ${quarter}  Convert To Number    ${quarter}
+    ${quarter}  Convert To Integer    ${quarter}
+    IF    ${quarter} < 0        
+         Fail   The parameter quarter ${quarter} is invalid. It must be Interger number. Please contact with Admin!
+    END
+    IF    ${quarter} < 1 or ${quarter} > 4
+         Fail   The parameter quarter ${quarter} is invalid. The range of quarter is between 1 and 4. Please contact with Admin!
+    END
+
+#    File Should Exist    ${sgFilePath}
+#    Open Excel Document    filename=${sgFilePath}    doc_id=SG
+#    ${numOfRowsOnSG}     Get Number Of Rows In Excel    ${sgFilePath}
+#    ${currentYear}  Get Current Year
 
 #    ${searchStr}    Set Variable    ${year}.Q${quarter} R
 #    ${rowIndexForSearchStr}     Convert To Number    3
@@ -143,8 +171,8 @@ Get List Of OEM Groups From SG
 #             Append To List    ${listOfOEMGroup}    ${oemGRoupCol}
 #        END
 #    END
-    Close All Excel Documents
-    [Return]    ${listOfOEMGroup}
+#    Close All Excel Documents
+#    [Return]    ${listOfOEMGroup}
     
 Get List Of OEM Groups From SS RCD
     [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${attribute}
