@@ -386,7 +386,6 @@ Check The Commit Or Comment Data
                      IF    '${dataColOnWoWChangeReportOnVDC}' == 'None'
                           ${dataColOnWoWChangeReportOnVDC}  Set Variable    ${EMPTY}
                      END
-
                      IF   '${dataColOnWoWChangeReport}' != '${dataColOnWoWChangeReportOnVDC}'
                          Log To Console    dataColOnWoWChangeReport:${dataColOnWoWChangeReport};dataColOnWoWChangeReportOnVDC:${dataColOnWoWChangeReportOnVDC}
                          ${result}  Set Variable    ${False}
