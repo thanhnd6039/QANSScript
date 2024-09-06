@@ -164,6 +164,10 @@ Check Data For The OEM West Table
         FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
             ${oemGroupColOnSGWeeklyActionDBReport}       Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
             ${dataColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
+
+            IF    '${dataColOnSGWeeklyActionDBReport}' == 'None'
+                 ${dataColOnSGWeeklyActionDBReport}     Set Variable    0
+            END
             ${dataColOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataColOnSGWeeklyActionDBReport}
             IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
                  ${totalDataOnSGWeeklyActionDBReport}   Evaluate    ${totalDataOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
@@ -384,7 +388,7 @@ Check The Commit Or Comment Data
                      END
 
                      IF   '${dataColOnWoWChangeReport}' != '${dataColOnWoWChangeReportOnVDC}'
-
+                         Log To Console    dataColOnWoWChangeReport:${dataColOnWoWChangeReport};dataColOnWoWChangeReportOnVDC:${dataColOnWoWChangeReportOnVDC}
                          ${result}  Set Variable    ${False}
                          IF    '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
                               Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West Others    ${dataColOnWoWChangeReport}    ${dataColOnWoWChangeReportOnVDC}
@@ -547,7 +551,7 @@ Check The GAP Data
 
             ${losData}      Set Variable    0
             Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-            IF    '${oemGroupColOnWoWChangeReport}' != 'Total'
+            IF    '${oemGroupColOnWoWChangeReport}' != 'Total'                
                  FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
                      ${oemGroupColOnSGWeeklyActionDBReport}     Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
                      ${losColOnSGWeeklyActionDBReport}          Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=7
@@ -556,7 +560,7 @@ Check The GAP Data
                          BREAK
                      END
                  END
-            ELSE
+            ELSE               
                 FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
                     ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
                     ${mainSalesRepColOnSGWeeklyActionDBReport}  Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
@@ -579,6 +583,7 @@ Check The GAP Data
                     BREAK
                 END
             END
+            Log To Console    LOS:${losData};COMMIT:${commitData}
             ${gapDataByFormular}    Evaluate    ${losData}-${commitData}
             ${gapDataByFormular}   Evaluate  "%.2f" % ${gapDataByFormular}
 
