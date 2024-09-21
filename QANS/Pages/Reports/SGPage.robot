@@ -6,6 +6,39 @@ ${testResultOfSGReportByOEMGroupFilePath}   C:\\RobotFramework\\Results\\SGRepor
 ${testResultOfSGReportByPNFilePath}         C:\\RobotFramework\\Results\\SGReport\\SGReportResultByPN.xlsx
 
 *** Keywords ***
+Convert SS RCD To Pivot And Export To Excel
+    [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}
+
+    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
+    ${startRow}     Set Variable    2
+
+    ${quarter}  Set Variable    Q${quarter}-${year}
+    File Should Exist    ${ssRCDFilePath}
+    Open Excel Document    ${ssRCDFilePath}    doc_id=SSRCD
+    ${numOfRowsOnSSRCD}  Get Number Of Rows In Excel    ${ssRCDFilePath}
+
+    FOR    ${rowIndexOnSSRCD}    IN RANGE    ${startRow}    ${numOfRowsOnSSRCD}+1
+        ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
+        ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
+        ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=10
+        ${yearCol}                Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=17
+        ${quarterCol}                Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+        ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
+
+        ${sumREVQty}    Set Variable    0
+
+        IF    '${yearCol}' == '${year}' and '${quarterCol}' == '${quarter}'
+             IF    '${parentClassCol}' in ${listParentClass}
+                  FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
+                       ${sumREVQty}
+                  END
+            END
+        END
+
+
+    END   
+    Close All Excel Documents
+
 Write The Test Result Of SG Report By OEM Group To Excel
     [Arguments]     ${oemGroup}     ${valueOnSGReport}   ${valueOnNS}
     File Should Exist    ${testResultOfSGReportByOEMGroupFilePath}
