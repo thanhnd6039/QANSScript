@@ -673,7 +673,7 @@ Check The GAP Data
             ${gapColOnWoWChangeReport}   Evaluate  "%.2f" % ${gapColOnWoWChangeReport}
 
             ${losData}      Set Variable    0
-            Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
+            Switch Current Excel Document    doc_id=SGWeeklyActionDBReport           
             IF  '${oemGroupColOnWoWChangeReport}' == 'OTHERS'
                  FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
                      ${oemGroupColOnSGWeeklyActionDBReport}        Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
@@ -691,7 +691,7 @@ Check The GAP Data
                      END
 
                  END
-            ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'
+            ELSE IF  '${oemGroupColOnWoWChangeReport}' == 'Total'                
                 FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
                     ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
                     ${mainSalesRepColOnSGWeeklyActionDBReport}  Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=2
@@ -707,6 +707,7 @@ Check The GAP Data
                           ${losData}   Evaluate    ${losData}+${losColOnSGWeeklyActionDBReport}
                     END
                 END
+                
             ELSE
                 FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
                      ${oemGroupColOnSGWeeklyActionDBReport}     Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
@@ -729,6 +730,7 @@ Check The GAP Data
                     BREAK
                 END
             END
+
             ${gapDataByFormular}    Evaluate    ${losData}-${commitData}
             ${gapDataByFormular}   Evaluate  "%.2f" % ${gapDataByFormular}
 
