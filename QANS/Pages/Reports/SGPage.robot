@@ -21,23 +21,24 @@ Convert SS RCD To Pivot And Export To Excel
         ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
         ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
         ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=10
-        ${yearCol}                Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=17
         ${quarterCol}                Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
         ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
 
         ${sumREVQty}    Set Variable    0
-
-        IF    '${yearCol}' == '${year}' and '${quarterCol}' == '${quarter}'
-             IF    '${parentClassCol}' in ${listParentClass}
-                  FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
-                       ${sumREVQty}
-                  END
+        IF    '${parentClassCol}' in ${listParentClass}
+            IF   '${quarterCol}' == '${quarter}'
+                FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
+                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
+                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=10
+                      ${quarterColTemp}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+                      ${sumREVQty}
+                END
             END
         END
 
-
-    END   
+    END
     Close All Excel Documents
+
 
 Write The Test Result Of SG Report By OEM Group To Excel
     [Arguments]     ${oemGroup}     ${valueOnSGReport}   ${valueOnNS}
