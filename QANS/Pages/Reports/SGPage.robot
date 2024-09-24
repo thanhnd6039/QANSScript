@@ -7,7 +7,7 @@ ${testResultOfSGReportByPNFilePath}         C:\\RobotFramework\\Results\\SGRepor
 
 *** Keywords ***
 Convert SS RCD To Pivot And Export To Excel
-    [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}
+    [Arguments]     ${ssRCDFilePath}    ${ssRCDForPivotFilePath}    ${year}     ${quarter}
 
     @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
     ${startRow}     Set Variable    2
@@ -16,25 +16,34 @@ Convert SS RCD To Pivot And Export To Excel
     File Should Exist    ${ssRCDFilePath}
     Open Excel Document    ${ssRCDFilePath}    doc_id=SSRCD
     ${numOfRowsOnSSRCD}  Get Number Of Rows In Excel    ${ssRCDFilePath}
-
+#    File Should Exist    ${ssRCDForPivotFilePath}
+#    Open Excel Document    ${ssRCDForPivotFilePath}    doc_id=SSRCDForPivot
+#
+#    Switch Current Excel Document    doc_id=SSRCD
     FOR    ${rowIndexOnSSRCD}    IN RANGE    ${startRow}    ${numOfRowsOnSSRCD}+1
         ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
         ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-        ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=10
-        ${quarterCol}                Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+        ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=11
+        ${quarterCol}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
         ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
 
-        ${sumREVQty}    Set Variable    0
+        ${sumREVQty}    Set Variable    ${revQtyCol}
         IF    '${parentClassCol}' in ${listParentClass}
             IF   '${quarterCol}' == '${quarter}'
+                Log To Console    quarter:${quarterCol}
                 FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
-                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
-                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=10
-                      ${quarterColTemp}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
-                      ${sumREVQty}
+                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexTemp}    col_num=2
+                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}    col_num=11
+                      ${revQtyColTemp}              Read Excel Cell    row_num=${rowIndexTemp}    col_num=29
+                      IF    '${oemGroupColTemp}' == '${oemGroupCol}' and '${pnColTemp}' == '${pnCol}'
+                           ${sumREVQty}     Evaluate    ${sumREVQty}+${revQtyColTemp}
+                      END
                 END
             END
+        ELSE
+           Continue For Loop
         END
+        Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY:${sumREVQty}
 
     END
     Close All Excel Documents
