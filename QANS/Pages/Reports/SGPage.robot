@@ -24,26 +24,26 @@ Convert SS RCD To Pivot And Export To Excel
         ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
         ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
         ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=11
-        ${quarterCol}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
         ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
 
         ${sumREVQty}    Set Variable    ${revQtyCol}
+        Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY11:${sumREVQty}
         IF    '${parentClassCol}' in ${listParentClass}
-            IF   '${quarterCol}' == '${quarter}'
-                Log To Console    quarter:${quarterCol}
-                FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
-                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexTemp}    col_num=2
-                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}    col_num=11
-                      ${revQtyColTemp}              Read Excel Cell    row_num=${rowIndexTemp}    col_num=29
-                      IF    '${oemGroupColTemp}' == '${oemGroupCol}' and '${pnColTemp}' == '${pnCol}'
+            FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
+                      ${idTemp}                     Read Excel Cell    row_num=${rowIndexTemp}       col_num=1
+                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexTemp}       col_num=2
+                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}       col_num=11
+                      ${quarterColTemp}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+                      ${revQtyColTemp}              Read Excel Cell    row_num=${rowIndexTemp}       col_num=29
+                      IF    '${oemGroupColTemp}' == '${oemGroupCol}' and '${pnColTemp}' == '${pnCol}' and '${quarterColTemp}' == '${quarter}'
+                           Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY:${revQtyColTemp}; Quarter:${quarter};quarterColTemp: ${quarterColTemp}; ID:${idTemp}
                            ${sumREVQty}     Evaluate    ${sumREVQty}+${revQtyColTemp}
                       END
-                END
             END
         ELSE
            Continue For Loop
         END
-        Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY:${sumREVQty}
+#        Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY:${sumREVQty}
 
     END
     Close All Excel Documents
