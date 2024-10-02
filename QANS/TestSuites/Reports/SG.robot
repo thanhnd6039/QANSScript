@@ -8,8 +8,12 @@ ${ssRCDForPivotFilePath}                    C:\\RobotFramework\\Downloads\\Reven
 
 
 *** Test Cases ***
-Testcase1
-    Convert SS RCD To Pivot And Export To Excel    ssRCDFilePath=${ssRCDFilePath}   ssRCDForPivotFilePath=${ssRCDForPivotFilePath}   year=2024    quarter=1
+Verify REV QTY for every quarter by OEM Group
+    ${listOfOEMGroupFromSSRCD}     Get List Of OEM Groups From SS RCD    ssRCDFilePath=${ssRCDFilePath}    year=2024    quarter=1    attribute=REVQTY
+    FOR    ${oemGroupFromSSRCD}    IN    @{listOfOEMGroupFromSSRCD}
+
+    END
+
 
 #Verify REV for every quarter by OEM Group
 #    Check Data For Every Quarter By OEM Group     ${sgFilePath}   ${ssRCDFilePath}     2024    3    AMOUNT   REV

@@ -25,55 +25,61 @@ Write Data To SS RCD For Pivot
 Convert SS RCD To Pivot And Export To Excel
     [Arguments]     ${ssRCDFilePath}    ${ssRCDForPivotFilePath}    ${year}     ${quarter}
 
-    &{dict}     Create Dictionary
-    @{list}     Create List
-    Set To Dictionary    ${dict}    oemGroup=OEM1     pn=pn1
-    Append To List    ${list}   ${dict}
-    Set To Dictionary    ${dict}    oemGroup=OEM2     pn=pn2
-    Append To List    ${list}   ${dict}
-    FOR    ${element}    IN    @{list}
-        Log To Console    data:${element}
-         
+    @{table}    Create List
+    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
+    ${startRow}     Set Variable    2
+
+    ${quarter}  Set Variable    Q${quarter}-${year}
+    File Should Exist    ${ssRCDFilePath}
+    Open Excel Document    ${ssRCDFilePath}    doc_id=SSRCD
+    ${numOfRowsOnSSRCD}  Get Number Of Rows In Excel    ${ssRCDFilePath}
+
+    FOR    ${rowIndexOnSSRCD}    IN RANGE    ${startRow}    ${numOfRowsOnSSRCD}+1
+        ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
+        ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
+        ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=11
+        ${quarterCol}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
+        ${tranIdCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=24
+        ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
+
+
+        ${sumREVQty}    Set Variable    ${revQtyCol}
+        
+        IF    '${parentClassCol}' in ${listParentClass} and '${quarterCol}' == '${quarter}'
+            ${isDataInTable}    Set Variable    ${False}
+            FOR    ${rowOnTable}    IN    @{table}
+                IF    '${rowOnTable}[0]' == '${oemGroupCol}' and '${rowOnTable}[1]' == '${pnCol}'
+                     ${isDataInTable}   Set Variable    ${True}
+                     BREAK
+                END
+            END
+            IF    '${isDataInTable}' == '${True}'
+                 Continue For Loop
+            END
+            FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
+                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexTemp}       col_num=2
+                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}       col_num=11
+                      ${quarterColTemp}             Read Excel Cell    row_num=${rowIndexTemp}       col_num=18
+                      ${revQtyColTemp}              Read Excel Cell    row_num=${rowIndexTemp}       col_num=29
+
+                      IF    '${oemGroupColTemp}' == '${oemGroupCol}' and '${pnColTemp}' == '${pnCol}' and '${quarterColTemp}' == '${quarter}'
+                           ${sumREVQty}     Evaluate    ${sumREVQty}+${revQtyColTemp}
+                      END
+            END
+        ELSE
+           Continue For Loop
+        END
+        Log To Console    Row:${rowIndexOnSSRCD}
+        ${rowOnTable}   Create List
+        ...             ${oemGroupCol}
+        ...             ${pnCol}
+        ...             ${tranIdCol}
+        ...             ${sumREVQty}
+        Append To List    ${table}  ${rowOnTable}
     END
-#    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
-#    ${startRow}     Set Variable    2
-#
-#    ${quarter}  Set Variable    Q${quarter}-${year}
-#    File Should Exist    ${ssRCDFilePath}
-#    Open Excel Document    ${ssRCDFilePath}    doc_id=SSRCD
-#    ${numOfRowsOnSSRCD}  Get Number Of Rows In Excel    ${ssRCDFilePath}
-#    File Should Exist    ${ssRCDForPivotFilePath}
-#    Open Excel Document    ${ssRCDForPivotFilePath}    doc_id=SSRCDForPivot
-#
-#    Switch Current Excel Document    doc_id=SSRCD
-#    FOR    ${rowIndexOnSSRCD}    IN RANGE    ${startRow}    ${numOfRowsOnSSRCD}+1
-#        ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
-#        ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-#        ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=11
-#        ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
-#
-#        ${sumREVQty}    Set Variable    ${revQtyCol}
-#        IF    '${parentClassCol}' in ${listParentClass}
-#            FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
-#                      ${idColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}       col_num=1
-#                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexTemp}       col_num=2
-#                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}       col_num=11
-#                      ${quarterColTemp}             Read Excel Cell    row_num=${rowIndexTemp}       col_num=18
-#                      ${revQtyColTemp}              Read Excel Cell    row_num=${rowIndexTemp}       col_num=29
-##                      Log To Console    Row:${rowIndexTemp}; Id:${idColTemp}; Quarter:${quarterColTemp}; REVQTY:${revQtyColTemp}
-#                      IF    '${oemGroupColTemp}' == '${oemGroupCol}' and '${pnColTemp}' == '${pnCol}' and '${quarterColTemp}' == '${quarter}'
-##                           Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY:${revQtyColTemp}; Quarter:${quarter};quarterColTemp: ${quarterColTemp}; ID:${idTemp}
-#                           ${sumREVQty}     Evaluate    ${sumREVQty}+${revQtyColTemp}
-#                      END
-#            END
-#        ELSE
-#           Continue For Loop
-#        END
-#        Log To Console    OEM:${oemGroupCol};PN:${pnCol};REVQTY:${sumREVQty}
-#        Write Data To SS RCD For Pivot    ssRCDForPivotFilePath=${ssRCDForPivotFilePath}    quarter=${quarter}    oemGroup=${oemGroupCol}    pn=${pnCol}    tranID=    $revQty
-#
-#    END
-#    Close All Excel Documents
+    Close All Excel Documents
+
+    [Return]  ${table}
 
 
 Write The Test Result Of SG Report By OEM Group To Excel
@@ -163,8 +169,8 @@ Get Value By OEM Group From SG
 
     [Return]    ${value}
 
-Get Value By OEM Group From SSRCD
-    [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${oemGroup}    ${valueType}
+Get Value By OEM Group From SS RCD
+    [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${oemGroup}    ${attribute}
     ${value}    Set Variable    0
 
     File Should Exist    ${ssRCDFilePath}
@@ -247,6 +253,7 @@ Get List Of OEM Groups From SG
 Get List Of OEM Groups From SS RCD
     [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${attribute}
     @{listOfOEMGroup}   Create List
+    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
 
     ${quarter}  Set Variable    Q${quarter}-${year}
     File Should Exist    ${ssRCDFilePath}
@@ -254,21 +261,22 @@ Get List Of OEM Groups From SS RCD
     ${numOfRowsOnSSRCD}     Get Number Of Rows In Excel    ${ssRCDFilePath}
 
     FOR    ${rowIndexOnSSRCD}    IN RANGE    2    ${numOfRowsOnSSRCD}+1
-        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
         ${parrentClassCol}  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-        ${yearCol}          Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=17
         ${quarterCol}       Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
-        IF    '${attribute}' == 'AMOUNT'
-             ${attributeCol}     Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=30
-        ELSE IF  '${attribute}' == 'QTY'
-             ${attributeCol}     Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
+        IF    '${parrentClassCol}' in ${listParentClass} and '${quarterCol}' == '${quarter}'
+             IF    '${attribute}' == 'REVQTY'
+                  ${attributeCol}     Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
+             ELSE IF     '${attribute}' == 'REVAMOUNT'
+                  ${attributeCol}     Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=30
+             ELSE
+                Fail    The value of attribute parameter ${attribute} is invalid. Please contact with Admin!
+             END
+             IF    '${attributeCol}' != '0'
+                  ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
+                  Append To List    ${listOfOEMGroup}   ${oemGroupCol}
+             END
         END
-
-        IF    '${year}' == '${yearCol}' and '${quarter}' == '${quarterCol}' and '${attributeCol}' != '0'
-            IF    '${parrentClassCol}' == 'COMPONENTS' or '${parrentClassCol}' == 'MEM' or '${parrentClassCol}' == 'STORAGE' or '${parrentClassCol}' == 'NI ITEMS'
-                 Append To List    ${listOfOEMGroup}     ${oemGroupCol} 
-            END                      
-        END
+               
     END
     ${listOfOEMGroup}     Remove Duplicates    ${listOfOEMGroup}
     Close All Excel Documents
