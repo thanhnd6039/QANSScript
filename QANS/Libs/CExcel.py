@@ -32,7 +32,7 @@ class CExcel(object):
         # logger.console("valueOfCell: {0}".format(valueOfCell))
         for colIndex in range(1, numOfCols+1):
             valueOfCell = sheet.cell(row=rowIndex, column=colIndex).value
-            if valueOfCell == searchStr:
+            if searchStr in valueOfCell:
                 posOfColumn = colIndex
                 break
         return posOfColumn

@@ -140,28 +140,28 @@ Check Data For Every Quarter By OEM Group
 #        END
 #    END
 
-Get Value By OEM Group From SG
-    [Arguments]     ${sgFilePath}    ${year}     ${quarter}   ${oemGroup}    ${valueType}
+Get Value By OEM Group From Flat SG
+    [Arguments]     ${flatSGFilePath}    ${year}     ${quarter}   ${oemGroup}    ${attribute}
     ${value}    Set Variable    0
 
-    File Should Exist    ${sgFilePath}
-    Open Excel Document    filename=${sgFilePath}    doc_id=SG
-    ${numOfRowsOnSG}     Get Number Of Rows In Excel    ${sgFilePath}
+    File Should Exist    ${flatSGFilePath}
+    Open Excel Document    filename=${flatSGFilePath}    doc_id=FlatSG
+    ${numOfRowsOnFlatSG}     Get Number Of Rows In Excel    ${flatSGFilePath}
 
-    IF    '${valueType}' == 'REV'
-         ${searchStr}    Set Variable    ${year}.Q${quarter} R
+    IF    '${attribute}' == 'REVQTY'
+         ${searchStr}    Set Variable    ${year}.Q${quarter} QTY
     END
-    ${rowIndexForSearchStr}     Convert To Number    3
-    ${posOfCol}  Get Position Of Column    ${sgFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-    IF    '${valueType}' == 'REV'
-         ${posOfCol}  Evaluate    ${posOfCol}+2
-    END
+
+    ${rowIndexForSearchStr}     Convert To Number    4
+    ${posOfCol}  Get Position Of Column    ${flatSGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
     
-    FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
-        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
-        ${valCol}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfCol}
-        IF    '${oemGroup}' == '${oemGroupCol}'
-             ${value}   Set Variable    ${valCol}
+    FOR    ${rowIndexOnFlatSG}    IN RANGE    5    ${numOfRowsOnFlatSG}+1
+        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnFlatSG}    col_num=1
+        ${valCol}           Read Excel Cell    row_num=${rowIndexOnFlatSG}    col_num=${posOfCol}
+#        Log To Console    OEM Group: ${oemGroupCol}; Value:${valCol}
+
+        IF    '${oemGroupCol}' == '${oemGroup}'
+             ${value}   Evaluate    ${value}+${valCol}
         END
     END
 
@@ -172,28 +172,28 @@ Get Value By OEM Group From SG
 Get Value By OEM Group From SS RCD
     [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${oemGroup}    ${attribute}
     ${value}    Set Variable    0
+    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
+    ${quarter}  Set Variable    Q${quarter}-${year}
 
     File Should Exist    ${ssRCDFilePath}
     Open Excel Document    filename=${ssRCDFilePath}    doc_id=SSRCD
     ${numOfRowsOnSSRCD}     Get Number Of Rows In Excel    ${ssRCDFilePath}
 
     FOR    ${rowIndexOnSSRCD}    IN RANGE    2    ${numOfRowsOnSSRCD}+1
-        ${oemGroupCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
         ${parentClassCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-        ${yearCol}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=17
         ${quarterCol}          Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
-
-        IF    '${valueType}' == 'REV'
-             ${valCol}           Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=30            
-        END
-
-        IF    '${oemGroup}' == '${oemGroupCol}' and '${year}' == '${yearCol}' and '${quarter}' == '${quarterCol}'
-             IF    '${parentClassCol}' == 'COMPONENTS' or '${parentClassCol}' == 'MEM' or '${parentClassCol}' == 'STORAGE' or '${parentClassCol}' == 'NI ITEMS'
+        IF    '${parentClassCol}' in ${listParentClass} and '${quarterCol}' == '${quarter}'
+             ${oemGroupCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
+             IF    '${attribute}' == 'REVQTY'
+                  ${valCol}           Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
+             ELSE
+                  Fail    The value of attribute parameter ${attribute} is invalid. Please contact with Admin!
+             END
+             IF    '${oemGroupCol}' == '${oemGroup}'
                   ${value}   Evaluate    ${value}+${valCol}
              END
         END
     END
-
     Close All Excel Documents
 
     [Return]    ${value}
