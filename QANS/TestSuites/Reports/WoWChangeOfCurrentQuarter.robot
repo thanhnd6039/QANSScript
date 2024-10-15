@@ -52,7 +52,7 @@ Verify GAP for the OEM East table
      [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM East table
      Check The GAP Data   wowChangeOnVDCFilePath=${wowChangeOnVDCFilePath}     sgWeeklyActionDBFilePath=${sgWeeklyActionDBCurQFilePath}   wowChangeFilePath=${wowChangeFilePath}    table=OEM East   posOfColOnWoWChange=11   nameOfCol=GAP
 
-Veify the data of Comments column for the OEM East table
+Veify Comments for the OEM East table
      [Tags]  WoWChange_0011
      [Documentation]     Verify the data of Comments column for the OEM East table
      Check The Commit Or Comment Data   wowChangeFilePath=${wowChangeFilePath}     wowChangeOnVDCFilePath=${wowChangeOnVDCFilePath}   posOfColOnWoWChange=12   nameOfCol=Comments   table=OEM East
