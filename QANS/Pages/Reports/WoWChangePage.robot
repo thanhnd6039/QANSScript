@@ -23,53 +23,6 @@ Write The Test Result Of WoW Change Report To Excel
     Save Excel Document    ${wowChangeResultFilePath}
     Close Current Excel Document
 
-#Check Data For The Strategic Table
-#    [Arguments]     ${wowChangeReportFilePath}  ${sgWeeklyActionDBReportFilePath}   ${posOfColOnWoWChangeReport}    ${posOfColOnSGWeeklyActionDBReport}     ${nameOfCol}
-#    ${result}   Set Variable    ${True}
-#    ${totalDataOnSGWeeklyActionDBReport}    Set Variable    0
-#
-#    File Should Exist    ${wowChangeReportFilePath}
-#    Open Excel Document    ${wowChangeReportFilePath}    doc_id=WoWChangeReport
-#
-#    File Should Exist    ${sgWeeklyActionDBReportFilePath}
-#    Open Excel Document    ${sgWeeklyActionDBReportFilePath}    doc_id=SGWeeklyActionDBReport
-#
-##   Verify the data for each OEM Group
-#    FOR    ${rowIndexOnWoWChangeReport}    IN RANGE    2    6
-#        Switch Current Excel Document    doc_id=WoWChangeReport
-#        ${oemGroupColOnWoWChangeReport}      Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=1
-#        ${dataColOnWoWChangeReport}          Read Excel Cell    row_num=${rowIndexOnWoWChangeReport}    col_num=${posOfColOnWoWChangeReport}
-#        Switch Current Excel Document    doc_id=SGWeeklyActionDBReport
-#        ${numOfRowsOnSGWeeklyActionDBReport}    Get Number Of Rows In Excel    ${sgWeeklyActionDBReportFilePath}
-#        FOR    ${rowIndexOnSGWeeklyActionDBReport}    IN RANGE    4    ${numOfRowsOnSGWeeklyActionDBReport}+1
-#            ${oemGroupColOnSGWeeklyActionDBReport}      Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=1
-#            ${dataColOnSGWeeklyActionDBReport}           Read Excel Cell    row_num=${rowIndexOnSGWeeklyActionDBReport}    col_num=${posOfColOnSGWeeklyActionDBReport}
-#            ${dataColOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${dataColOnSGWeeklyActionDBReport}
-#            IF    '${oemGroupColOnWoWChangeReport}' == '${oemGroupColOnSGWeeklyActionDBReport}'
-#                 ${totalDataOnSGWeeklyActionDBReport}    Evaluate    ${totalDataOnSGWeeklyActionDBReport}+${dataColOnSGWeeklyActionDBReport}
-#                 IF    ${dataColOnWoWChangeReport} != ${dataColOnSGWeeklyActionDBReport}
-#                      ${result}     Set Variable    ${False}
-#                      Write The Test Result Of WoW Change Report To Excel    ${nameOfCol} for Strategic table    ${oemGroupColOnWoWChangeReport}    ${dataColOnWoWChangeReport}    ${dataColOnSGWeeklyActionDBReport}
-#                 END
-#                 BREAK
-#            END
-#        END
-#    END
-#
-#    ${totalDataOnSGWeeklyActionDBReport}   Evaluate  "%.2f" % ${totalDataOnSGWeeklyActionDBReport}
-#    Switch Current Excel Document    doc_id=WoWChangeReport
-#    ${totalDataOnWoWchangeReport}   Read Excel Cell    row_num=6    col_num=${posOfColOnWoWChangeReport}
-#    IF    ${totalDataOnWoWchangeReport} != ${totalDataOnSGWeeklyActionDBReport}
-#         ${result}     Set Variable    ${False}
-#         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    Strategic Total    ${totalDataOnWoWchangeReport}    ${totalDataOnSGWeeklyActionDBReport}
-#    END
-#
-#    IF    '${result}' == '${False}'
-#         Close All Excel Documents
-#         Fail   The ${nameOfCol} data between the WoW Change Report and SG Weekly Action Report is different
-#    END
-#    Close All Excel Documents
-
 Get List Of Sales Member In OEM East Table
     @{listOfSalesMember}    Create List
     Append To List    ${listOfSalesMember}      Chris Seitz
@@ -380,7 +333,7 @@ Check The Commit Or Comment Data
                    Close All Excel Documents
                    Fail  The name of column ${nameOfCol} is invalid
                 END
-
+                Log To Console    OEM:${oemGroupColOnWoWChange}; Target:${dataColOnWoWChange}; Source:${dataColOnWoWChangeOnVDC}
                 IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnWoWChangeOnVDC}'
                      IF    '${dataColOnWoWChange}' == 'None'
                           ${dataColOnWoWChange}  Set Variable    ${EMPTY}
@@ -388,7 +341,9 @@ Check The Commit Or Comment Data
                      IF    '${dataColOnWoWChangeOnVDC}' == 'None'
                           ${dataColOnWoWChangeOnVDC}  Set Variable    ${EMPTY}
                      END
+
                      IF   '${dataColOnWoWChange}' != '${dataColOnWoWChangeOnVDC}'
+                         
                          ${result}  Set Variable    ${False}
                          IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
                               Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM West OTHERS    ${dataColOnWoWChange}    ${dataColOnWoWChangeOnVDC}
