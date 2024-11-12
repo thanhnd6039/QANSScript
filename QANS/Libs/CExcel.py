@@ -28,16 +28,22 @@ class CExcel(object):
         numOfCols = self.get_number_of_cols_in_excel(filePath)
         file = load_workbook(filePath)
         sheet = file.active
-        # valueOfCell = sheet.cell(row=4, column=5).value
+        # valueOfCell = sheet.cell(row=3, column=6).value
         # logger.console("valueOfCell: {0}".format(valueOfCell))
         for colIndex in range(1, numOfCols+1):
             valueOfCell = sheet.cell(row=rowIndex, column=colIndex).value
-            if searchStr in valueOfCell:
+            if searchStr == valueOfCell:
                 posOfColumn = colIndex
                 break
         return posOfColumn
 
-
+if __name__ == '__main__':
+    cExcel = CExcel()
+    filePath = 'C:\\RobotFramework\\Downloads\\Sales Gap Report NS With SO Forecast.xlsx'
+    rowIndex = 3
+    searchStr = '2024.Q1 R'
+    number = cExcel.get_position_of_column(filePath, rowIndex, searchStr)
+    print(number)
 
 
 
