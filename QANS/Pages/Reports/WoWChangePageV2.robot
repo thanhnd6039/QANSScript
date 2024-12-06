@@ -66,8 +66,8 @@ Get List Of OEM Group Shown In OEM West Table
 
     [Return]    ${listOfOEMGroup}
 
-Check Data For The OEM East Table
-    [Arguments]     ${wowChangeFilePath}  ${SGFilePath}   ${posOfColOnWoWChange}    ${posOfColOnSG}     ${nameOfCol}
+Check Data
+    [Arguments]     ${table}    ${posOfColOnWoWChange}    ${posOfColOnSG}     ${nameOfCol}
     ${result}   Set Variable    ${True}
     ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
     ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
@@ -80,6 +80,38 @@ Check Data For The OEM East Table
     Switch Current Excel Document     doc_id=SG
     ${numOfRowsOnSG}    Get Number Of Rows In Excel    ${SGFilePath}
     Switch Current Excel Document    doc_id=WoWChange
+
+    IF    '${table}' == 'OEM East'
+        #   Verify the data for each OEM Group
+        FOR    ${rowIndexOnWoWChange}    IN RANGE    2    7
+            Switch Current Excel Document    doc_id=WoWChange
+            ${oemGroupColOnWoWChange}      Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=1
+            ${dataColOnWoWChange}          Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+            Switch Current Excel Document     doc_id=SG
+            FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
+                ${oemGroupColOnSG}       Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
+                IF    '${oemGroupColOnSG}' == 'None'
+                     Continue For Loop
+                END
+                ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfColOnSG}
+                IF    '${dataColOnSG}' == 'None'
+                     ${dataColOnSG}     Set Variable    0
+                END
+                ${dataColOnSG}   Evaluate  "%.2f" % ${dataColOnSG}
+                IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnSG}'
+                     IF    ${dataColOnWoWChange} != ${dataColOnSG}
+                          ${result}     Set Variable    ${False}
+                          Write The Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupColOnWoWChange}    valueOnWoWChange=${dataColOnWoWChange}    valueOnSG=${dataColOnSG}
+                     END
+                     BREAK
+                END
+            END
+        END
+    ELSE IF     '${table}' == 'OEM West'
+        Log To Console    Doing
+    ELSE
+        Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+    END
 
 #   Verify the data for each OEM Group
     FOR    ${rowIndexOnWoWChange}    IN RANGE    2    7

@@ -14,7 +14,7 @@ Verify Prev Q Ship for the OEM East table
     ${rowIndexForSearchStr}     Convert To Number    3
     ${posOfColOnSG}  Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
     ${posOfColOnSG}     Evaluate    ${posOfColOnSG}+2
-    Check Data For The OEM East Table    posOfColOnWoWChange=${posOfColOnWoWChange}       posOfColOnSG=${posOfColOnSG}    nameOfCol=Pre Q Ships
+    Check Data    table=OEM East  posOfColOnWoWChange=${posOfColOnWoWChange}       posOfColOnSG=${posOfColOnSG}    nameOfCol=Pre Q Ships
 
 Verify Current Q Budget for the OEM East table
     [Tags]  WoWChange_0002
