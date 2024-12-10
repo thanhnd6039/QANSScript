@@ -68,7 +68,8 @@ Get List Of OEM Group Shown In OEM West Table
     [Return]    ${listOfOEMGroup}
 
 Check The Ship, Backlog, LOS Data
-    [Arguments]     ${table}    ${nameOfCol}    ${posOfColOnWoWChange}    ${posOfRColOnSG}      ${posOfBColOnSG}=0
+    [Arguments]     ${table}    ${nameOfCol}    ${posOfColOnWoWChange}    ${posOfRColOnSG}=0      ${posOfBColOnSG}=0
+
     ${result}   Set Variable    ${True}
     ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    0
     ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    0
@@ -110,10 +111,22 @@ Check The Ship, Backlog, LOS Data
             IF    '${oemGroupColOnSG}' == 'None'
                  Continue For Loop
             END
-            IF    '${nameOfCol}' == 'LOS'
-                 Log To Console    Doing
+            IF    '${nameOfCol}' == 'Ships' or '${nameOfCol}' == 'Pre Q Ships'
+                 ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+            ELSE IF  '${nameOfCol}' == 'Backlog'
+                 ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+            ELSE IF  '${nameOfCol}' == 'LOS'
+                 ${dataRColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+                 ${dataBolOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+                 IF    '${dataRColOnSG}' == 'None'
+                     ${dataRColOnSG}   Set Variable    0
+                 END
+                 IF    '${dataBolOnSG}' == 'None'
+                     ${dataBolOnSG}    Set Variable    0
+                 END
+                 ${dataColOnSG}     Evaluate    ${dataRColOnSG}+${dataBolOnSG}
             ELSE
-                ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+                 Fail   The nameOfCol parameter ${nameOfCol} is invalid. Please contact with the Administrator for supporting
             END
 
             IF    '${dataColOnSG}' == 'None'
@@ -134,10 +147,22 @@ Check The Ship, Backlog, LOS Data
     ${totalOnSG}  Set Variable    0
     FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
         ${mainSalesRepColOnSG}      Read Excel Cell    row_num=${rowIndexOnSG}    col_num=3
-        IF    '${nameOfCol}' == 'LOS'
-            Log To Console    Doing
+        IF    '${nameOfCol}' == 'Ships' or '${nameOfCol}' == 'Pre Q Ships'
+             ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+        ELSE IF  '${nameOfCol}' == 'Backlog'
+             ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+        ELSE IF  '${nameOfCol}' == 'LOS'
+             ${dataRColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+             ${dataBolOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+             IF    '${dataRColOnSG}' == 'None'
+                  ${dataRColOnSG}   Set Variable    0
+             END
+             IF    '${dataBolOnSG}' == 'None'
+                  ${dataBolOnSG}    Set Variable    0
+             END
+             ${dataColOnSG}     Evaluate    ${dataRColOnSG}+${dataBolOnSG}
         ELSE
-            ${dataColOnSG}          Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+             Fail   The nameOfCol parameter ${nameOfCol} is invalid. Please contact with the Administrator for supporting
         END
 
         IF    '${dataColOnSG}' == 'None'
@@ -162,10 +187,22 @@ Check The Ship, Backlog, LOS Data
     FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
         ${oemGroupColOnSG}          Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
         ${mainSalesRepColOnSG}      Read Excel Cell    row_num=${rowIndexOnSG}    col_num=3
-        IF    '${nameOfCol}' == 'LOS'
-            Log To Console    Doing
+        IF    '${nameOfCol}' == 'Ships' or '${nameOfCol}' == 'Pre Q Ships'
+             ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+        ELSE IF  '${nameOfCol}' == 'Backlog'
+             ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+        ELSE IF  '${nameOfCol}' == 'LOS'
+             ${dataRColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+             ${dataBolOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+             IF    '${dataRColOnSG}' == 'None'
+                  ${dataRColOnSG}   Set Variable    0
+             END
+             IF    '${dataBolOnSG}' == 'None'
+                  ${dataBolOnSG}    Set Variable    0
+             END
+             ${dataColOnSG}     Evaluate    ${dataRColOnSG}+${dataBolOnSG}
         ELSE
-            ${dataColOnSG}          Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+             Fail   The nameOfCol parameter ${nameOfCol} is invalid. Please contact with the Administrator for supporting
         END
 
         IF    '${dataColOnSG}' == 'None'
@@ -391,3 +428,65 @@ Check The Commit Or Comment Data
          Fail   The ${nameOfCol} column for the ${table} table between the WoW Change Report and WoW Change Report On VDC is different
     END
     Close All Excel Documents
+
+Check The WoW Data
+    [Arguments]     ${table}    ${nameOfCol}    ${posOfColOnWoWChange}
+
+    ${result}   Set Variable    ${True}
+
+    File Should Exist      path=${wowChangeFilePath}
+    Open Excel Document    filename=${wowChangeFilePath}         doc_id=WoWChange
+
+    File Should Exist      path=${wowChangeOnVDCFilePath}
+    Open Excel Document    filename=${wowChangeOnVDCFilePath}    doc_id=WoWChangeOnVDC
+
+    IF    '${table}' == 'OEM East'
+        ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    2
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    9
+    ELSE IF     '${table}' == 'OEM West'
+        ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    19
+    ELSE
+        Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+    END
+
+    FOR    ${rowIndexOnWoWChange}    IN RANGE    ${startRowIndexForOEMGroupOnWoWChange}    ${endRowIndexForOEMGroupOnWoWChange}
+        Switch Current Excel Document    doc_id=WoWChange
+        ${oemGroupColOnWoWChange}           Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=1
+        ${wowColOnWoWChange}                Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+        ${posOfDataColOnWoWChange}          Evaluate    ${posOfColOnWoWChange}-1
+        ${dataColOnWoWChange}               Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=${posOfDataColOnWoWChange}
+        Switch Current Excel Document    doc_id=WoWChangeOnVDC
+        FOR    ${rowIndexOnWoWChangeOnVDC}    IN RANGE    ${startRowIndexForOEMGroupOnWoWChange}   ${endRowIndexForOEMGroupOnWoWChange}
+            ${oemGroupColOnWoWChangeOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeOnVDC}    col_num=1
+            IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnWoWChangeOnVDC}'
+                ${dataColOnWoWChangeOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeOnVDC}    col_num=${posOfDataColOnWoWChange}
+                ${wowData}  Evaluate    ${dataColOnWoWChange}-${dataColOnWoWChangeOnVDC}
+                ${wowColOnWoWChange}   Evaluate  "%.2f" % ${wowColOnWoWChange}
+                ${wowData}   Evaluate  "%.2f" % ${wowData}
+                IF    '${wowColOnWoWChange}' == '-0.00'
+                     ${wowColOnWoWChange}     Set Variable    0.00
+                END
+                IF    '${wowColOnWoWChange}' != '${wowData}'
+                    ${result}  Set Variable    ${False}
+                     IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS    ${wowColOnWoWChange}    ${wowData}
+                     ELSE IF  '${oemGroupColOnWoWChange}' == 'Total'
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${wowColOnWoWChange}    ${wowData}
+                     ELSE
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChange}    ${wowColOnWoWChange}    ${wowData}
+                     END
+                END
+                BREAK
+            END
+        END
+    END
+
+    IF    '${result}' == '${False}'
+         Close All Excel Documents
+         Fail   The ${nameOfCol} data for the ${table} table is wrong
+    END
+    Close All Excel Documents
+
+Check The GAP Data
+    [Arguments]     ${table}    ${nameOfCol}    ${posOfColOnWoWChange}
