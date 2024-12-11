@@ -78,6 +78,8 @@ Check The Ship, Backlog, LOS Data
 
     ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
     ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
+    ${listOfSalesMemberInOEMWestTable}       Get List Of Sales Member In OEM West Table
+    ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
 
     File Should Exist      path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
@@ -169,17 +171,24 @@ Check The Ship, Backlog, LOS Data
                ${dataColOnSG}     Set Variable    0
         END
 
-        IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
-             ${totalOnSG}     Evaluate    ${totalOnSG}+${dataColOnSG}
+        IF    '${table}' == 'OEM East'
+             IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
+                   ${totalOnSG}     Evaluate    ${totalOnSG}+${dataColOnSG}
+             END
+        ELSE IF   '${table}' == 'OEM West'
+            IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
+                   ${totalOnSG}     Evaluate    ${totalOnSG}+${dataColOnSG}
+            END
+        ELSE
+            Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
         END
-
     END
     ${totalOnSG}   Evaluate  "%.2f" % ${totalOnSG}
     Switch Current Excel Document    doc_id=WoWChange
     ${totalOnWoWchange}   Read Excel Cell    row_num=${totalRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
     IF    ${totalOnWoWchange} != ${totalOnSG}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${totalOnWoWchange}    ${totalOnSG}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSG}
     END
     #  Verify the OTHERS data
     Switch Current Excel Document    doc_id=SG
@@ -209,18 +218,29 @@ Check The Ship, Backlog, LOS Data
                ${dataColOnSG}     Set Variable    0
         END
 
-        IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
-             IF    '${oemGroupColOnSG}' not in ${listOfOEMGroupShownInOEMEastTable}
-                  ${othersOnSG}     Evaluate    ${othersOnSG}+${dataColOnSG}
+        IF    '${table}' == 'OEM East'
+             IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
+                IF    '${oemGroupColOnSG}' not in ${listOfOEMGroupShownInOEMEastTable}
+                   ${othersOnSG}     Evaluate    ${othersOnSG}+${dataColOnSG}
+                END
              END
+        ELSE IF   '${table}' == 'OEM West'
+            IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
+                IF    '${oemGroupColOnSG}' not in ${listOfOEMGroupShownInOEMWestTable}
+                   ${othersOnSG}     Evaluate    ${othersOnSG}+${dataColOnSG}
+                END
+            END
+        ELSE
+            Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
         END
+
     END
     ${othersOnSG}   Evaluate  "%.2f" % ${othersOnSG}
     Switch Current Excel Document    doc_id=WoWChange
     ${othersOnWoWChange}   Read Excel Cell    row_num=${othersRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
     IF    ${othersOnWoWChange} != ${othersOnSG}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS    ${othersOnWoWChange}    ${othersOnSG}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSG}
     END
 
     IF    '${result}' == '${False}'
@@ -240,6 +260,8 @@ Check The Budget Data
 
     ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
     ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
+    ${listOfSalesMemberInOEMWestTable}       Get List Of Sales Member In OEM West Table
+    ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
 
     File Should Exist      path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
@@ -300,17 +322,24 @@ Check The Budget Data
                ${dataColOnSGWeeklyActionDB}     Set Variable    0
         END
 
-        IF    '${mainSalesRepColOnSGWeeklyActionDB}' in ${listOfSalesMemberInOEMEastTable}
-             ${totalOnSGWeeklyActionDB}     Evaluate    ${totalOnSGWeeklyActionDB}+${dataColOnSGWeeklyActionDB}
+        IF    '${table}' == 'OEM East'
+             IF    '${mainSalesRepColOnSGWeeklyActionDB}' in ${listOfSalesMemberInOEMEastTable}
+                   ${totalOnSGWeeklyActionDB}     Evaluate    ${totalOnSGWeeklyActionDB}+${dataColOnSGWeeklyActionDB}
+             END
+        ELSE IF   '${table}' == 'OEM West'
+             IF    '${mainSalesRepColOnSGWeeklyActionDB}' in ${listOfSalesMemberInOEMWestTable}
+                   ${totalOnSGWeeklyActionDB}     Evaluate    ${totalOnSGWeeklyActionDB}+${dataColOnSGWeeklyActionDB}
+             END
+        ELSE
+            Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
         END
-
     END
     ${totalOnSGWeeklyActionDB}   Evaluate  "%.2f" % ${totalOnSGWeeklyActionDB}
     Switch Current Excel Document    doc_id=WoWChange
     ${totalOnWoWchange}   Read Excel Cell    row_num=${totalRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
     IF    ${totalOnWoWchange} != ${totalOnSGWeeklyActionDB}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${totalOnWoWchange}    ${totalOnSGWeeklyActionDB}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSGWeeklyActionDB}
     END
     #  Verify the OTHERS data
     Switch Current Excel Document    doc_id=SGWeeklyActionDB
@@ -324,18 +353,30 @@ Check The Budget Data
                ${dataColOnSGWeeklyActionDB}     Set Variable    0
         END
 
-        IF    '${mainSalesRepColOnSGWeeklyActionDB}' in ${listOfSalesMemberInOEMEastTable}
-             IF    '${oemGroupColOnSGWeeklyActionDB}' not in ${listOfOEMGroupShownInOEMEastTable}
-                  ${othersOnSGWeeklyActionDB}     Evaluate    ${othersOnSGWeeklyActionDB}+${dataColOnSGWeeklyActionDB}
+        IF    '${table}' == 'OEM East'
+             IF    '${mainSalesRepColOnSGWeeklyActionDB}' in ${listOfSalesMemberInOEMEastTable}
+                 IF    '${oemGroupColOnSGWeeklyActionDB}' not in ${listOfOEMGroupShownInOEMEastTable}
+                      ${othersOnSGWeeklyActionDB}     Evaluate    ${othersOnSGWeeklyActionDB}+${dataColOnSGWeeklyActionDB}
+                 END
              END
+        ELSE IF   '${table}' == 'OEM West'
+             IF    '${mainSalesRepColOnSGWeeklyActionDB}' in ${listOfSalesMemberInOEMWestTable}
+                 IF    '${oemGroupColOnSGWeeklyActionDB}' not in ${listOfOEMGroupShownInOEMWestTable}
+                      ${othersOnSGWeeklyActionDB}     Evaluate    ${othersOnSGWeeklyActionDB}+${dataColOnSGWeeklyActionDB}
+                 END
+             END
+        ELSE
+            Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
         END
+
+
     END
     ${othersOnSGWeeklyActionDB}   Evaluate  "%.2f" % ${othersOnSGWeeklyActionDB}
     Switch Current Excel Document    doc_id=WoWChange
     ${othersOnWoWChange}   Read Excel Cell    row_num=${othersRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
     IF    ${othersOnWoWChange} != ${othersOnSGWeeklyActionDB}
          ${result}     Set Variable    ${False}
-         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS    ${othersOnWoWChange}    ${othersOnSGWeeklyActionDB}
+         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSGWeeklyActionDB}
     END
 
     IF    '${result}' == '${False}'
@@ -378,9 +419,9 @@ Check The Commit Or Comment Data
              IF    '${dataColOnWoWChange}' != '${EMPTY}'
                   ${result}  Set Variable    ${False}
                   IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
-                       Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS    ${dataColOnWoWChange}    ${EMPTY}
+                       Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${dataColOnWoWChange}    ${EMPTY}
                   ELSE IF  '${oemGroupColOnWoWChange}' == 'Total'
-                       Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${dataColOnWoWChange}    ${EMPTY}
+                       Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${dataColOnWoWChange}    ${EMPTY}
                   ELSE
                        Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChange}    ${dataColOnWoWChange}    ${EMPTY}
                   END
@@ -411,9 +452,9 @@ Check The Commit Or Comment Data
                  IF   '${dataColOnWoWChange}' != '${dataColOnWoWChangeOnVDC}'
                      ${result}  Set Variable    ${False}
                      IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
-                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS    ${dataColOnWoWChange}    ${dataColOnWoWChangeOnVDC}
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${dataColOnWoWChange}    ${dataColOnWoWChangeOnVDC}
                      ELSE IF  '${oemGroupColOnWoWChange}' == 'Total'
-                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total     ${dataColOnWoWChange}    ${dataColOnWoWChangeOnVDC}
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total     ${dataColOnWoWChange}    ${dataColOnWoWChangeOnVDC}
                      ELSE
                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChange}    ${dataColOnWoWChange}    ${dataColOnWoWChangeOnVDC}
                      END
@@ -489,4 +530,152 @@ Check The WoW Data
     Close All Excel Documents
 
 Check The GAP Data
-    [Arguments]     ${table}    ${nameOfCol}    ${posOfColOnWoWChange}
+    [Arguments]     ${table}    ${nameOfCol}    ${posOfColOnWoWChange}      ${posOfRColOnSG}      ${posOfBColOnSG}
+    ${result}   Set Variable    ${True}
+    ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
+    ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
+    ${listOfSalesMemberInOEMWestTable}       Get List Of Sales Member In OEM West Table
+    ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
+
+    File Should Exist      path=${wowChangeFilePath}
+    Open Excel Document    filename=${wowChangeFilePath}    doc_id=WoWChange
+
+    File Should Exist      path=${wowChangeOnVDCFilePath}
+    Open Excel Document    filename=${wowChangeOnVDCFilePath}      doc_id=WoWChangeOnVDC
+
+    File Should Exist      path=${SGFilePath}
+    Open Excel Document    filename=${SGFilePath}    doc_id=SG
+    Switch Current Excel Document    doc_id=SG
+    ${numOfRowsOnSG}    Get Number Of Rows In Excel    ${SGFilePath}
+
+    IF    '${table}' == 'OEM East'
+        ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    2
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    9
+    ELSE IF     '${table}' == 'OEM West'
+        ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    19
+    ELSE
+        Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+    END
+
+    FOR    ${rowIndexOnWoWChange}    IN RANGE    ${startRowIndexForOEMGroupOnWoWChange}    ${endRowIndexForOEMGroupOnWoWChange}
+        Switch Current Excel Document    doc_id=WoWChange
+        ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=1
+        ${gapColOnWoWChange}               Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+        ${gapColOnWoWChange}   Evaluate  "%.2f" % ${gapColOnWoWChange}
+
+        ${los}      Set Variable    0
+        Switch Current Excel Document    doc_id=SG
+        IF  '${oemGroupColOnWoWChange}' == 'OTHERS'
+             FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
+                 ${oemGroupColOnSG}        Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
+                 ${mainSalesRepColOnSG}    Read Excel Cell    row_num=${rowIndexOnSG}    col_num=3
+                 ${dataRColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+                 ${dataBColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+
+                 IF    '${dataRColOnSG}' == 'None'
+                      ${dataRColOnSG}   Set Variable    0
+                 END
+                 IF    '${dataBColOnSG}' == 'None'
+                      ${dataBColOnSG}   Set Variable    0
+                 END
+                 ${dataLOSOnSG}     Evaluate    ${dataRColOnSG}+${dataBColOnSG}
+
+                 IF    '${table}' == 'OEM East'
+                      IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
+                          IF    '${oemGroupColOnSG}' not in ${listOfOEMGroupShownInOEMEastTable}
+                                ${los}   Evaluate    ${los}+${dataLOSOnSG}
+                          END
+                      END
+                 ELSE IF    ${table} == 'OEM West'
+                    IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
+                          IF    '${oemGroupColOnSG}' not in ${listOfOEMGroupShownInOEMWestTable}
+                                ${los}   Evaluate    ${los}+${dataLOSOnSG}
+                          END
+                    END
+                 ELSE
+                    Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+                 END
+
+             END
+        ELSE IF  '${oemGroupColOnWoWChange}' == 'Total'
+            FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
+                ${oemGroupColOnSG}        Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
+                ${mainSalesRepColOnSG}    Read Excel Cell    row_num=${rowIndexOnSG}    col_num=3
+                ${dataRColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+                ${dataBColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+
+                IF    '${dataRColOnSG}' == 'None'
+                      ${dataRColOnSG}   Set Variable    0
+                 END
+                 IF    '${dataBColOnSG}' == 'None'
+                      ${dataBColOnSG}   Set Variable    0
+                 END
+                 ${dataLOSOnSG}     Evaluate    ${dataRColOnSG}+${dataBColOnSG}
+
+                 IF    '${table}' == 'OEM East'
+                      IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
+                           ${los}   Evaluate    ${los}+${dataLOSOnSG}
+                      END
+                 ELSE IF    '${table}' == 'OEM West'
+                      IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
+                           ${los}   Evaluate    ${los}+${dataLOSOnSG}
+                      END
+                 ELSE
+                     Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+                 END
+
+            END
+        ELSE
+            FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
+                 ${oemGroupColOnSG}     Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
+                 ${dataRColOnSG}        Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
+                 ${dataBColOnSG}        Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
+
+                 IF    '${dataRColOnSG}' == 'None'
+                      ${dataRColOnSG}   Set Variable    0
+                 END
+                 IF    '${dataBColOnSG}' == 'None'
+                      ${dataBColOnSG}   Set Variable    0
+                 END
+                 ${dataLOSOnSG}     Evaluate    ${dataRColOnSG}+${dataBColOnSG}
+
+                 IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnSG}'
+                     ${los}     Set Variable    ${dataLOSOnSG}
+                     BREAK
+                 END
+             END
+        END
+
+        Switch Current Excel Document    doc_id=WoWChangeOnVDC
+        ${commit}   Set Variable    0
+        FOR    ${rowIndexOnWoWChangeOnVDC}    IN RANGE    2    9
+            ${oemGroupColOnWoWChangeOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeOnVDC}    col_num=1
+            ${twCommitColOnWoWChangeOnVDC}          Read Excel Cell    row_num=${rowIndexOnWoWChangeOnVDC}    col_num=5
+
+            IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnWoWChangeOnVDC}'
+                ${commit}   Set Variable    ${twCommitColOnWoWChangeOnVDC}
+                BREAK
+            END
+        END
+        ${gapByFormular}    Evaluate    ${los}-${commit}
+        ${gapByFormular}   Evaluate  "%.2f" % ${gapByFormular}
+
+        IF    '${gapColOnWoWChange}' != '${gapByFormular}'
+              ${result}   Set Variable    ${False}
+              IF    '${oemGroupColOnWoWChange}' == 'Total'
+                   Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total     ${gapColOnWoWChange}    ${gapByFormular}
+              ELSE IF  '${oemGroupColOnWoWChange}' == 'OTHERS'
+                   Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS     ${gapColOnWoWChange}    ${gapByFormular}
+              ELSE
+                   Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChange}    ${gapColOnWoWChange}    ${gapByFormular}
+              END
+        END
+    END
+
+    IF    '${result}' == '${False}'
+         Close All Excel Documents
+         Fail   The ${nameOfCol} data for the ${table} table is wrong
+    END
+    Close All Excel Documents
+
