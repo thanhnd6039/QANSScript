@@ -1,177 +1,243 @@
 *** Settings ***
 Resource    ../../Pages/Reports/WoWChangePage.robot
 
-*** Variables ***
-${wowChangeReportFilePath}              C:\\RobotFramework\\Downloads\\WoW Change Of Next Quarter [Current Week].xlsx
-${wowChangeReportOnVDCFilePath}         C:\\RobotFramework\\Downloads\\Wow Change [Current Week] On VDC.xlsx
-${sgWeeklyActionDBReportPreQFilePath}   C:\\RobotFramework\\Downloads\\SalesGap Weekly Actions Gap Week DB Pre Quarter.xlsx
-${sgWeeklyActionDBReportCurQFilePath}   C:\\RobotFramework\\Downloads\\SalesGap Weekly Actions Gap Week DB Current Quarter.xlsx
-
 *** Test Cases ***
-Verify the data of Prev Quarter Ship column for the Strategic table
-    [Tags]  WoWChangeReport_0001
-    [Documentation]     Verify the data of Prev Q Ships column for the Strategic table
-    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}  2   7   Pre Q Ships
+#Verify Prev Q Ship for the OEM East table
+#    [Tags]  WoWChange_0001
+#    [Documentation]     Verify the data of Pre Q Ships column for the OEM East table
+#
+#    ${posOfColOnWoWChange}      Set Variable    2
+#    ${currentYear}              Get Current Year
+#    ${currentQuarter}           Get Current Quarter
+#    ${preQuarter}               Evaluate        ${currentQuarter}-1
+#    ${searchStr}                Set Variable    ${currentYear}.Q${preQuarter} R
+#    ${rowIndexForSearchStr}     Convert To Number    3
+#    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+#    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
+#    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
 
-Verify the data of Current Quarter Budget column for the Strategic table
-    [Tags]  WoWChangeReport_0002
-    [Documentation]     Verify the data of Current Q Budget column for the Strategic table
-    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  3   3   Current Q Budget
+#Verify Current Q Budget for the OEM East table
+#    [Tags]  WoWChange_0002
+#    [Documentation]     Verify the data of Current Q Budget column for the OEM East table
+#
+#    ${posOfColOnWoWChange}          Set Variable    3
+#    ${posOfColOnSGWeeklyActionDB}   Set Variable    3
+#    Check The Budget Data    table=OEM East     nameOfCol=Current Q Budget  posOfColOnWoWChange=${posOfColOnWoWChange}       posOfColOnSGWeeklyActionDB=${posOfColOnSGWeeklyActionDB}
 
-Verfiy the data of LW Commit colmn for the Strategic table
-    [Tags]  WoWChangeReport_0003
-    [Documentation]     Verify the data of LW Commit column for the Strategic table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   Strategic
-
-Verify the data of TW Commit column for the Strategic table
-    [Tags]  WoWChangeReport_0004
-    [Documentation]     Verify the data of TW Commit column for the Strategic table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   Strategic
-
-#Verify the data of Ships column for the Strategic table
-#    [Tags]  WoWChangeReport_0005
-#    [Documentation]     Verify the data of Ships column for the Strategic table
-#    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  6   5   Ships
-
-#Verify the data of WoW(WoW of Ships column) column for the Strategic table
-#    [Tags]  WoWChangeReport_0006
-#    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the Strategic table
-#    Check The WoW Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   Strategic   7   WoW Of Ships
-
-Verify the data of Backlog column for the Strategic table
-    [Tags]  WoWChangeReport_0007
-    [Documentation]     Verify the data of Backlog column for the Strategic table
-    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  8   6   Backlog
-
-Verify the data of LOS column for the Strategic table
-    [Tags]  WoWChangeReport_0008
-    [Documentation]     Verify the data of LOS column for the Strategic table
-    Check Data For The Strategic Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  9   7   LOS
-
-Verify the data of Wow(WoW of LOS column) column for the Strategic table
-    [Tags]  WoWChangeReport_0009
-    [Documentation]     Verify the data of WoW(WoW of LOS column) column for the Strategic table
-    Check The WoW Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   Strategic   10   WoW Of LOS
-
-Verify the data of GAP column for the Strategic table
-    [Tags]  WoWChangeReport_0010
-    [Documentation]     Verify the data of GAP(LOS - Commit) column for the Strategic table
-    Check The GAP Data   ${wowChangeReportOnVDCFilePath}     ${sgWeeklyActionDBReportCurQFilePath}   ${wowChangeReportFilePath}    Strategic   11   GAP
-
-Verify the data of Comments column for the Strategic table
-    [Tags]  WoWChangeReport_0011
-    [Documentation]     Verify the data of Comments column for the Strategic table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   Strategic
-
-Verify the data of Prev Quarter Ship column for the OEM East table
-    [Tags]  WoWChangeReport_0012
-    [Documentation]     Verify the data of Pre Q Ships column for the OEM East table
-    Check Data For The OEM East Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}  2  7   Pre Q Ships
-
-Verify the data of Current Quarter Budget column for the OEM East table
-    [Tags]  WoWChangeReport_0013
-    [Documentation]     Verify the data of Current Q Budget column for the OEM East table
-    Check Data For The OEM East Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  3   3   Current Q Budget
-
-Verify the data of LW Commit column for the OEM East table
-     [Tags]  WoWChangeReport_0014
+Verify LW Commit for the OEM East table
+     [Tags]  WoWChange_0003
      [Documentation]     Verify the data of LW Commit column for the OEM East table
-     Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   OEM East
 
-Verify the data of TW Commit column for the OEM East table
-    [Tags]  WoWChangeReport_0015
+     ${posOfColOnWoWChange}          Set Variable    4
+     Check The Commit Or Comment Data   table=OEM East   nameOfCol=LW Commit    posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify TW Commit for the OEM East table
+    [Tags]  WoWChange_0004
     [Documentation]     Verify the data of TW Commit column for the OEM East table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   OEM East
 
-#Verify the data of Ships column for the OEM East table
-#    [Tags]  WoWChangeReport_0016
+    ${posOfColOnWoWChange}          Set Variable    5
+    Check The Commit Or Comment Data   table=OEM East   nameOfCol=TW Commit    posOfColOnWoWChange=${posOfColOnWoWChange}
+
+#Verify Ships for the OEM East table
+#    [Tags]  WoWChange_0005
 #    [Documentation]     Verify the data of Ships column for the OEM East table
-#    Check Data For The OEM East Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  6   5   Ships
+#
+#    ${posOfColOnWoWChange}      Set Variable    6
+#    ${currentYear}              Get Current Year
+#    ${currentQuarter}           Get Current Quarter
+#    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+#    ${rowIndexForSearchStr}     Convert To Number    3
+#    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+#    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
+#    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
 
-#Verify the data of WoW(WoW of Ships column) column for the OEM East table
-#    [Tags]  WoWChangeReport_0017
+#Verify WoW of Ships for the OEM East table
+#    [Tags]  WoWChange_0006
 #    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM East table
-#    Check The WoW Data  ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   OEM East   7   WoW Of Ships
+#
+#    ${posOfColOnWoWChange}      Set Variable    7
+#    Check The WoW Data  table=OEM East   nameOfCol=WoW Of Ships     posOfColOnWoWChange=${posOfColOnWoWChange}
 
-Verify the data of Backlog column for the OEM East table
-    [Tags]  WoWChangeReport_0018
+Verify Backlog for the OEM East table
+    [Tags]  WoWChange_0007
     [Documentation]     Verify the data of Backlog column for the OEM East table
-    Check Data For The OEM East Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  8   6   Backlog
 
-Verify the data of LOS column for the OEM East table
-    [Tags]  WoWChangeReport_0019
+    ${posOfColOnWoWChange}      Set Variable    8
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    IF    '${currentQuarter}' == '4'
+        ${currentYear}  Evaluate    ${currentYear}+1
+        ${nextquarter}  Set Variable    1
+    ELSE
+        ${nextquarter}  Evaluate    ${currentQuarter}+1
+    END
+    
+    ${searchStr}                Set Variable    ${currentYear}.Q${nextquarter} B
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfBColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfBColOnSG}            Evaluate    ${posOfBColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Backlog   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfBColOnSG=${posOfBColOnSG}
+
+Verify LOS for the OEM East table
+    [Tags]  WoWChange_0008
     [Documentation]     Verify the data of LOS column for the OEM East table
-    Check Data For The OEM East Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  9   7   LOS
 
-Verify the data of WoW(WoW of LOS column) column for the OEM East table
-    [Tags]  WoWChangeReport_0020
+    ${posOfColOnWoWChange}      Set Variable    9
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
+    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+    ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=LOS   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+
+Verify WoW of LOS for the OEM East table
+    [Tags]  WoWChange_0009
     [Documentation]     Verify the data of WoW(WoW of LOS column) column for the OEM East table
-    Check The WoW Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   OEM East   10   WoW Of LOS
 
-Verify the data of GAP column for the OEM East table
-     [Tags]  WoWChangeReport_0021
+    ${posOfColOnWoWChange}      Set Variable    10
+    Check The WoW Data  table=OEM East   nameOfCol=WoW Of LOS     posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify GAP for the OEM East table
+     [Tags]  WoWChange_0010
      [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM East table
-     Check The GAP Data   ${wowChangeReportOnVDCFilePath}     ${sgWeeklyActionDBReportCurQFilePath}   ${wowChangeReportFilePath}    OEM East   11   GAP
 
-Veify the data of Comments column for the OEM East table
-     [Tags]  WoWChangeReport_0022
+     ${posOfColOnWoWChange}      Set Variable    11
+     ${currentYear}              Get Current Year
+     ${currentQuarter}           Get Current Quarter
+     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+     ${rowIndexForSearchStr}     Convert To Number    3
+     ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+     ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
+     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
+     Check The GAP Data  table=OEM East   nameOfCol=GAP     posOfColOnWoWChange=${posOfColOnWoWChange}      posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+
+Veify Comments for the OEM East table
+     [Tags]  WoWChange_0011
      [Documentation]     Verify the data of Comments column for the OEM East table
-     Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   OEM East
 
-Verify the data of Prev Quarter Ship column for the OEM West table
-    [Tags]  WoWChangeReport_0023
+     ${posOfColOnWoWChange}          Set Variable    12
+     Check The Commit Or Comment Data   table=OEM East   nameOfCol=Comments    posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify Prev Quarter Ship for the OEM West table
+    [Tags]  WoWChange_0012
     [Documentation]     Verify the data of Pre Q Ships column for the OEM East table
-    Check Data For The OEM West Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportPreQFilePath}  2  7   Pre Q Ships
 
-Verify the data of Current Quarter Budget column for the OEM West table
-    [Tags]  WoWChangeReport_0024
+    ${posOfColOnWoWChange}      Set Variable    2
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    ${preQuarter}               Evaluate        ${currentQuarter}-1
+    ${searchStr}                Set Variable    ${currentYear}.Q${preQuarter} R
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM West     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
+
+Verify Current Quarter Budget for the OEM West table
+    [Tags]  WoWChange_0013
     [Documentation]     Verify the data of Current Q Budget column for the OEM East table
-    Check Data For The OEM West Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  3   3   Current Q Budget
 
-Verify the data of LW Commit column for the OEM West table
-    [Tags]  WoWChangeReport_0025
+    ${posOfColOnWoWChange}          Set Variable    3
+    ${posOfColOnSGWeeklyActionDB}   Set Variable    3
+    Check The Budget Data    table=OEM West     nameOfCol=Current Q Budget  posOfColOnWoWChange=${posOfColOnWoWChange}       posOfColOnSGWeeklyActionDB=${posOfColOnSGWeeklyActionDB}
+
+Verify LW Commit for the OEM West table
+    [Tags]  WoWChange_0014
     [Documentation]     Verify the data of LW Commit column for the OEM East table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   4   LW Commit   OEM West
 
-Verify the data of TW Commit column for the OEM West table
-    [Tags]  WoWChangeReport_0026
+    ${posOfColOnWoWChange}          Set Variable    4
+    Check The Commit Or Comment Data   table=OEM West   nameOfCol=LW Commit    posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify TW Commit for the OEM West table
+    [Tags]  WoWChange_0015
     [Documentation]     Verify the data of TW Commit column for the OEM West table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   5   TW Commit   OEM West
-#
-#Verify the data of Ships column for the OEM West table
-#    [Tags]  WoWChangeReport_0027
-#    [Documentation]     Verify the data of Ships column for the OEM West table
-#    Check Data For The OEM West Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  6   5   Ships
-#
-#Verify the data of WoW(WoW of Ships column) column for the OEM West table
-#    [Tags]  WoWChangeReport_0028
-#    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM West table
-#    Check The WoW Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   OEM West   7   WoW Of Ships
 
-Verify the data of Backlog column for the OEM West table
-    [Tags]  WoWChangeReport_0029
+    ${posOfColOnWoWChange}          Set Variable    5
+    Check The Commit Or Comment Data   table=OEM West   nameOfCol=TW Commit    posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify Ships for the OEM West table
+    [Tags]  WoWChange_0016
+    [Documentation]     Verify the data of Ships column for the OEM West table
+
+    ${posOfColOnWoWChange}      Set Variable    6
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM West     nameOfCol=Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
+
+Verify WoW of Ships for the OEM West table
+    [Tags]  WoWChange_0017
+    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM West table
+
+    ${posOfColOnWoWChange}      Set Variable    7
+    Check The WoW Data  table=OEM West   nameOfCol=WoW Of Ships     posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify Backlog for the OEM West table
+    [Tags]  WoWChange_0018
     [Documentation]     Verify the data of Backlog column for the OEM West table
-    Check Data For The OEM West Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  8   6   Backlog
 
-Verify the data of LOS column for the OEM West table
-    [Tags]  WoWChangeReport_0030
+    ${posOfColOnWoWChange}      Set Variable    8
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfBColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfBColOnSG}            Evaluate    ${posOfBColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM West     nameOfCol=Backlog   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfBColOnSG=${posOfBColOnSG}
+
+Verify LOS for the OEM West table
+    [Tags]  WoWChange_0019
     [Documentation]     Verify the data of LOS column for the OEM West table
-    Check Data For The OEM West Table  ${wowChangeReportFilePath}      ${sgWeeklyActionDBReportCurQFilePath}  9   7   LOS
 
-Verify the data of WoW(WoW of LOS column) column for the OEM West table
-    [Tags]  WoWChangeReport_0031
+    ${posOfColOnWoWChange}      Set Variable    9
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
+    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+    ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM West     nameOfCol=LOS   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+
+Verify WoW of LOS for the OEM West table
+    [Tags]  WoWChange_0020
     [Documentation]     Verify the data of WoW(WoW of LOS column) column for the OEM West table
-    Check The WoW Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   OEM West   10   WoW Of LOS
 
-Verify the data of GAP column for the OEM West table
-     [Tags]  WoWChangeReport_0032
+    ${posOfColOnWoWChange}      Set Variable    10
+    Check The WoW Data  table=OEM West   nameOfCol=WoW Of LOS     posOfColOnWoWChange=${posOfColOnWoWChange}
+
+Verify GAP for the OEM West table
+     [Tags]  WoWChange_0021
      [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM West table
-     Check The GAP Data   ${wowChangeReportOnVDCFilePath}     ${sgWeeklyActionDBReportCurQFilePath}   ${wowChangeReportFilePath}    OEM West   11   GAP
 
-Verify the data of Comments column for the OEM West table
-    [Tags]  WoWChangeReport_0033
+     ${posOfColOnWoWChange}      Set Variable    11
+     ${currentYear}              Get Current Year
+     ${currentQuarter}           Get Current Quarter
+     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+     ${rowIndexForSearchStr}     Convert To Number    3
+     ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+     ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
+     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
+     Check The GAP Data  table=OEM West   nameOfCol=GAP     posOfColOnWoWChange=${posOfColOnWoWChange}      posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+
+Verify Comments for the OEM West table
+    [Tags]  WoWChange_0022
     [Documentation]     Verify the data of Comments column for the OEM West table
-    Check The Commit Or Comment Data   ${wowChangeReportFilePath}     ${wowChangeReportOnVDCFilePath}   12   Comments   OEM West
+
+    ${posOfColOnWoWChange}          Set Variable    12
+    Check The Commit Or Comment Data   table=OEM West   nameOfCol=Comments    posOfColOnWoWChange=${posOfColOnWoWChange}
 
 
 
