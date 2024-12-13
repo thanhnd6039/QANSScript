@@ -66,8 +66,6 @@ Check The REV Data
 #        Switch Current Excel Document    doc_id=MasterOPPReport
 #    END
 
-Create Sales Dashboard By PN Table
-    [Arguments]     ${salesDashboardByPN}
 
 Create Source Table To Verify REV For Each Quarter
     [Arguments]     ${ssMasterOPPFilePath}   ${salesDashboardByPN}      ${year}     ${quarter}

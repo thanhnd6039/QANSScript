@@ -4,7 +4,6 @@ Resource    ../../Pages/NS/LoginPage.robot
 
 *** Variables ***
 ${masterOPPFilePath}                       C:\\RobotFramework\\Downloads\\Opportunity Report.xlsx
-${salesDashboardByPNFilePath}              C:\\RobotFramework\\Downloads\\Sales Dashboard by PN.xlsx
 ${ssMasterOPPFilePath}                     C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
 
 *** Test Cases ***
