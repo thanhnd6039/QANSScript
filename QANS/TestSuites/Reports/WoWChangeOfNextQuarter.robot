@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    ../../Pages/Reports/WoWChangePage.robot
+Resource    ../../Pages/Reports/WoWChangeNextQuarterPage.robot
 
 *** Test Cases ***
 #Verify Prev Q Ship for the OEM East table
@@ -85,14 +85,12 @@ Verify LOS for the OEM East table
     ${posOfColOnWoWChange}      Set Variable    9
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
     ${rowIndexForSearchStr}     Convert To Number    3
-    ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-    ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
-    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=LOS   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+    Log To Console    posOfBColOnSG:${posOfBColOnSG}
+    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=LOS   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfBColOnSG=${posOfBColOnSG}
 
 Verify WoW of LOS for the OEM East table
     [Tags]  WoWChange_0009
