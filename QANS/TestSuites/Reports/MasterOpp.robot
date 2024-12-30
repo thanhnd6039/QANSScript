@@ -2,13 +2,12 @@
 Resource    ../../Pages/Reports/MasterOppPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
 
-*** Variables ***
-${masterOPPFilePath}                       C:\\RobotFramework\\Downloads\\Opportunity Report.xlsx
-${ssMasterOPPFilePath}                     C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
-
 *** Test Cases ***
-Verify The REV Data For Every Quarter On Master OPP Report
-    Check The REV Data    ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  2022  1
+Verify the number of OPPs on Master OPP Report
+    Check The Data Of OPP   nameOfReport=OPP
+#Verify the Line ID data of OPP on Master OPP Report
+#Verify the Tracked OPP data of OPP on Master OPP Report
+
 #Validating The Detailed Data Of Master Opp Report
 #    Remove All Files in Specified Directory    ${DOWNLOAD_DIR}\\
 #    Setup    Chrome

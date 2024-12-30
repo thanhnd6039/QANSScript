@@ -3,7 +3,6 @@ Resource    ../CommonPage.robot
 Resource    ../NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
-
 *** Variables ***
 ${txtTitleOfMasterOpp}                               //*[contains(text(),'Master')]
 ${lstOppStageFilter}                                 //*[@id='ReportViewerControl_ctl04_ctl29_txtValue']
@@ -23,11 +22,67 @@ ${chk9_OppDisapprovedOppStageOption}                 //*[@id='ReportViewerContro
 ${chkNullOfCreatedFromFilter}                        //*[@id='ReportViewerControl_ctl04_ctl05_cbNull']
 ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerControl_ctl04_ctl07_cbNull']
 ${RESULT_FILE_PATH}                                  ${RESULT_DIR}\\MasterOpp\\MasterOppResult.xlsx
+${ssMasterOPPFilePath}                               ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
+${masterOPPReportFilePath}                           ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
+${posOfOPPColOnSSMasterOPP}                          2
+${posOfOPPColOnMasterOPPReport}                      1
 
 *** Keywords ***
-Check The REV Data
-    [Arguments]     ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
-    Create Source Table To Verify REV For Each Quarter    ${ssMasterOPPFilePath}    ${salesDashboardByPNFilePath}    ${year}    ${quarter}
+Check The Data Of OPP
+    [Arguments]     ${nameOfReport}
+    @{listOfOPPsFromSSMasterOPP}        Create List
+    @{listOfOPPsFromMasterOPPReport}    Create List
+
+    ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
+    ${listOfOPPsFromMasterOPPReport}    Get List Of Opps From The Master Opp Report
+
+
+
+
+Get List Of Opps From The SS Master Opp
+    @{listOfOpps}   Create List
+
+    File Should Exist    path=${ssMasterOPPFilePath}
+    Open Excel Document    filename=${ssMasterOPPFilePath}    doc_id=SSMasterOPP
+    ${numOfRows}    Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}+1
+        ${oppCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPColOnSSMasterOPP}
+        IF    '${oppCol}' != '${EMPTY}'
+             Append To List    ${listOfOpps}     ${oppCol}
+        END
+    END
+    Close All Excel Documents
+    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+    Sort List    ${listOfOpps}
+    FOR    ${opp}    IN    @{listOfOpps}
+        Log To Console    OPP: ${opp}
+    END
+    [Return]    ${listOfOpps}
+
+Get List Of Opps From The Master Opp Report
+    @{listOfOpps}   Create List
+
+    File Should Exist      path=${masterOPPReportFilePath}
+    Open Excel Document    filename=${masterOPPReportFilePath}    doc_id=MasterOPPReport
+    ${numOfRows}           Get Number Of Rows In Excel      ${masterOPPReportFilePath}
+
+    FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
+        ${oppCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPColOnMasterOPPReport}
+        IF    '${oppCol}' != '${EMPTY}'
+             Append To List    ${listOfOpps}     ${oppCol}
+        END
+    END
+
+    Close All Excel Documents
+    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
+    Sort List    ${listOfOpps}
+
+    [Return]    ${listOfOpps}
+
+
+#Check The REV Data
+#    [Arguments]     ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
+#    Create Source Table To Verify REV For Each Quarter    ${ssMasterOPPFilePath}    ${salesDashboardByPNFilePath}    ${year}    ${quarter}
 
 #    File Should Exist    ${masterOPPReportFilePath}
 #    Open Excel Document    ${masterOPPReportFilePath}    doc_id=MasterOPPReport
@@ -67,9 +122,9 @@ Check The REV Data
 #    END
 
 
-Create Source Table To Verify REV For Each Quarter
-    [Arguments]     ${ssMasterOPPFilePath}   ${salesDashboardByPN}      ${year}     ${quarter}
-    @{table}        Create List
+#Create Source Table To Verify REV For Each Quarter
+#    [Arguments]     ${ssMasterOPPFilePath}   ${salesDashboardByPN}      ${year}     ${quarter}
+#    @{table}        Create List
 
 #    File Should Exist      ${ssMasterOPPFilePath}
 #    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
@@ -134,7 +189,7 @@ Create Source Table To Verify REV For Each Quarter
 #        Switch Current Excel Document    doc_id=SSMasterOPP
 #    END
 
-    [Return]    ${table}
+#    [Return]    ${table}
 
 #Navigate To Master Opp Report
 #    ${configFileObject}     Load Json From File    ${CONFIG_FILE}
@@ -1102,45 +1157,10 @@ Create Source Table To Verify REV For Each Quarter
 #    Close All Excel Documents
 #    [Return]    ${result}
 #
-#Get List Of Opps From The SS Of Master Opp Report On NS
-#    [Arguments]     ${ssFilePath}
-#    @{listOfOpps}   Create List
-#
-#    File Should Exist    ${ssFilePath}
-#    Open Excel Document    ${ssFilePath}    MasterOppSource
-#    ${numOfRows}    Get Number Of Rows In Excel    ${ssFilePath}
-#    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}+1
-#        ${opp}  Read Excel Cell    ${rowIndex}    1
-#        IF    '${opp}' != '${EMPTY}'
-#             Append To List    ${listOfOpps}     ${opp}
-#        END
-#    END
-#    Close All Excel Documents
-#    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
-#    Sort List    ${listOfOpps}
-#    [Return]    ${listOfOpps}
-#
-#Get List Of Opps From The Master Opp Report
-#    [Arguments]     ${reportFilePath}
-#    @{listOfOpps}   Create List
-#
-#    File Should Exist      ${reportFilePath}
-#    Open Excel Document    ${reportFilePath}    MasterOppReport
-#    ${numOfRows}    Get Number Of Rows In Excel    ${reportFilePath}
-#
-#    FOR    ${rowIndex}    IN RANGE    5    ${numOfRows}+1
-#        ${opp}  Read Excel Cell    ${rowIndex}    1
-#        IF    '${opp}' != '${EMPTY}'
-#             Append To List    ${listOfOpps}     ${opp}
-#        END
-#    END
-#
-#    Close All Excel Documents
-#    ${listOfOpps}   Remove Duplicates    ${listOfOpps}
-#    Sort List    ${listOfOpps}
-#
-#    [Return]    ${listOfOpps}
-#
+
+
+
+
 #Get List Of Opps Have Multi Items From The Master Opp Report
 #    [Arguments]     ${reportFilePath}
 #    @{listOfOpps}   Create List
