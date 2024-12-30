@@ -23,18 +23,33 @@ ${chkNullOfCreatedFromFilter}                        //*[@id='ReportViewerContro
 ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerControl_ctl04_ctl07_cbNull']
 ${RESULT_FILE_PATH}                                  ${RESULT_DIR}\\MasterOpp\\MasterOppResult.xlsx
 ${ssMasterOPPFilePath}                               ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
-${masterOPPReportFilePath}                           ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
+${masterOPPReportFilePath}                           ${DOWNLOAD_DIR}\\Opportunity Report V3.xlsx
 ${posOfOPPColOnSSMasterOPP}                          2
 ${posOfOPPColOnMasterOPPReport}                      1
 
 *** Keywords ***
 Check The Data Of OPP
-    [Arguments]     ${nameOfReport}
+    [Arguments]     ${nameOfCol}
+    ${result}   Set Variable    ${True}
     @{listOfOPPsFromSSMasterOPP}        Create List
     @{listOfOPPsFromMasterOPPReport}    Create List
 
-    ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
-    ${listOfOPPsFromMasterOPPReport}    Get List Of Opps From The Master Opp Report
+    IF    '${nameOfCol}' == 'OPP'
+         ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
+         ${listOfOPPsFromMasterOPPReport}    Get List Of Opps From The Master Opp Report
+
+         FOR    ${oppOnSSMasterOPP}    IN    @{listOfOPPsFromSSMasterOPP}
+             ${result}  Set Variable    ${False}
+             FOR    ${oppOnMasterOPPReport}    IN    @{listOfOPPsFromMasterOPPReport}
+                 IF    '${oppOnSSMasterOPP}' == '${oppOnMasterOPPReport}'
+                      ${result}     Set Variable    ${True}
+                      Log To Console    OPP:${oppOnSSMasterOPP}
+                      BREAK
+                 END
+             END
+         END
+    END
+
 
 
 
@@ -54,9 +69,6 @@ Get List Of Opps From The SS Master Opp
     Close All Excel Documents
     ${listOfOpps}   Remove Duplicates    ${listOfOpps}
     Sort List    ${listOfOpps}
-    FOR    ${opp}    IN    @{listOfOpps}
-        Log To Console    OPP: ${opp}
-    END
     [Return]    ${listOfOpps}
 
 Get List Of Opps From The Master Opp Report

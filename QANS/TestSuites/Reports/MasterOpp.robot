@@ -4,7 +4,7 @@ Resource    ../../Pages/NS/LoginPage.robot
 
 *** Test Cases ***
 Verify the number of OPPs on Master OPP Report
-    Check The Data Of OPP   nameOfReport=OPP
+    Check The Data Of OPP   nameOfCol=OPP
 #Verify the Line ID data of OPP on Master OPP Report
 #Verify the Tracked OPP data of OPP on Master OPP Report
 
