@@ -37,22 +37,23 @@ Check The Data Of OPP
     IF    '${nameOfCol}' == 'OPP'
          ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
          ${listOfOPPsFromMasterOPPReport}    Get List Of Opps From The Master Opp Report
-
-         FOR    ${oppOnSSMasterOPP}    IN    @{listOfOPPsFromSSMasterOPP}
-             ${result}  Set Variable    ${False}
-             FOR    ${oppOnMasterOPPReport}    IN    @{listOfOPPsFromMasterOPPReport}
-                 IF    '${oppOnSSMasterOPP}' == '${oppOnMasterOPPReport}'
-                      ${result}     Set Variable    ${True}
-                      Log To Console    OPP:${oppOnSSMasterOPP}
-                      BREAK
-                 END
-             END
+         ${numOfRowsOnSSMasterOPP}           Get Length    ${listOfOPPsFromSSMasterOPP}
+         ${numOfRowsOnMasterOPPReport}       Get Length    ${listOfOPPsFromMasterOPPReport}
+         ${startIndexForMasterOPPReport}     Set Variable    0
+         FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    0    ${numOfRowsOnSSMasterOPP}
+            ${isOPPInMasterOPPReport}   Set Variable    ${False}
+            FOR    ${rowIndexOnMasterOPPReport}    IN RANGE    ${startIndexForMasterOPPReport}    ${numOfRowsOnMasterOPPReport}
+                IF    '${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}' == '${listOfOPPsFromMasterOPPReport[${rowIndexOnMasterOPPReport}]}'
+                     ${isOPPInMasterOPPReport}   Set Variable    ${True}
+                     ${startIndexForMasterOPPReport}    Evaluate    ${startIndexForMasterOPPReport}+1
+                     BREAK
+                END                 
+            END
+            IF    '${isOPPInMasterOPPReport}' == '${False}'
+                 Log To Console    OPP:${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}
+            END
          END
     END
-
-
-
-
 
 Get List Of Opps From The SS Master Opp
     @{listOfOpps}   Create List
