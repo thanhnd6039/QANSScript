@@ -72,7 +72,8 @@ Check The Data Of OPP
             END
          END
     ELSE IF  '${nameOfCol}' == 'LINE ID'
-        Log To Console    continue
+        ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
+
     ELSE
         Log To Console    Invalid
     END
