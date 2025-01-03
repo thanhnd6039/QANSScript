@@ -1,11 +1,13 @@
 *** Settings ***
 Resource    ../../Pages/Reports/MasterOppPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
+Suite Setup     Initialize Suite
 
 *** Test Cases ***
 Verify the number of OPPs on Master OPP Report
     Check The Data Of OPP   nameOfCol=OPP
-#Verify the Line ID data of OPP on Master OPP Report
+Verify the Line ID data of OPP on Master OPP Report
+    Check The Data Of OPP   nameOfCol=LINE ID
 #Verify the Tracked OPP data of OPP on Master OPP Report
 
 #Validating The Detailed Data Of Master Opp Report

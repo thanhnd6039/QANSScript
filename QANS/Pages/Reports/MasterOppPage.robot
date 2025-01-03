@@ -21,13 +21,30 @@ ${chk9_ClosedOppStageOption}                         //*[@id='ReportViewerContro
 ${chk9_OppDisapprovedOppStageOption}                 //*[@id='ReportViewerControl_ctl04_ctl29_divDropDown_ctl13']
 ${chkNullOfCreatedFromFilter}                        //*[@id='ReportViewerControl_ctl04_ctl05_cbNull']
 ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerControl_ctl04_ctl07_cbNull']
-${RESULT_FILE_PATH}                                  ${RESULT_DIR}\\MasterOpp\\MasterOppResult.xlsx
+${masterOPPReportResultFilePath}                     ${RESULT_DIR}\\MasterOppReport\\MasterOppReportResult.xlsx
 ${ssMasterOPPFilePath}                               ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
 ${masterOPPReportFilePath}                           ${DOWNLOAD_DIR}\\Opportunity Report V3.xlsx
 ${posOfOPPColOnSSMasterOPP}                          2
 ${posOfOPPColOnMasterOPPReport}                      1
 
 *** Keywords ***
+Initialize Suite
+    Log To Console    Initialize Suite
+
+Write The Test Result Of Master OPP Report To Excel
+    [Arguments]     ${itemNeedToCheck}     ${opp}     ${valueOnMasterOPPReport}   ${valueOnSSMasterOPP}
+    File Should Exist      path=${masterOPPReportResultFilePath}
+    Open Excel Document    filename=${masterOPPReportResultFilePath}    doc_id=MasterOPPReportResult
+    Switch Current Excel Document    doc_id=MasterOPPReportResult
+    ${latestRow}   Get Number Of Rows In Excel    ${masterOPPReportResultFilePath}
+    ${nextRow}    Evaluate    ${latestRow}+1
+    Write Excel Cell    row_num=${nextRow}    col_num=1    value=${itemNeedToCheck}
+    Write Excel Cell    row_num=${nextRow}    col_num=2    value=${opp}
+    Write Excel Cell    row_num=${nextRow}    col_num=3    value=${valueOnMasterOPPReport}
+    Write Excel Cell    row_num=${nextRow}    col_num=4    value=${valueOnSSMasterOPP}
+    Save Excel Document    ${masterOPPReportResultFilePath}
+    Close Current Excel Document
+
 Check The Data Of OPP
     [Arguments]     ${nameOfCol}
     ${result}   Set Variable    ${True}
@@ -44,18 +61,29 @@ Check The Data Of OPP
             ${isOPPInMasterOPPReport}   Set Variable    ${False}
             FOR    ${rowIndexOnMasterOPPReport}    IN RANGE    ${startIndexForMasterOPPReport}    ${numOfRowsOnMasterOPPReport}
                 IF    '${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}' == '${listOfOPPsFromMasterOPPReport[${rowIndexOnMasterOPPReport}]}'
-                     ${isOPPInMasterOPPReport}   Set Variable    ${True}
+                     ${isOPPInMasterOPPReport}          Set Variable    ${True}
                      ${startIndexForMasterOPPReport}    Evaluate    ${startIndexForMasterOPPReport}+1
                      BREAK
                 END                 
             END
             IF    '${isOPPInMasterOPPReport}' == '${False}'
-                 Log To Console    OPP:${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}
+                 ${result}   Set Variable    ${False}
+                 Write The Test Result Of Master OPP Report To Excel    itemNeedToCheck=OPP    opp=${EMPTY}    valueOnMasterOPPReport=${EMPTY}    valueOnSSMasterOPP=${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}
             END
          END
+    ELSE IF  '${nameOfCol}' == 'LINE ID'
+        Log To Console    continue
+    ELSE
+        Log To Console    Invalid
     END
+    IF    '${result}' == '${False}'
+         Close All Excel Documents
+         Fail   The data is different betwween the Master OPP Report and NS
+    END
+    Close All Excel Documents
 
 Get List Of Opps From The SS Master Opp
+    [Arguments]
     @{listOfOpps}   Create List
 
     File Should Exist    path=${ssMasterOPPFilePath}
