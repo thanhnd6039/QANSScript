@@ -90,11 +90,35 @@ Check The Data Of OPP
     Close All Excel Documents
 
 Check The Line ID Data On Master OPP Report
-    @{tableSSMasterOPP}         Create List
-    @{tableMasterOPPReport}     Create List
+    @{tableSSMasterOPP}                 Create List
+    @{tableMasterOPPReport}             Create List
+    @{checkListOPPAndLineIDDuplicated}  Create List
 
     ${tableSSMasterOPP}         Create Table From The SS Master OPP
     ${tableMasterOPPReport}     Create Table From The Master OPP Report
+    FOR    ${dataRow}    IN    @{tableMasterOPPReport}
+        ${oppCol}           Set Variable    ${dataRow[0]}
+        ${lineIDCol}        Set Variable    ${dataRow[1]}
+        ${oppAndLineIDCol}  Set Variable    ${dataRow[2]}
+        IF    '${oppCol}' == '2805' and '${lineIDCol}' == '0'
+             Continue For Loop
+        END
+        Append To List    ${checkListOPPAndLineIDDuplicated}    ${oppAndLineIDCol}
+    END
+    List Should Not Contain Duplicates    ${checkListOPPAndLineIDDuplicated}
+    FOR    ${dataRow}    IN    @{tableMasterOPPReport}
+        ${oppCol}           Set Variable    ${dataRow[0]}
+        ${lineIDCol}        Set Variable    ${dataRow[1]}
+        IF    '${oppCol}' == '2805'
+             Continue For Loop
+        END
+
+        IF    '${lineIDCol}' == '0'
+             Fail   The Line ID data of OPP ${oppCol} is Empty
+        END
+    END
+
+
 
 
 Get List Of Opps From The SS Master Opp
