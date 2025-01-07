@@ -9,7 +9,7 @@ Verify the number of OPPs on Master OPP Report
     Check The Data Of OPP   nameOfCol=OPP
 Verify the Line ID data of OPP on Master OPP Report
     [Tags]  MasterOPP_0002
-    Check The Data Of OPP   nameOfCol=LINE ID
+    Check The Line ID Data On Master OPP Report
 #Verify the Tracked OPP data of OPP on Master OPP Report
 
 #Validating The Detailed Data Of Master Opp Report

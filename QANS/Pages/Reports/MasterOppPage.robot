@@ -24,8 +24,14 @@ ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerContro
 ${masterOPPReportResultFilePath}                     ${RESULT_DIR}\\MasterOppReport\\MasterOppReportResult.xlsx
 ${ssMasterOPPFilePath}                               ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
 ${masterOPPReportFilePath}                           ${DOWNLOAD_DIR}\\Opportunity Report V3.xlsx
+${startRowIndexOnMasterOPPReport}                    5
+${startRowIndexOnSSMasterOPP}                        2
 ${posOfOPPColOnSSMasterOPP}                          2
+${posOfLineIDColOnSSMasterOPP}                       3
 ${posOfOPPColOnMasterOPPReport}                      1
+${posOfLineIDColOnMasterOPPReport}                   2
+${sourceFilePath}                     ${RESULT_DIR}\\MasterOppReport\\Source.xlsx
+${targetFilePath}                     ${RESULT_DIR}\\MasterOppReport\\Target.xlsx
 
 *** Keywords ***
 Initialize Suite
@@ -83,6 +89,14 @@ Check The Data Of OPP
     END
     Close All Excel Documents
 
+Check The Line ID Data On Master OPP Report
+    @{tableSSMasterOPP}         Create List
+    @{tableMasterOPPReport}     Create List
+
+    ${tableSSMasterOPP}         Create Table From The SS Master OPP
+    ${tableMasterOPPReport}     Create Table From The Master OPP Report
+
+
 Get List Of Opps From The SS Master Opp
     [Arguments]
     @{listOfOpps}   Create List
@@ -121,6 +135,31 @@ Get List Of Opps From The Master Opp Report
 
     [Return]    ${listOfOpps}
 
+Create Table From The Master OPP Report
+    @{table}    Create List
+
+    File Should Exist      path=${masterOPPReportFilePath}
+    Open Excel Document    filename=${masterOPPReportFilePath}    doc_id=MasterOPPReport
+    ${numOfRows}    Get Number Of Rows In Excel    ${masterOPPReportFilePath}
+    FOR    ${rowIndex}    IN RANGE    ${startRowIndexOnMasterOPPReport}    ${numOfRows}+1
+        ${oppCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPColOnMasterOPPReport}
+        ${lineIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfLineIDColOnMasterOPPReport}
+        IF    '${lineIDCol}' == 'None'
+             ${lineIDCol}   Set Variable    0
+        END
+        ${oppAndLineIDCol}      Set Variable    ${oppCol}${lineIDCol}
+        ${oppAndLineIDCol}  Convert To Integer    ${oppAndLineIDCol}
+        
+        ${rowOnTable}   Create List
+        ...             ${oppCol}
+        ...             ${lineIDCol}
+        ...             ${oppAndLineIDCol}
+        Append To List    ${table}   ${rowOnTable}
+    END
+
+    Close Current Excel Document
+    [Return]    ${table}
+
 Create Table From The SS Master OPP
     @{table}    Create List
 
@@ -128,187 +167,25 @@ Create Table From The SS Master OPP
     Open Excel Document    filename=${ssMasterOPPFilePath}    doc_id=SSMasterOPP
 
     ${numOfRows}    Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
-    FOR    ${rowIndex}    IN RANGE    2    ${numOfRows}+1
-        ${oppCol}       Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${lineIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=3
-
+    FOR    ${rowIndex}    IN RANGE    ${startRowIndexOnSSMasterOPP}    ${numOfRows}+1
+        ${oppCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPColOnSSMasterOPP}
+        ${lineIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfLineIDColOnSSMasterOPP}
+        IF    '${lineIDCol}' == '${EMPTY}'
+             ${lineIDCol}   Set Variable    0
+        END
+        ${oppAndLineIDCol}      Set Variable    ${oppCol}${lineIDCol}
+        ${oppAndLineIDCol}  Convert To Integer    ${oppAndLineIDCol}
         ${rowOnTable}   Create List
         ...             ${oppCol}
+        ...             ${lineIDCol}
+        ...             ${oppAndLineIDCol}
+        Append To List    ${table}   ${rowOnTable}
     END
+    ${table}    Sort Table By Column    ${table}    2
 
+    Close Current Excel Document
     [Return]    ${table}
 
-#    FOR    ${rowIndexOnSS}    IN RANGE    2    ${numOfRowsOnSS}+1
-#        ${oppColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=1
-#        ${trackedOppColOnSS}                         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=2
-#        ${oppLinkToColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=3
-#        IF    '${oppLinkToColOnSS}' == '- None -'
-#             ${oppLinkToColOnSS}      Set Variable    ${EMPTY}
-#        END
-#
-#        ${oemGroupColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=5
-#        ${isOEMGroupOnSSContainsColon}  Set Variable    ${False}
-#        ${isOEMGroupOnSSContainsColon}  Evaluate   ":" in """${oemGroupColOnSS}"""
-#        IF    '${isOEMGroupOnSSContainsColon}' == '${True}'
-#              ${strArrTemp}   Split String    ${oemGroupColOnSS}  :
-#              ${oemGroupColOnSS}    Set Variable    ${strArrTemp}[1]
-#              ${oemGroupColOnSS}    Set Variable    ${oemGroupColOnSS.strip()}
-#        END
-#
-#        ${samColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=6
-#        ${saleRepColOnSS}                            Read Excel Cell    row_num=${rowIndexOnSS}    col_num=7
-#        ${isSaleRepOnSSContainsComma}  Set Variable    ${False}
-#        ${isSaleRepOnSSContainsComma}  Evaluate   "," in """${saleRepColOnSS}"""
-#        IF    '${isSaleRepOnSSContainsComma}' == '${True}'
-#            ${strArrTemp}   Split String    ${saleRepColOnSS}
-#            ${saleRepColOnSS}      Catenate    ${strArrTemp}[1]    ${strArrTemp}[0]
-#            ${saleRepColOnSS}  Remove String    ${saleRepColOnSS}     ,
-#            ${saleRepColOnSS}    Set Variable    ${saleRepColOnSS.strip()}
-#        END
-#
-#        ${tmColOnSS}                                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=8
-#        IF    '${tmColOnSS}' == '- None -'
-#            ${tmColOnSS}     Set Variable    ${EMPTY}
-#        END
-#        ${isTMOnSSContainsComma}  Set Variable    ${False}
-#        ${isTMOnSSContainsComma}  Evaluate   "," in """${tmColOnSS}"""
-#        IF    '${isTMOnSSContainsComma}' == '${True}'
-#            ${strArrTemp}   Split String    ${tmColOnSS}
-#            ${tmColOnSS}      Catenate    ${strArrTemp}[1]    ${strArrTemp}[0]
-#            ${tmColOnSS}  Remove String    ${tmColOnSS}     ,
-#            ${tmColOnSS}    Set Variable    ${tmColOnSS.strip()}
-#        END
-#
-#        ${oppDiscoveryPersonColOnSS}                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=9
-#        IF    '${oppDiscoveryPersonColOnSS}' == '- None -'
-#           ${oppDiscoveryPersonColOnSS}     Set Variable    ${EMPTY}
-#        END
-#        ${isOPPDiscoveryPersonOnSSContainsComma}  Set Variable    ${False}
-#        ${isOPPDiscoveryPersonOnSSContainsComma}  Evaluate   "," in """${oppDiscoveryPersonColOnSS}"""
-#        IF    '${isOPPDiscoveryPersonOnSSContainsComma}' == '${True}'
-#            ${strArrTemp}   Split String    ${oppDiscoveryPersonColOnSS}
-#            ${oppDiscoveryPersonColOnSS}      Catenate    ${strArrTemp}[1]    ${strArrTemp}[0]
-#            ${oppDiscoveryPersonColOnSS}    Remove String    ${oppDiscoveryPersonColOnSS}     ,
-#            ${oppDiscoveryPersonColOnSS}    Set Variable    ${oppDiscoveryPersonColOnSS.strip()}
-#        END
-#
-#        ${bizDevSupportColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=10
-#        IF    '${bizDevSupportColOnSS}' == '- None -'
-#              ${bizDevSupportColOnSS}     Set Variable    ${EMPTY}
-#        END
-#        ${isBizDevSupportContainsComma}  Set Variable    ${False}
-#        ${isBizDevSupportContainsComma}  Evaluate   "," in """${bizDevSupportColOnSS}"""
-#        IF    '${isBizDevSupportContainsComma}' == '${True}'
-#                ${strArrTemp}   Split String    ${bizDevSupportColOnSS}
-#                ${bizDevSupportColOnSS}      Catenate    ${strArrTemp}[1]    ${strArrTemp}[0]
-#                ${bizDevSupportColOnSS}  Remove String    ${bizDevSupportColOnSS}     ,
-#                ${bizDevSupportColOnSS}    Set Variable    ${bizDevSupportColOnSS.strip()}
-#        END
-#
-#        ${pnColOnSS}                                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=11
-#        ${qtyColOnSS}                                Read Excel Cell    row_num=${rowIndexOnSS}    col_num=12
-#        ${projectTotalColOnSS}                       Read Excel Cell    row_num=${rowIndexOnSS}    col_num=13
-#        ${probColOnSS}                               Read Excel Cell    row_num=${rowIndexOnSS}    col_num=14
-#        ${probColOnSS}  Remove String    ${probColOnSS}  %
-#        ${probColOnSS}  Convert To Number    ${probColOnSS}
-#
-#        ${currentOppStageColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=15
-#        ${oppCategoryColOnSS}                        Read Excel Cell    row_num=${rowIndexOnSS}    col_num=17
-#        ${expSampleShipColOnSS}                      Read Excel Cell    row_num=${rowIndexOnSS}    col_num=18
-#        IF    '${expSampleShipColOnSS}' != 'None'
-#              ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         date_format=%m/%d/%Y
-#              ${expSampleShipColOnSS}        Convert Date    ${expSampleShipColOnSS}         result_format=%m/%d/%Y
-#        END
-#
-#        ${expQualApprovedColOnSS}                    Read Excel Cell    row_num=${rowIndexOnSS}    col_num=19
-#        IF    '${expQualApprovedColOnSS}' != 'None'
-#              ${expQualApprovedColOnSS}        Convert Date    ${expQualApprovedColOnSS}         date_format=%m/%d/%Y
-#              ${expQualApprovedColOnSS}        Convert Date    ${expQualApprovedColOnSS}         result_format=%m/%d/%Y
-#        END
-#
-#        ${expDWDateColOnSS}                          Read Excel Cell    row_num=${rowIndexOnSS}    col_num=20
-#        IF    '${expDWDateColOnSS}' != 'None'
-#              ${expDWDateColOnSS}        Convert Date    ${expDWDateColOnSS}         date_format=%m/%d/%Y
-#              ${expDWDateColOnSS}        Convert Date    ${expDWDateColOnSS}         result_format=%m/%d/%Y
-#        END
-#
-#        ${1PPODateColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=21
-#        IF    '${1PPODateColOnSS}' != 'None'
-#              ${1PPODateColOnSS}        Convert Date    ${1PPODateColOnSS}         date_format=%m/%d/%Y
-#              ${1PPODateColOnSS}        Convert Date    ${1PPODateColOnSS}         result_format=%m/%d/%Y
-#        END
-#
-#        ${DWDateColOnSS}                             Read Excel Cell    row_num=${rowIndexOnSS}    col_num=22
-#        IF    '${DWDateColOnSS}' != 'None'
-#              ${DWDateColOnSS}        Convert Date    ${DWDateColOnSS}         date_format=%m/%d/%Y
-#              ${DWDateColOnSS}        Convert Date    ${DWDateColOnSS}         result_format=%m/%d/%Y
-#        END
-#
-#        ${DWColOnSS}                                 Read Excel Cell    row_num=${rowIndexOnSS}    col_num=23
-#        IF    '${DWColOnSS}' == '- None -'
-#              ${DWColOnSS}     Set Variable    ${EMPTY}
-#        END
-#
-#        ${customerPNColOnSS}                         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=24
-#        IF    '${customerPNColOnSS}' == '- None -'
-#             ${customerPNColOnSS}     Set Variable    ${EMPTY}
-#        END
-#
-#        ${subSegmentColOnSS}                         Read Excel Cell    row_num=${rowIndexOnSS}    col_num=25
-#        IF    '${subSegmentColOnSS}' == '- None -'
-#              ${subSegmentColOnSS}     Set Variable    ${EMPTY}
-#        END
-#        ${programColOnSS}                            Read Excel Cell    row_num=${rowIndexOnSS}    col_num=26
-#        ${programColOnSS}     Convert To String    ${programColOnSS}
-#         ${programColOnSS}    Remove String    ${programColOnSS}   '  "
-#         IF    '${programColOnSS}' == 'None' or '${programColOnSS}' == '- None -'
-#              ${programColOnSS}     Set Variable    ${EMPTY}
-#         END
-#
-#        ${applicationColOnSS}                        Read Excel Cell    row_num=${rowIndexOnSS}    col_num=27
-#        IF    '${applicationColOnSS}' == '- None -'
-#              ${applicationColOnSS}     Set Variable    ${EMPTY}
-#        END
-#
-#        ${functionColOnSS}                           Read Excel Cell    row_num=${rowIndexOnSS}    col_num=28
-#        IF    '${functionColOnSS}' == '- None -'
-#              ${functionColOnSS}     Set Variable    ${EMPTY}
-#        END
-#
-#        ${rowOnTable}   Create List
-#        ...             ${oppColOnSS}
-#        ...             ${trackedOppColOnSS}
-#        ...             ${oppLinkToColOnSS}
-#        ...             ${oemGroupColOnSS}
-#        ...             ${samColOnSS}
-#        ...             ${saleRepColOnSS}
-#        ...             ${tmColOnSS}
-#        ...             ${oppDiscoveryPersonColOnSS}
-#        ...             ${bizDevSupportColOnSS}
-#        ...             ${pnColOnSS}
-#        ...             ${qtyColOnSS}
-#        ...             ${projectTotalColOnSS}
-#        ...             ${probColOnSS}
-#        ...             ${currentOppStageColOnSS}
-#        ...             ${oppCategoryColOnSS}
-#        ...             ${expSampleShipColOnSS}
-#        ...             ${expQualApprovedColOnSS}
-#        ...             ${expDWDateColOnSS}
-#        ...             ${1PPODateColOnSS}
-#        ...             ${DWDateColOnSS}
-#        ...             ${DWColOnSS}
-#        ...             ${customerPNColOnSS}
-#        ...             ${subSegmentColOnSS}
-#        ...             ${programColOnSS}
-#        ...             ${applicationColOnSS}
-#        ...             ${functionColOnSS}
-#        Append To List    ${table}   ${rowOnTable}
-#        ${rowOnTable}   Remove Values From List    ${rowOnTable}
-#    END
-#    Close All Excel Documents
-#
-#    [Return]    ${table}
-#
 
 #Check The REV Data
 #    [Arguments]     ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
