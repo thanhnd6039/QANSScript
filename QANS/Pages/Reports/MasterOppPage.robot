@@ -34,6 +34,8 @@ ${posOfOEMGroupColOnSSMasterOPP}                     5
 ${posOfPNColOnSSMasterOPP}                           6
 ${posOfOPPColOnMasterOPPReport}                      1
 ${posOfLineIDColOnMasterOPPReport}                   2
+${posOfOEMGroupColOnFlatSGReport}                    1
+${posOfPNColOnFlatSGReport}                          2
 ${sourceFilePath}                     ${RESULT_DIR}\\MasterOppReport\\Source.xlsx
 ${targetFilePath}                     ${RESULT_DIR}\\MasterOppReport\\Target.xlsx
 
@@ -255,7 +257,8 @@ Create Table From The SS Master OPP
         IF    '${mapREVCol}' == 'Yes'
              Switch Current Excel Document    doc_id=FlatSGReport
              FOR    ${rowIndexOnFlatSGReport}    IN RANGE    5    ${numOfRowsOnFlatSGReport}+1
-                 Log    ${counter}
+                 ${oemGroupColOnFlatSGReport}   Read Excel Cell    row_num=${rowIndexOnFlatSGReport}    col_num=${posOfOEMGroupColOnFlatSGReport}
+                 ${pnColOnFlatSGReport}         Read Excel Cell    row_num=${rowIndexOnFlatSGReport}    col_num=${posOfPNColOnFlatSGReport}
 
              END
         ELSE
