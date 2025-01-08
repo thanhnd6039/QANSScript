@@ -24,10 +24,14 @@ ${chkNullOfCreatedToFilter}                          //*[@id='ReportViewerContro
 ${masterOPPReportResultFilePath}                     ${RESULT_DIR}\\MasterOppReport\\MasterOppReportResult.xlsx
 ${ssMasterOPPFilePath}                               ${DOWNLOAD_DIR}\\testMasterOpportunity.xlsx
 ${masterOPPReportFilePath}                           ${DOWNLOAD_DIR}\\Opportunity Report V3.xlsx
+${flatSGReportFilePath}                              ${DOWNLOAD_DIR}\\Flat Sales Gap.xlsx
 ${startRowIndexOnMasterOPPReport}                    5
 ${startRowIndexOnSSMasterOPP}                        2
 ${posOfOPPColOnSSMasterOPP}                          2
 ${posOfLineIDColOnSSMasterOPP}                       3
+${posOfMapREVColOnSSMasterOPP}                       4
+${posOfOEMGroupColOnSSMasterOPP}                     5
+${posOfPNColOnSSMasterOPP}                           6
 ${posOfOPPColOnMasterOPPReport}                      1
 ${posOfLineIDColOnMasterOPPReport}                   2
 ${sourceFilePath}                     ${RESULT_DIR}\\MasterOppReport\\Source.xlsx
@@ -51,51 +55,60 @@ Write The Test Result Of Master OPP Report To Excel
     Save Excel Document    ${masterOPPReportResultFilePath}
     Close Current Excel Document
 
-Check The Data Of OPP
-    [Arguments]     ${nameOfCol}
+Check The LOS Data Of OPP On Master OPP Report
+    ${result}   Set Variable    ${True}
+
+    File Should Exist      path=${masterOPPReportFilePath}
+    Open Excel Document    filename=${masterOPPReportFilePath}    doc_id=MasterOPPReport
+    ${numOfRowsOnMasterOPPReport}    Get Number Of Rows In Excel    ${masterOPPReportFilePath}
+
+
+Check The Number Of OPPs On Master OPP Report
     ${result}   Set Variable    ${True}
     @{listOfOPPsFromSSMasterOPP}        Create List
     @{listOfOPPsFromMasterOPPReport}    Create List
-
-    IF    '${nameOfCol}' == 'OPP'
-         ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
-         ${listOfOPPsFromMasterOPPReport}    Get List Of Opps From The Master Opp Report
-         ${numOfRowsOnSSMasterOPP}           Get Length    ${listOfOPPsFromSSMasterOPP}
-         ${numOfRowsOnMasterOPPReport}       Get Length    ${listOfOPPsFromMasterOPPReport}
-         ${startIndexForMasterOPPReport}     Set Variable    0
-         FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    0    ${numOfRowsOnSSMasterOPP}
-            ${isOPPInMasterOPPReport}   Set Variable    ${False}
-            FOR    ${rowIndexOnMasterOPPReport}    IN RANGE    ${startIndexForMasterOPPReport}    ${numOfRowsOnMasterOPPReport}
-                IF    '${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}' == '${listOfOPPsFromMasterOPPReport[${rowIndexOnMasterOPPReport}]}'
-                     ${isOPPInMasterOPPReport}          Set Variable    ${True}
-                     ${startIndexForMasterOPPReport}    Evaluate    ${startIndexForMasterOPPReport}+1
-                     BREAK
-                END                 
-            END
-            IF    '${isOPPInMasterOPPReport}' == '${False}'
-                 ${result}   Set Variable    ${False}
-                 Write The Test Result Of Master OPP Report To Excel    itemNeedToCheck=OPP    opp=${EMPTY}    valueOnMasterOPPReport=${EMPTY}    valueOnSSMasterOPP=${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}
-            END
-         END
-    ELSE IF  '${nameOfCol}' == 'LINE ID'
-        Create Table From The SS Master OPP
-
-    ELSE
-        Log To Console    Invalid
+    
+    ${listOfOPPsFromSSMasterOPP}        Get List Of Opps From The SS Master Opp
+    ${listOfOPPsFromMasterOPPReport}    Get List Of Opps From The Master Opp Report
+    ${numOfRowsOnSSMasterOPP}           Get Length    ${listOfOPPsFromSSMasterOPP}
+    ${numOfRowsOnMasterOPPReport}       Get Length    ${listOfOPPsFromMasterOPPReport}
+    ${startIndexForMasterOPPReport}     Set Variable    0
+    FOR    ${rowIndexOnSSMasterOPP}    IN RANGE    0    ${numOfRowsOnSSMasterOPP}
+        ${isOPPInMasterOPPReport}   Set Variable    ${False}
+        FOR    ${rowIndexOnMasterOPPReport}    IN RANGE    ${startIndexForMasterOPPReport}    ${numOfRowsOnMasterOPPReport}
+            IF    '${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}' == '${listOfOPPsFromMasterOPPReport[${rowIndexOnMasterOPPReport}]}'
+                 ${isOPPInMasterOPPReport}          Set Variable    ${True}
+                 ${startIndexForMasterOPPReport}    Evaluate    ${startIndexForMasterOPPReport}+1
+                 BREAK
+            END                 
+        END
+        IF    '${isOPPInMasterOPPReport}' == '${False}'
+             ${result}   Set Variable    ${False}
+             Write The Test Result Of Master OPP Report To Excel    itemNeedToCheck=OPP    opp=${EMPTY}    valueOnMasterOPPReport=${EMPTY}    valueOnSSMasterOPP=${listOfOPPsFromSSMasterOPP[${rowIndexOnSSMasterOPP}]}
+        END
     END
-    IF    '${result}' == '${False}'
-         Close All Excel Documents
-         Fail   The data is different betwween the Master OPP Report and NS
+    
+    IF    '${result}' == '${False}'        
+         Fail   The number of OPPs is different between the Master OPP Report and NS
     END
-    Close All Excel Documents
+    
+Check The Data Of OPP On Master OPP Report
+    [Arguments]     ${nameOfCol}
+    Log To Console    Building
 
 Check The Line ID Data On Master OPP Report
+    ${result}   Set Variable    ${True}
+    ${isLineIDEmpty}    Set Variable    ${False}
     @{tableSSMasterOPP}                 Create List
     @{tableMasterOPPReport}             Create List
     @{checkListOPPAndLineIDDuplicated}  Create List
 
     ${tableSSMasterOPP}         Create Table From The SS Master OPP
     ${tableMasterOPPReport}     Create Table From The Master OPP Report
+    ${numOfRowsOnTableSSMasterOPP}          Get Length    ${tableSSMasterOPP}
+    ${numOfRowsOnTableMasterOPPReport}      Get Length    ${tableMasterOPPReport}
+
+#    Check if the Line ID data is duplicated
     FOR    ${dataRow}    IN    @{tableMasterOPPReport}
         ${oppCol}           Set Variable    ${dataRow[0]}
         ${lineIDCol}        Set Variable    ${dataRow[1]}
@@ -106,20 +119,49 @@ Check The Line ID Data On Master OPP Report
         Append To List    ${checkListOPPAndLineIDDuplicated}    ${oppAndLineIDCol}
     END
     List Should Not Contain Duplicates    ${checkListOPPAndLineIDDuplicated}
+
+#    Check if the Line ID data is blank
     FOR    ${dataRow}    IN    @{tableMasterOPPReport}
         ${oppCol}           Set Variable    ${dataRow[0]}
         ${lineIDCol}        Set Variable    ${dataRow[1]}
         IF    '${oppCol}' == '2805'
              Continue For Loop
         END
-
         IF    '${lineIDCol}' == '0'
-             Fail   The Line ID data of OPP ${oppCol} is Empty
+             ${isLineIDEmpty}    Set Variable    ${True}
+             Write The Test Result Of Master OPP Report To Excel    itemNeedToCheck=Line ID    opp=${oppCol}    valueOnMasterOPPReport=${EMPTY}    valueOnSSMasterOPP=Not Check
+        END
+    END
+    IF    '${isLineIDEmpty}' == '${True}'
+         Fail   The Line ID data of OPP is Empty
+    END
+
+#    Check the data of Line ID
+    ${srartRowForTableMasterOPPReport}  Set Variable    0
+    FOR    ${rowIndexOnTableSSMasterOPP}    IN RANGE    0    ${numOfRowsOnTableSSMasterOPP}
+        ${isLineIDOnTableMasterOPPReport}   Set Variable    ${False}
+        ${oppColOnTableSSMasterOPP}              Set Variable    ${tableSSMasterOPP[${rowIndexOnTableSSMasterOPP}][0]}
+        ${lineIDColOnTableSSMasterOPP}           Set Variable    ${tableSSMasterOPP[${rowIndexOnTableSSMasterOPP}][1]}
+        ${oppAndLineIDColOnTableSSMasterOPP}     Set Variable    ${tableSSMasterOPP[${rowIndexOnTableSSMasterOPP}][2]}
+        FOR    ${rowIndexOnTableMasterOPPReport}    IN RANGE    ${srartRowForTableMasterOPPReport}    ${numOfRowsOnTableMasterOPPReport}
+            ${oppColOnTableMasterOPPReport}              Set Variable    ${tableMasterOPPReport[${rowIndexOnTableMasterOPPReport}][0]}
+            ${lineIDColOnTableMasterOPPReport}           Set Variable    ${tableMasterOPPReport[${rowIndexOnTableMasterOPPReport}][1]}
+            ${oppAndLineIDColOnTableMasterOPPReport}     Set Variable    ${tableMasterOPPReport[${rowIndexOnTableMasterOPPReport}][2]}
+            IF    '${oppAndLineIDColOnTableSSMasterOPP}' == '${oppAndLineIDColOnTableMasterOPPReport}'
+                 ${isLineIDOnTableMasterOPPReport}   Set Variable    ${True}
+                 ${srartRowForTableMasterOPPReport}     Evaluate    ${srartRowForTableMasterOPPReport}+1
+                 BREAK
+            END
+        END
+        IF    '${isLineIDOnTableMasterOPPReport}' == '${False}'
+             ${result}   Set Variable    ${False}
+             Write The Test Result Of Master OPP Report To Excel    itemNeedToCheck=Line ID    opp=${oppColOnTableSSMasterOPP}    valueOnMasterOPPReport=${EMPTY}    valueOnSSMasterOPP=${lineIDColOnTableSSMasterOPP}
         END
     END
 
-
-
+    IF    '${result}' == '${False}'
+         Fail   The data of Line ID is different between the Master OPP Report and SS Master OPP
+    END
 
 Get List Of Opps From The SS Master Opp
     [Arguments]
@@ -180,18 +222,26 @@ Create Table From The Master OPP Report
         ...             ${oppAndLineIDCol}
         Append To List    ${table}   ${rowOnTable}
     END
+    ${table}    Sort Table By Column    ${table}    2
 
     Close Current Excel Document
     [Return]    ${table}
 
 Create Table From The SS Master OPP
+    [Arguments]     ${year}=2025     ${quarter}=1
     @{table}    Create List
 
     File Should Exist      path=${ssMasterOPPFilePath}
     Open Excel Document    filename=${ssMasterOPPFilePath}    doc_id=SSMasterOPP
-
+    Switch Current Excel Document    doc_id=SSMasterOPP
     ${numOfRows}    Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
+    File Should Exist      path=${flatSGReportFilePath}
+    Open Excel Document    filename=${flatSGReportFilePath}    doc_id=FlatSGReport
+    Switch Current Excel Document    doc_id=FlatSGReport
+    ${numOfRowsOnFlatSGReport}      Get Number Of Rows In Excel    ${flatSGReportFilePath}
+
     FOR    ${rowIndex}    IN RANGE    ${startRowIndexOnSSMasterOPP}    ${numOfRows}+1
+        Switch Current Excel Document    doc_id=SSMasterOPP
         ${oppCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPColOnSSMasterOPP}
         ${lineIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfLineIDColOnSSMasterOPP}
         IF    '${lineIDCol}' == '${EMPTY}'
@@ -199,10 +249,23 @@ Create Table From The SS Master OPP
         END
         ${oppAndLineIDCol}      Set Variable    ${oppCol}${lineIDCol}
         ${oppAndLineIDCol}  Convert To Integer    ${oppAndLineIDCol}
+        ${mapREVCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMapREVColOnSSMasterOPP}
+        ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSMasterOPP}
+        ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSMasterOPP}
+        IF    '${mapREVCol}' == 'Yes'
+             Switch Current Excel Document    doc_id=FlatSGReport
+             FOR    ${rowIndexOnFlatSGReport}    IN RANGE    5    ${numOfRowsOnFlatSGReport}+1
+                 Log    ${counter}
+
+             END
+        ELSE
+             ${losCol}      Set Variable    0
+        END
         ${rowOnTable}   Create List
         ...             ${oppCol}
         ...             ${lineIDCol}
         ...             ${oppAndLineIDCol}
+        ...             ${losCol}
         Append To List    ${table}   ${rowOnTable}
     END
     ${table}    Sort Table By Column    ${table}    2
@@ -211,46 +274,7 @@ Create Table From The SS Master OPP
     [Return]    ${table}
 
 
-#Check The REV Data
-#    [Arguments]     ${masterOPPFilePath}  ${salesDashboardByPNFilePath}  ${ssMasterOPPFilePath}  ${year}  ${quarter}
-#    Create Source Table To Verify REV For Each Quarter    ${ssMasterOPPFilePath}    ${salesDashboardByPNFilePath}    ${year}    ${quarter}
 
-#    File Should Exist    ${masterOPPReportFilePath}
-#    Open Excel Document    ${masterOPPReportFilePath}    doc_id=MasterOPPReport
-#
-#    File Should Exist    ${salesDashboardByPNReportFilePath}
-#    Open Excel Document    ${salesDashboardByPNReportFilePath}    doc_id=SalesDashboardByPNReport
-
-#    File Should Exist    ${ssMasterOPPFilePath}
-#    Open Excel Document    ${ssMasterOPPFilePath}    doc_id=SSMasterOPP
-#
-#    Switch Current Excel Document    doc_id=SSMasterOPP
-#    ${numOfRowsOnSSMasterOPP}   Get Number Of Rows In Excel    ${ssMasterOPPFilePath}
-
-
-#    Switch Current Excel Document    doc_id=MasterOPPReport
-#    ${yearStrOnMasterOPPReport}           Get Substring    ${year}    2  4
-#    ${searchStrREVColOnMasterOPPReport}   Set Variable    ${yearStrOnMasterOPPReport}-Q${quarter} REV
-#    ${startRowOnMasterOPPReport}          Convert To Number    4
-#    ${posOfColREVOnMasterOPPReport}       Get Position Of Column    ${masterOPPReportFilePath}    ${startRowOnMasterOPPReport}    ${searchStrREVColOnMasterOPPReport}
-#    ${numOfRowsOnMasterOPPReport}         Get Number Of Rows In Excel    ${masterOPPReportFilePath}
-#    ${rowIndexOnSSMasterOPP}              Set Variable    2
-#    FOR    ${rowIndexOnMasterOPPReport}    IN RANGE    5    ${numOfRowsOnMasterOPPReport}+1
-#        ${oppColOnMasterOPPReport}          Read Excel Cell    row_num=${rowIndexOnMasterOPPReport}    col_num=1
-#        ${revColOnMasterOPPReport}          Read Excel Cell    row_num=${rowIndexOnMasterOPPReport}    col_num=${posOfColREVOnMasterOPPReport}
-#        ${isMapRevColOnMasterOPPReport}     Set Variable    ${EMPTY}
-#        Switch Current Excel Document    doc_id=SSMasterOPP
-#        ${isMapRevColOnSSMasterOPP}         Read Excel Cell    ${rowIndexOnSSMasterOPP}    4
-#        ${isMapRevColOnMasterOPPReport}     Set Variable    ${isMapRevColOnSSMasterOPP}
-#        ${rowIndexOnSSMasterOPP}            Evaluate    ${rowIndexOnSSMasterOPP}+1
-#
-#        IF    '${isMapRevColOnMasterOPPReport}' == 'No' or '${isMapRevColOnMasterOPPReport}' == '${EMPTY}'
-#             IF    '${revColOnMasterOPPReport}' != 'None'
-#                  Log To Console    OPP:${oppColOnMasterOPPReport},REV:${revColOnMasterOPPReport}
-#             END
-#        END
-#        Switch Current Excel Document    doc_id=MasterOPPReport
-#    END
 
 
 #Create Source Table To Verify REV For Each Quarter

@@ -6,11 +6,14 @@ Suite Setup     Initialize Suite
 *** Test Cases ***
 Verify the number of OPPs on Master OPP Report
     [Tags]  MasterOPP_0001
-    Check The Data Of OPP   nameOfCol=OPP
+    Check The Number Of OPPs On Master OPP Report
 Verify the Line ID data of OPP on Master OPP Report
     [Tags]  MasterOPP_0002
     Check The Line ID Data On Master OPP Report
-#Verify the Tracked OPP data of OPP on Master OPP Report
+Verify the LOS data of OPP on Master OPP Report
+    [Tags]  MasterOPP_0003
+
+#Verify the SF data of OPP on Master OPP Report
 
 #Validating The Detailed Data Of Master Opp Report
 #    Remove All Files in Specified Directory    ${DOWNLOAD_DIR}\\
