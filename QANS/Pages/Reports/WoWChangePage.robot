@@ -43,12 +43,13 @@ Get List Of Sales Member In OEM West Table
     Append To List    ${listOfSalesMember}      Huan Tran
     Append To List    ${listOfSalesMember}      Dave Beasley
     Append To List    ${listOfSalesMember}      Cameron Sinclair
+    Append To List    ${listOfSalesMember}      Clint Stalker
 
     [Return]    ${listOfSalesMember}
 
 Get List Of OEM Group Shown In OEM East Table
     @{listOfOEMGroup}   Create List
-    Append To List    ${listOfOEMGroup}      MELLANOX GROUP
+    Append To List    ${listOfOEMGroup}      NVIDIA/MELLANOX
     Append To List    ${listOfOEMGroup}      NOKIA/ALCATEL LUCENT WORLDWIDE
     Append To List    ${listOfOEMGroup}      CURTISS WRIGHT GROUP
     Append To List    ${listOfOEMGroup}      JUNIPER NETWORKS

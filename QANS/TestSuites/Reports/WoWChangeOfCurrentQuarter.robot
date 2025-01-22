@@ -51,12 +51,12 @@ Verify Ships for the OEM East table
     ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
     Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
 
-#Verify WoW of Ships for the OEM East table
-#    [Tags]  WoWChange_0006
-#    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM East table
-#
-#    ${posOfColOnWoWChange}      Set Variable    7
-#    Check The WoW Data  table=OEM East   nameOfCol=WoW Of Ships     posOfColOnWoWChange=${posOfColOnWoWChange}
+Verify WoW of Ships for the OEM East table
+    [Tags]  WoWChange_0006
+    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM East table
+
+    ${posOfColOnWoWChange}      Set Variable    7
+    Check The WoW Data  table=OEM East   nameOfCol=WoW Of Ships     posOfColOnWoWChange=${posOfColOnWoWChange}
 
 Verify Backlog for the OEM East table
     [Tags]  WoWChange_0007
@@ -166,12 +166,12 @@ Verify Ships for the OEM West table
     ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
     Check The Ship, Backlog, LOS Data    table=OEM West     nameOfCol=Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
 
-#Verify WoW of Ships for the OEM West table
-#    [Tags]  WoWChange_0017
-#    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM West table
-#
-#    ${posOfColOnWoWChange}      Set Variable    7
-#    Check The WoW Data  table=OEM West   nameOfCol=WoW Of Ships     posOfColOnWoWChange=${posOfColOnWoWChange}
+Verify WoW of Ships for the OEM West table
+    [Tags]  WoWChange_0017
+    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM West table
+
+    ${posOfColOnWoWChange}      Set Variable    7
+    Check The WoW Data  table=OEM West   nameOfCol=WoW Of Ships     posOfColOnWoWChange=${posOfColOnWoWChange}
 
 Verify Backlog for the OEM West table
     [Tags]  WoWChange_0018
