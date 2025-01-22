@@ -94,14 +94,6 @@ Input Verification Code And Click Submit
     Click Element    ${chkTrustThisDeviceFor30Days}
     Wait Until Element Is Enabled    ${btnSubmit}   ${TIMEOUT}
     Click Element    ${btnSubmit}
-    
-    
-
-
-
-
-
-
 
 Should See Account Is SANDBOX
     Wait Until Element Is Visible    ${imgSANDBOXIcon}      ${TIMEOUT}
