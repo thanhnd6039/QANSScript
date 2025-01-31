@@ -403,7 +403,7 @@ Check The Commit Or Comment Data
         ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    9
     ELSE IF     '${table}' == 'OEM West'
         ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
-        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    19
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    18
     ELSE
         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
@@ -553,7 +553,7 @@ Check The GAP Data
         ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    9
     ELSE IF     '${table}' == 'OEM West'
         ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
-        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    19
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    18
     ELSE
         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
@@ -607,24 +607,23 @@ Check The GAP Data
 
                 IF    '${dataRColOnSG}' == 'None'
                       ${dataRColOnSG}   Set Variable    0
-                 END
-                 IF    '${dataBColOnSG}' == 'None'
+                END
+                IF    '${dataBColOnSG}' == 'None'
                       ${dataBColOnSG}   Set Variable    0
-                 END
-                 ${dataLOSOnSG}     Evaluate    ${dataRColOnSG}+${dataBColOnSG}
+                END
+                ${dataLOSOnSG}     Evaluate    ${dataRColOnSG}+${dataBColOnSG}
 
-                 IF    '${table}' == 'OEM East'
+                IF    '${table}' == 'OEM East'
                       IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
                            ${los}   Evaluate    ${los}+${dataLOSOnSG}
                       END
-                 ELSE IF    '${table}' == 'OEM West'
+                ELSE IF    '${table}' == 'OEM West'
                       IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
                            ${los}   Evaluate    ${los}+${dataLOSOnSG}
                       END
-                 ELSE
+                ELSE
                      Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
-                 END
-
+                END
             END
         ELSE
             FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
@@ -658,7 +657,6 @@ Check The GAP Data
                 BREAK
             END
         END
-
         ${gapByFormular}    Evaluate    ${los}-${commit}
         ${gapByFormular}   Evaluate  "%.2f" % ${gapByFormular}
 
