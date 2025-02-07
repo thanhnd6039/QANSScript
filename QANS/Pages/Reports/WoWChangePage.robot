@@ -64,6 +64,7 @@ Get List Of OEM Group Shown In OEM West Table
     Append To List    ${listOfOEMGroup}      SCHWEITZER ENGINEERING LABORATORIES (SEL)
     Append To List    ${listOfOEMGroup}      PANASONIC AVIONICS
     Append To List    ${listOfOEMGroup}      ZTE KANGXUN TELECOM CO. LTD.
+    Append To List    ${listOfOEMGroup}      NATIONAL INSTRUMENTS
 
     [Return]    ${listOfOEMGroup}
 
@@ -95,9 +96,9 @@ Check The Ship, Backlog, LOS Data
         ${totalRowIndexOnWoWChange}              Set Variable    8
     ELSE IF     '${table}' == 'OEM West'
         ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
-        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    16
-        ${othersRowIndexOnWoWChange}             Set Variable    16
-        ${totalRowIndexOnWoWChange}              Set Variable    17
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    17
+        ${othersRowIndexOnWoWChange}             Set Variable    17
+        ${totalRowIndexOnWoWChange}              Set Variable    18
     ELSE
         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
@@ -277,9 +278,9 @@ Check The Budget Data
         ${totalRowIndexOnWoWChange}              Set Variable    8
     ELSE IF     '${table}' == 'OEM West'
         ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
-        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    16
-        ${othersRowIndexOnWoWChange}             Set Variable    16
-        ${totalRowIndexOnWoWChange}              Set Variable    17
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    17
+        ${othersRowIndexOnWoWChange}             Set Variable    17
+        ${totalRowIndexOnWoWChange}              Set Variable    18
     ELSE
         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
@@ -403,7 +404,7 @@ Check The Commit Or Comment Data
         ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    9
     ELSE IF     '${table}' == 'OEM West'
         ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
-        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    18
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    19
     ELSE
         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
@@ -553,7 +554,7 @@ Check The GAP Data
         ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    9
     ELSE IF     '${table}' == 'OEM West'
         ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    11
-        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    18
+        ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    19
     ELSE
         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
