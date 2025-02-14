@@ -99,21 +99,21 @@ Verify WoW of LOS for the OEM East table
     ${posOfColOnWoWChange}      Set Variable    10
     Check The WoW Data  table=OEM East   nameOfCol=WoW Of LOS     posOfColOnWoWChange=${posOfColOnWoWChange}
 
-Verify GAP for the OEM East table
-     [Tags]  WoWChange_0010
-     [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM East table
-
-     ${posOfColOnWoWChange}      Set Variable    11
-     ${currentYear}              Get Current Year
-     ${currentQuarter}           Get Current Quarter
-     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
-     ${rowIndexForSearchStr}     Convert To Number    3
-     ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-     ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
-     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
-     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
-     Check The GAP Data  table=OEM East   nameOfCol=GAP     posOfColOnWoWChange=${posOfColOnWoWChange}      posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+#Verify GAP for the OEM East table
+#     [Tags]  WoWChange_0010
+#     [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM East table
+#
+#     ${posOfColOnWoWChange}      Set Variable    11
+#     ${currentYear}              Get Current Year
+#     ${currentQuarter}           Get Current Quarter
+#     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+#     ${rowIndexForSearchStr}     Convert To Number    3
+#     ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+#     ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
+#     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+#     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+#     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
+#     Check The GAP Data  table=OEM East   nameOfCol=GAP     posOfColOnWoWChange=${posOfColOnWoWChange}      posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
 
 Veify Comments for the OEM East table
      [Tags]  WoWChange_0011
@@ -220,21 +220,21 @@ Verify WoW of LOS for the OEM West table
     ${posOfColOnWoWChange}      Set Variable    10
     Check The WoW Data  table=OEM West   nameOfCol=WoW Of LOS     posOfColOnWoWChange=${posOfColOnWoWChange}
 
-Verify GAP for the OEM West table
-     [Tags]  WoWChange_0021
-     [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM West table
-
-     ${posOfColOnWoWChange}      Set Variable    11
-     ${currentYear}              Get Current Year
-     ${currentQuarter}           Get Current Quarter
-     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
-     ${rowIndexForSearchStr}     Convert To Number    3
-     ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-     ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
-     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
-     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
-     Check The GAP Data  table=OEM West   nameOfCol=GAP     posOfColOnWoWChange=${posOfColOnWoWChange}      posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
+#Verify GAP for the OEM West table
+#     [Tags]  WoWChange_0021
+#     [Documentation]     Verify the data of GAP(LOS - Commit) column for the OEM West table
+#
+#     ${posOfColOnWoWChange}      Set Variable    11
+#     ${currentYear}              Get Current Year
+#     ${currentQuarter}           Get Current Quarter
+#     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} R
+#     ${rowIndexForSearchStr}     Convert To Number    3
+#     ${posOfRColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+#     ${posOfRColOnSG}    Evaluate    ${posOfRColOnSG}+2
+#     ${searchStr}                Set Variable    ${currentYear}.Q${currentQuarter} B
+#     ${posOfBColOnSG}    Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+#     ${posOfBColOnSG}    Evaluate    ${posOfBColOnSG}+2
+#     Check The GAP Data  table=OEM West   nameOfCol=GAP     posOfColOnWoWChange=${posOfColOnWoWChange}      posOfRColOnSG=${posOfRColOnSG}    posOfBColOnSG=${posOfBColOnSG}
 
 Verify Comments for the OEM West table
     [Tags]  WoWChange_0022

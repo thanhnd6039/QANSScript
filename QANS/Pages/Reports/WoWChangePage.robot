@@ -512,9 +512,9 @@ Check The WoW Data
                 IF    '${wowColOnWoWChange}' != '${wowData}'
                     ${result}  Set Variable    ${False}
                      IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
-                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East OTHERS    ${wowColOnWoWChange}    ${wowData}
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${wowColOnWoWChange}    ${wowData}
                      ELSE IF  '${oemGroupColOnWoWChange}' == 'Total'
-                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    OEM East Total    ${wowColOnWoWChange}    ${wowData}
+                          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${wowColOnWoWChange}    ${wowData}
                      ELSE
                           Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${oemGroupColOnWoWChange}    ${wowColOnWoWChange}    ${wowData}
                      END
