@@ -135,7 +135,8 @@ Check The Ship, Backlog, LOS Data
             IF    '${dataColOnSG}' == 'None'
                  ${dataColOnSG}     Set Variable    0
             END
-            ${dataColOnSG}   Evaluate  "%.2f" % ${dataColOnSG}
+            ${dataColOnSG}          Evaluate  "%.2f" % ${dataColOnSG}
+            ${dataColOnWoWChange}   Evaluate  "%.2f" % ${dataColOnWoWChange}
             IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnSG}'
                  IF    ${dataColOnWoWChange} != ${dataColOnSG}
                       ${result}     Set Variable    ${False}
@@ -187,6 +188,7 @@ Check The Ship, Backlog, LOS Data
     ${totalOnSG}   Evaluate  "%.2f" % ${totalOnSG}
     Switch Current Excel Document    doc_id=WoWChange
     ${totalOnWoWchange}   Read Excel Cell    row_num=${totalRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+    ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
     IF    ${totalOnWoWchange} != ${totalOnSG}
          ${result}     Set Variable    ${False}
          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSG}
@@ -239,6 +241,7 @@ Check The Ship, Backlog, LOS Data
     ${othersOnSG}   Evaluate  "%.2f" % ${othersOnSG}
     Switch Current Excel Document    doc_id=WoWChange
     ${othersOnWoWChange}   Read Excel Cell    row_num=${othersRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+    ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
     IF    ${othersOnWoWChange} != ${othersOnSG}
          ${result}     Set Variable    ${False}
          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSG}
@@ -303,6 +306,7 @@ Check The Budget Data
                  ${dataColOnSGWeeklyActionDB}     Set Variable    0
             END
             ${dataColOnSGWeeklyActionDB}   Evaluate  "%.2f" % ${dataColOnSGWeeklyActionDB}
+            ${dataColOnWoWChange}          Evaluate  "%.2f" % ${dataColOnWoWChange}
             IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnSGWeeklyActionDB}'
                  IF    ${dataColOnWoWChange} != ${dataColOnSGWeeklyActionDB}
                       ${result}     Set Variable    ${False}
@@ -338,6 +342,7 @@ Check The Budget Data
     ${totalOnSGWeeklyActionDB}   Evaluate  "%.2f" % ${totalOnSGWeeklyActionDB}
     Switch Current Excel Document    doc_id=WoWChange
     ${totalOnWoWchange}   Read Excel Cell    row_num=${totalRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+    ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
     IF    ${totalOnWoWchange} != ${totalOnSGWeeklyActionDB}
          ${result}     Set Variable    ${False}
          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSGWeeklyActionDB}
@@ -375,6 +380,7 @@ Check The Budget Data
     ${othersOnSGWeeklyActionDB}   Evaluate  "%.2f" % ${othersOnSGWeeklyActionDB}
     Switch Current Excel Document    doc_id=WoWChange
     ${othersOnWoWChange}   Read Excel Cell    row_num=${othersRowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+    ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
     IF    ${othersOnWoWChange} != ${othersOnSGWeeklyActionDB}
          ${result}     Set Variable    ${False}
          Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSGWeeklyActionDB}
@@ -509,6 +515,7 @@ Check The WoW Data
                 IF    '${wowColOnWoWChange}' == '-0.00'
                      ${wowColOnWoWChange}     Set Variable    0.00
                 END
+                ${wowColOnWoWChange}   Evaluate  "%.2f" % ${wowColOnWoWChange}
                 IF    '${wowColOnWoWChange}' != '${wowData}'
                     ${result}  Set Variable    ${False}
                      IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
