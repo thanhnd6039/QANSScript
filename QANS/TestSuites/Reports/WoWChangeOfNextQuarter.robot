@@ -2,19 +2,19 @@
 Resource    ../../Pages/Reports/WoWChangeNextQuarterPage.robot
 
 *** Test Cases ***
-#Verify Prev Q Ship for the OEM East table
-#    [Tags]  WoWChange_0001
-#    [Documentation]     Verify the data of Pre Q Ships column for the OEM East table
-#
-#    ${posOfColOnWoWChange}      Set Variable    2
-#    ${currentYear}              Get Current Year
-#    ${currentQuarter}           Get Current Quarter
-#    ${preQuarter}               Evaluate        ${currentQuarter}-1
-#    ${searchStr}                Set Variable    ${currentYear}.Q${preQuarter} R
-#    ${rowIndexForSearchStr}     Convert To Number    3
-#    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-#    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
-#    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
+Verify Prev Q Ship for the OEM East table
+    [Tags]  WoWChange_0001
+    [Documentation]     Verify the data of Pre Q Ships column for the OEM East table
+
+    ${posOfColOnWoWChange}      Set Variable    2
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    ${preQuarter}               Evaluate        ${currentQuarter}-1
+    ${searchStr}                Set Variable    ${currentYear}.Q${preQuarter} R
+    ${rowIndexForSearchStr}     Convert To Number    3
+    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
+    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
+    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
 
 #Verify Current Q Budget for the OEM East table
 #    [Tags]  WoWChange_0002
