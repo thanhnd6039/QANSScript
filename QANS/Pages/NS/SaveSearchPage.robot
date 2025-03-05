@@ -7,7 +7,52 @@ ${iconFilters}                 //*[@aria-label='Expand/Collapse filters']
 ${txtDateCreatedFrom}          //input[@id='BaseTran_DATECREATEDfrom']
 ${txtDateCreateTo}             //input[@id='BaseTran_DATECREATEDto']
 
+${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
+${startRowOnSSMasterOPP}          2
+${posOfOPPJoinIDColOnSSMasterOPP}              3
+${posOfOEMGroupColOnSSMasterOPP}               6
+${posOfPNColOnSSMasterOPP}                     7
+
 *** Keywords ***
+Get List Of OPP JOIN ID On SS Master OPP
+    @{listOfOPPJoinID}  Create List
+
+    File Should Exist    path=${SSMasterOPPFilePath}
+    Open Excel Document    filename=${SSMasterOPPFilePath}    doc_id=SSMasterOPP
+    ${numOfRowsOnSSMasterOPP}    Get Number Of Rows In Excel    ${SSMasterOPPFilePath}
+
+    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSMasterOPP}    ${numOfRowsOnSSMasterOPP}+1
+        ${oppJoinIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPJoinIDColOnSSMasterOPP}
+        Append To List    ${listOfOPPJoinID}    ${oppJoinIDCol}
+    END
+
+    [Return]    ${listOfOPPJoinID}
+
+#Check The OPP Join ID Data Is Exist On SS Master OPP By OEM Group And PN
+#    [Arguments]     ${oemGroup}     ${pn}   ${oppJoinID}
+#
+#    ${result}   Set Variable    ${False}
+#
+#    File Should Exist    path=${SSMasterOPPFilePath}
+#    Open Excel Document    filename=${SSMasterOPPFilePath}    doc_id=SSMasterOPP
+#    ${numOfRowsOnSSMasterOPP}    Get Number Of Rows In Excel    ${SSMasterOPPFilePath}
+#
+#    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSMasterOPP}    ${numOfRowsOnSSMasterOPP}+1
+##        ${oppJoinIDCol}     Set Variable    None
+#        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSMasterOPP}
+#        ${pnCol}            Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSMasterOPP}
+#        ${oppJoinIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPJoinIDColOnSSMasterOPP}
+##        IF    '${oemGroupCol}' == '${oemGroup}' and '${pnCol}' == '${pn}'
+##             ${oppJoinIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPJoinIDColOnSSMasterOPP}
+##        END
+#        IF    '${oppJoinIDCol}' == '${oppJoinID}'
+#             ${result}  Set Variable    ${True}
+#             BREAK
+#        END
+#    END
+#    Close Current Excel Document
+#    [Return]    ${result}
+
 The Title Of Save Search Should Contain
     [Arguments]     ${title}
     ${titleXpath}   Set Variable     //h1[contains(text(),'${title}')]
