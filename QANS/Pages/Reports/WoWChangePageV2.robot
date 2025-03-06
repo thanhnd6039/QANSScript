@@ -1,5 +1,6 @@
 *** Settings ***
 Resource    ../CommonPage.robot
+Resource    SGPage.robot
 
 *** Variables ***
 ${wowChangeResultFilePath}        C:\\RobotFramework\\Results\\WoWChangeReportResult.xlsx
@@ -86,14 +87,6 @@ Check The Ship, Backlog, LOS Data
     Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
     ${numOfRowsOnWoWChange}  Get Number Of Rows In Excel    filePath=${wowChangeFilePath}
 
-    File Should Exist      path=${SGFilePath}
-    Open Excel Document    filename=${SGFilePath}    doc_id=SG
-    
-    Switch Current Excel Document     doc_id=SG
-    ${numOfRowsOnSG}    Get Number Of Rows In Excel    ${SGFilePath}
-    
-    Switch Current Excel Document    doc_id=WoWChange
-
     FOR    ${rowIndexOnWoWChange}    IN RANGE    1    ${numOfRowsOnWoWChange}+1
         ${oemGroupColOnWoWChange}     Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=1
         IF    '${oemGroupColOnWoWChange}' == '${table}'
@@ -131,54 +124,33 @@ Check The Ship, Backlog, LOS Data
                  BREAK
             END
         END
-#    ELSE
-#        Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+    ELSE
+        Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
     END
 
-    
-    Switch Current Excel Document    doc_id=WoWChange
    #   Verify the data for each OEM Group
     FOR    ${rowIndexOnWoWChange}    IN RANGE    ${startRowIndexForOEMGroupOnWoWChange}    ${endRowIndexForOEMGroupOnWoWChange}+1
-        Switch Current Excel Document    doc_id=WoWChange
-        ${oemGroupColOnWoWChange}      Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=1
-        ${dataColOnWoWChange}          Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
-        Switch Current Excel Document     doc_id=SG
-        FOR    ${rowIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
-            ${oemGroupColOnSG}       Read Excel Cell    row_num=${rowIndexOnSG}    col_num=2
-            IF    '${oemGroupColOnSG}' == 'None'
-                 Continue For Loop
-            END
-            IF    '${nameOfCol}' == 'Ships' or '${nameOfCol}' == 'Pre Q Ships'
-                 ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
-            ELSE IF  '${nameOfCol}' == 'Backlog'
-                 ${dataColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
-            ELSE IF  '${nameOfCol}' == 'LOS'
-                 ${dataRColOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfRColOnSG}
-                 ${dataBolOnSG}           Read Excel Cell    row_num=${rowIndexOnSG}    col_num=${posOfBColOnSG}
-                 IF    '${dataRColOnSG}' == 'None'
-                     ${dataRColOnSG}   Set Variable    0
-                 END
-                 IF    '${dataBolOnSG}' == 'None'
-                     ${dataBolOnSG}    Set Variable    0
-                 END
-                 ${dataColOnSG}     Evaluate    ${dataRColOnSG}+${dataBolOnSG}
-            ELSE
-                 Fail   The nameOfCol parameter ${nameOfCol} is invalid. Please contact with the Administrator for supporting
-            END
 
-            IF    '${dataColOnSG}' == 'None'
-                 ${dataColOnSG}     Set Variable    0
-            END
-            ${dataColOnSG}          Evaluate  "%.2f" % ${dataColOnSG}
-            ${dataColOnWoWChange}   Evaluate  "%.2f" % ${dataColOnWoWChange}
-            IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnSG}'
-                 IF    ${dataColOnWoWChange} != ${dataColOnSG}
-                      ${result}     Set Variable    ${False}
-                      Write The Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupColOnWoWChange}    valueOnWoWChange=${dataColOnWoWChange}    valueOnSG=${dataColOnSG}
-                 END
-                 BREAK
-            END
+        ${oemGroupColOnWoWChange}      Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=1
+        ${dataOnWoWChange}          Read Excel Cell    row_num=${rowIndexOnWoWChange}    col_num=${posOfColOnWoWChange}
+        IF    '${nameOfCol}' == 'Ships' or '${nameOfCol}' == 'Pre Q Ships'
+            ${dataOnSG}     Get The Amount Data By OEM Group On SG Report    oemGroup=${oemGroupColOnWoWChange}    posOfCol=${posOfRColOnSG}
+        ELSE IF  '${nameOfCol}' == 'Backlog'
+            ${dataOnSG}     Get The Amount Data By OEM Group On SG Report    oemGroup=${oemGroupColOnWoWChange}    posOfCol=${posOfBColOnSG}
+        ELSE IF  '${nameOfCol}' == 'LOS'
+            ${dataROnSG}     Get The Amount Data By OEM Group On SG Report    oemGroup=${oemGroupColOnWoWChange}    posOfCol=${posOfRColOnSG}
+            ${dataBOnSG}     Get The Amount Data By OEM Group On SG Report    oemGroup=${oemGroupColOnWoWChange}    posOfCol=${posOfBColOnSG}
+            ${dataOnSG}     Evaluate    ${dataROnSG}+${dataBOnSG}
         END
+
+        ${dataOnWoWChange}          Evaluate  "%.2f" % ${dataOnWoWChange}
+        ${dataOnSG}                 Evaluate  "%.2f" % ${dataOnSG}
+        Log To Console    OEM GRoup:${oemGroupColOnWoWChange}; dataOnWoWChange:${dataOnWoWChange}; dataOnSG:${dataOnSG}
+        IF    ${dataOnWoWChange} != ${dataOnSG}
+              ${result}     Set Variable    ${False}
+              Write The Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupColOnWoWChange}    valueOnWoWChange=${dataOnWoWChange}    valueOnSG=${dataOnSG}
+        END
+
     END
 #    #   Verify the Total data
 #    Switch Current Excel Document    doc_id=SG
@@ -227,6 +199,7 @@ Check The Ship, Backlog, LOS Data
 #         ${result}     Set Variable    ${False}
 #         Write The Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSG}
 #    END
+
 #    #  Verify the OTHERS data
 #    Switch Current Excel Document    doc_id=SG
 #    ${othersOnSG}  Set Variable    0
