@@ -18,4 +18,4 @@ Verify Prev Q Ship for the OEM East table
     ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    3    ${searchStr}
     ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
     ${posOfColOnWoWChange}      Set Variable    2
-    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
+    Check The Ship, Backlog, LOS Data    table=OEM West + Channel     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
