@@ -14,8 +14,10 @@ Verify Prev Q Ship for the OEM East table
     ELSE
          ${preQuarter}               Evaluate        ${currentQuarter}-1
     END
-    ${searchStr}                Set Variable    ${currentYear}.Q${preQuarter} R
-    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    3    ${searchStr}
-    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
-    ${posOfColOnWoWChange}      Set Variable    2
-    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}
+
+#    ${searchStr}                Set Variable    ${currentYear}.Q${preQuarter} R
+#    ${posOfRColOnSG}            Get Position Of Column    ${SGFilePath}    3    ${searchStr}
+#    ${posOfRColOnSG}            Evaluate    ${posOfRColOnSG}+2
+#    ${posOfColOnWoWChange}      Set Variable    2
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Pre Q Ships     year=${currentYear}     quarter=${preQuarter}
+#    Check The Ship, Backlog, LOS Data    table=OEM East     nameOfCol=Pre Q Ships   posOfColOnWoWChange=${posOfColOnWoWChange}    posOfRColOnSG=${posOfRColOnSG}

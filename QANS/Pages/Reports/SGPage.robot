@@ -7,30 +7,66 @@ ${testResultOfSGReportByPNFilePath}         C:\\RobotFramework\\Results\\SGRepor
 ${SGFilePath}                               C:\\RobotFramework\\Downloads\\Sales Gap Report NS With SO Forecast.xlsx
 
 ${startRowOnSG}             6
+${rowIndexForSearchCol}     3
 ${posOfOEMGroupColOnSG}     2
+${posOfMainSalesRepColOnSG}     3
 
 *** Keywords ***
-Get The Amount Data By OEM Group On SG Report
-    [Arguments]     ${oemGroup}     ${posOfCol}
-    ${amount}   Set Variable    0
+Get Value By OEM Group On SG Report
+    [Arguments]     ${oemGroup}     ${transType}    ${year}     ${quarter}  ${attribute}
+    ${value}   Set Variable    0
+
+    ${searchStr}        Set Variable    ${year}.Q${quarter} ${transType}
+    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchCol}    ${searchStr}
+    IF    '${attribute}' == 'AMOUNT'
+         ${posOfCol}    Evaluate    ${posOfCol}+2
+    END
+
     File Should Exist    path=${SGFilePath}
     Open Excel Document    filename=${SGFilePath}    doc_id=SG
-    ${numOfRowsOnSG}  Get Number Of Rows In Excel    filePath=${SGFilePath}
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
 
-    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRowsOnSG}+1
+    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRows}+1
         ${oemGroupCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSG}
         IF    '${oemGroupCol}' == '${oemGroup}'
-             ${amount}  Read Excel Cell    row_num=${rowIndex}    col_num=${posOfCol}
-             IF    '${amount}' == 'None'
-                  ${amount}     Set Variable    0
+             ${value}  Read Excel Cell    row_num=${rowIndex}    col_num=${posOfCol}
+             IF    '${value}' == 'None'
+                  ${value}     Set Variable    0
              END
              BREAK
         END
     END
+
     Close Current Excel Document
-    [Return]    ${amount}
+    [Return]    ${value}
 
+Get Value By Main Sales Rep On SG Report
+    [Arguments]     ${mainSalesRep}     ${transType}    ${year}     ${quarter}  ${attribute}
+    ${value}   Set Variable    0
 
+    ${searchStr}        Set Variable    ${year}.Q${quarter} ${transType}
+    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchCol}    ${searchStr}
+    IF    '${attribute}' == 'AMOUNT'
+         ${posOfCol}    Evaluate    ${posOfCol}+2
+    END
+
+    File Should Exist      path=${SGFilePath}
+    Open Excel Document    filename=${SGFilePath}    doc_id=SG
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
+
+    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRows}+1
+        ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepColOnSG}
+        ${valueCol}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfCol}
+        IF    '${valueCol}' == 'None'
+             ${valueCol}    Set Variable    0
+        END
+        IF    '${mainSalesRepCol}' in ${mainSalesRep}
+             ${value}   Evaluate    ${value}+${valueCol}
+        END
+    END
+
+    Close Current Excel Document
+    [Return]    ${value}
 #Write Data To SS RCD For Pivot
 #    [Arguments]     ${ssRCDForPivotFilePath}    ${quarter}  ${oemGroup}  ${pn}  ${tranID}   ${revQty}
 #
