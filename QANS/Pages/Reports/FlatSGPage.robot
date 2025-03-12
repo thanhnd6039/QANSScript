@@ -1,0 +1,3 @@
+*** Settings ***
+Resource    ../CommonPage.robot
+

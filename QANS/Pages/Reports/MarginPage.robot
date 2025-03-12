@@ -14,7 +14,7 @@ ${posOfPNColOnMargin}               2
 
 *** Keywords ***
 Create Table For Margin Report
-    [Arguments]     ${transType}    ${year}     ${quarter}
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
     @{table}    Create List
     ${searchStr}    Set Variable    ${EMPTY}
 
@@ -29,25 +29,43 @@ Create Table For Margin Report
     END
 
     ${posOfValueCol}     Get Position Of Column    filePath=${marginFilePath}    rowIndex=${rowIndexForSearchColOnMargin}    searchStr=${searchStr}
+    IF    '${attribute}' == 'QTY'
+         ${posOfValueCol}   Evaluate    ${posOfValueCol}+0
+    ELSE IF     '${attribute}' == 'AMOUNT'
+         ${posOfValueCol}   Evaluate    ${posOfValueCol}+1
+    ELSE
+        Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+    END
 
     File Should Exist      path=${marginFilePath}
     Open Excel Document    filename=${marginFilePath}    doc_id=Margin
     ${numOfRows}    Get Number Of Rows In Excel    filePath=${marginFilePath}
-
+    ${oemGroup}     Set Variable    ${EMPTY}
     FOR    ${rowIndex}    IN RANGE    ${startRowOnMargin}    ${numOfRows}+1
-        ${oemGroup}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnMargin}
-        ${pn}           Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnMargin}
-        ${value}        Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        ${oemGroupCol}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnMargin}
+        ${pnCol}           Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnMargin}
+        ${valueCol}        Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        IF    '${pnCol}' == 'Total'
+             Continue For Loop
+        END
 
+        IF    '${valueCol}' == 'None' or '${valueCol}' == '0'
+             Continue For Loop
+        END
+
+        IF    '${oemGroupCol}' != 'None'
+             ${oemGroup}    Set Variable    ${oemGroupCol}
+        END
+
+        
+        ${rowOnTable}   Create List
+        ...             ${oemGroup}
+        ...             ${pnCol}
+        ...             ${valueCol}
+        Append To List    ${table}   ${rowOnTable}
     END
 
-    ${rowOnTable}   Create List
-    ...             ${oemGroup}
-    ...             ${pn}
-    ...             ${value}
-
-    Append To List    ${table}   ${rowOnTable}
-
+    Close Current Excel Document
     [Return]    ${table}
 
 #Create Table From The SS Revenue Cost Dump For Margin Report Source

@@ -66,6 +66,36 @@ Remove All Files in Specified Directory
         Remove File    ${dirPath}${fileName}
     END
 
+Write Table To Excel
+    [Arguments]     ${filePath}     ${listNameOfCols}     ${table}
+
+    File Should Exist      path=${filePath}
+    Open Excel Document    filename=${filePath}    doc_id=Table
+#    Add Header to File
+    ${count}    Set Variable    1
+    FOR    ${nameOfCol}    IN    @{listNameOfCols}
+        Write Excel Cell    row_num=1    col_num=${count}     value=${nameOfCol}
+        ${count}    Evaluate    ${count}+1
+    END
+    ${latestRow}   Get Number Of Rows In Excel    ${filePath}
+    ${nextRow}     Evaluate    ${latestRow}+1
+#    Add Raw Data to File
+    FOR    ${rawData}    IN    @{table}
+        ${count}        Set Variable    0
+        ${colIndex}     Set Variable    1
+        FOR    ${nameOfCol}    IN    @{listNameOfCols}
+            Write Excel Cell    row_num=${nextRow}    col_num=${colIndex}    value=${rawData[${count}]}
+            ${count}    Evaluate    ${count}+1
+            ${colIndex}     Evaluate    ${colIndex}+1
+        END
+        ${nextRow}  Evaluate    ${nextRow}+1
+    END
+    Save Excel Document    ${filePath}
+    Close Current Excel Document
+
+
+
+
 
 
 
