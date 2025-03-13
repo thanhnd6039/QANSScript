@@ -8,25 +8,46 @@ ${txtDateCreatedFrom}          //input[@id='BaseTran_DATECREATEDfrom']
 ${txtDateCreateTo}             //input[@id='BaseTran_DATECREATEDto']
 
 ${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
-${startRowOnSSMasterOPP}          2
+${SSRCDFilePath}               C:\\RobotFramework\\Downloads\\SS Revenue Cost Dump.xlsx
+${startRowOnSSRCD}                       2
+${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
 ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
-Get List Of OPP JOIN ID On SS Master OPP
-    @{listOfOPPJoinID}  Create List
+Create Table For SS Revenue Cost Dump
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
+    @{table}    Create List
 
-    File Should Exist    path=${SSMasterOPPFilePath}
-    Open Excel Document    filename=${SSMasterOPPFilePath}    doc_id=SSMasterOPP
-    ${numOfRowsOnSSMasterOPP}    Get Number Of Rows In Excel    ${SSMasterOPPFilePath}
-
-    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSMasterOPP}    ${numOfRowsOnSSMasterOPP}+1
-        ${oppJoinIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPJoinIDColOnSSMasterOPP}
-        Append To List    ${listOfOPPJoinID}    ${oppJoinIDCol}
+    IF    '${transType}' == 'REVENUE'
+         ${searchStr}   Set Variable    ${year} Q${quarter} Actual
+    ELSE IF     '${transType}' == 'BACKLOG'
+         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
+    ELSE IF     '${transType}' == 'TOTAL BACKLOG'
+         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
+    ELSE IF     '${transType}' == 'CUSTOMER FORECAST'
+         ${searchStr}   Set Variable    ${year} Q${quarter} Customer Forecast
+    ELSE
+         Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
     END
 
-    [Return]    ${listOfOPPJoinID}
+    [Return]    ${table}
+
+
+#Get List Of OPP JOIN ID On SS Master OPP
+#    @{listOfOPPJoinID}  Create List
+#
+#    File Should Exist    path=${SSMasterOPPFilePath}
+#    Open Excel Document    filename=${SSMasterOPPFilePath}    doc_id=SSMasterOPP
+#    ${numOfRowsOnSSMasterOPP}    Get Number Of Rows In Excel    ${SSMasterOPPFilePath}
+#
+#    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSMasterOPP}    ${numOfRowsOnSSMasterOPP}+1
+#        ${oppJoinIDCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOPPJoinIDColOnSSMasterOPP}
+#        Append To List    ${listOfOPPJoinID}    ${oppJoinIDCol}
+#    END
+#
+#    [Return]    ${listOfOPPJoinID}
 
 #Check The OPP Join ID Data Is Exist On SS Master OPP By OEM Group And PN
 #    [Arguments]     ${oemGroup}     ${pn}   ${oppJoinID}

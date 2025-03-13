@@ -18,11 +18,11 @@ Create Table For Margin Report
     @{table}    Create List
     ${searchStr}    Set Variable    ${EMPTY}
 
-    IF    '${transType}' == 'Revenue'
+    IF    '${transType}' == 'REVENUE'
          ${searchStr}   Set Variable    ${year} Q${quarter} Actual
-    ELSE IF     '${transType}' == 'Backlog'
+    ELSE IF     '${transType}' == 'BACKLOG'
          ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
-    ELSE IF     '${transType}' == 'Customer Forecast'
+    ELSE IF     '${transType}' == 'CUSTOMER FORECAST'
          ${searchStr}   Set Variable    ${year} Q${quarter} Customer Forecast
     ELSE
          Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
@@ -33,6 +33,12 @@ Create Table For Margin Report
          ${posOfValueCol}   Evaluate    ${posOfValueCol}+0
     ELSE IF     '${attribute}' == 'AMOUNT'
          ${posOfValueCol}   Evaluate    ${posOfValueCol}+1
+    ELSE IF     '${attribute}' == 'COST'
+         ${posOfValueCol}   Evaluate    ${posOfValueCol}+2
+    ELSE IF     '${attribute}' == '% MARGIN'
+         ${posOfValueCol}   Evaluate    ${posOfValueCol}+3
+    ELSE IF     '${attribute}' == 'AVG MM'
+         ${posOfValueCol}   Evaluate    ${posOfValueCol}+4
     ELSE
         Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
     END
@@ -45,27 +51,28 @@ Create Table For Margin Report
         ${oemGroupCol}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnMargin}
         ${pnCol}           Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnMargin}
         ${valueCol}        Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
-        IF    '${pnCol}' == 'Total'
-             Continue For Loop
-        END
-
-        IF    '${valueCol}' == 'None' or '${valueCol}' == '0'
-             Continue For Loop
-        END
 
         IF    '${oemGroupCol}' != 'None'
              ${oemGroup}    Set Variable    ${oemGroupCol}
         END
 
-        
+        IF    '${pnCol}' == 'Total'
+             Continue For Loop
+        END
+
+        IF    '${valueCol}' == 'None' or '${valueCol}' == '0' or '${valueCol}' == '${EMPTY}'
+             Continue For Loop
+        END
+
         ${rowOnTable}   Create List
         ...             ${oemGroup}
         ...             ${pnCol}
         ...             ${valueCol}
         Append To List    ${table}   ${rowOnTable}
     END
-
     Close Current Excel Document
+
+
     [Return]    ${table}
 
 #Create Table From The SS Revenue Cost Dump For Margin Report Source

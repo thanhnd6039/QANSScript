@@ -19,7 +19,6 @@ Create Table For Flat SG Report
          ${searchStr}   Set Variable    ${year}.Q${quarter} R
     ELSE IF     '${transType}' == 'Backlog'
          ${searchStr}   Set Variable    ${year}.Q${quarter} B
-         ${posOfBLCol}     Get Position Of Column    filePath=${flatSGFilePath}    rowIndex=${rowIndexForSearchColOnFlatSG}    searchStr=${searchStr}
     ELSE IF     '${transType}' == 'Customer Forecast'
          ${searchStr}   Set Variable    ${year}.Q${quarter} CF
     ELSE
