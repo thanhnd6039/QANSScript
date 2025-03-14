@@ -398,7 +398,6 @@ Check The Commit Or Comment Data
     ${startRowIndexForOEMGroupOnWoWChange}   Set Variable    0
     ${endRowIndexForOEMGroupOnWoWChange}     Set Variable    0
 
-
     File Should Exist      path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}         doc_id=WoWChange
 

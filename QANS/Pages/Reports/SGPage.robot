@@ -6,18 +6,115 @@ ${testResultOfSGReportByOEMGroupFilePath}   C:\\RobotFramework\\Results\\SGRepor
 ${testResultOfSGReportByPNFilePath}         C:\\RobotFramework\\Results\\SGReport\\SGReportResultByPN.xlsx
 ${SGFilePath}                               C:\\RobotFramework\\Downloads\\Sales Gap Report NS With SO Forecast.xlsx
 
-${startRowOnSG}             6
-${rowIndexForSearchCol}     3
-${posOfOEMGroupColOnSG}     2
-${posOfMainSalesRepColOnSG}     3
+${startRowOnSG}                      6
+${rowIndexForSearchPosOfCol}         3
+${posOfOEMGroupColOnSG}              2
+${posOfMainSalesRepColOnSG}          3
 
 *** Keywords ***
+Create Table For SG Report
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
+    @{table}        Create List
+    ${searchStr}    Set Variable    ${EMPTY}
+
+    IF    '${transType}' == 'REVENUE'
+         ${searchStr}   Set Variable    ${year}.Q${quarter} R
+    ELSE IF     '${transType}' == 'BACKLOG'
+         ${searchStr}   Set Variable    ${year}.Q${quarter} B
+    ELSE IF     '${transType}' == 'BACKLOG FORECAST'
+         ${searchStr}   Set Variable    ${year}.Q${quarter} BF
+    ELSE IF     '${transType}' == 'CUSTOMER FORECAST'
+         ${searchStr}   Set Variable    ${year}.Q${quarter} CF
+    ELSE IF     '${transType}' == 'BUDGET'
+         ${searchStr}   Set Variable    ${year}.Q${quarter} BGT
+    ELSE IF     '${transType}' == 'LOS'
+        ${searchStr}   Set Variable    ${year}.Q${quarter} R
+        ${posOfRCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
+        IF   '${posOfRCol}' == '0'
+            Fail   Not found the position of column
+        END
+        IF    '${attribute}' == 'QTY'
+             ${posOfRCol}   Evaluate    ${posOfRCol}+0
+        ELSE IF     '${attribute}' == 'AMOUNT'
+             ${posOfRCol}   Evaluate    ${posOfRCol}+2
+        ELSE
+            Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+        END
+        ${searchStr}   Set Variable    ${year}.Q${quarter} B
+        ${posOfBCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
+        IF   '${posOfBCol}' == '0'
+            Fail   Not found the position of column
+        END
+        IF    '${attribute}' == 'QTY'
+             ${posOfBCol}   Evaluate    ${posOfBCol}+0
+        ELSE IF     '${attribute}' == 'AMOUNT'
+             ${posOfBCol}   Evaluate    ${posOfBCol}+2
+        ELSE
+            Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+        END
+    ELSE
+         Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
+    END
+
+    IF    '${transType}' != 'LOS'
+        ${posOfValueCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
+        IF    '${posOfValueCol}' == '0'
+            Fail   Not found the position of column
+        END
+        IF    '${attribute}' == 'QTY'
+             ${posOfValueCol}   Evaluate    ${posOfValueCol}+0
+        ELSE IF     '${attribute}' == 'AMOUNT'
+             ${posOfValueCol}   Evaluate    ${posOfValueCol}+2
+        ELSE
+            Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+        END
+    END
+
+    File Should Exist    path=${SGFilePath}
+    Open Excel Document    filename=${SGFilePath}    doc_id=SG
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
+    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRows}+1
+        ${oemGroupCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSG}
+        IF    '${oemGroupCol}' != 'None'
+            ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepColOnSG}
+            IF    '${transType}' != 'LOS'
+                 ${valueCol}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+            ELSE
+                ${valueOfRCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfRCol}
+                IF    '${valueOfRCol}' == 'None'
+                     ${valueOfRCol}     Set Variable    0
+                END
+                ${valueOfBCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfBCol}
+                IF    '${valueOfBCol}' == 'None'
+                     ${valueOfBCol}     Set Variable    0
+                END
+                ${valueCol}     Evaluate    ${valueOfRCol}+${valueOfBCol}
+            END
+            IF    '${valueCol}' == 'None'
+                 ${valueCol}    Set Variable    0
+            END
+            ${valueCol}      Evaluate  "%.2f" % ${valueCol}
+            IF    '${valueCol}' == '0.00'
+                 Continue For Loop
+            END
+            ${rowOnTable}   Create List
+            ...             ${oemGroupCol}
+            ...             ${mainSalesRepCol}
+            ...             ${valueCol}
+            Append To List    ${table}   ${rowOnTable}
+        END
+
+    END
+
+    Close Current Excel Document
+    [Return]    ${table}
+
 Get Value By OEM Group On SG Report
     [Arguments]     ${oemGroup}     ${transType}    ${year}     ${quarter}  ${attribute}
     ${value}   Set Variable    0
 
     ${searchStr}        Set Variable    ${year}.Q${quarter} ${transType}
-    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchCol}    ${searchStr}
+    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchPosOfCol}    ${searchStr}
     IF    '${attribute}' == 'AMOUNT'
          ${posOfCol}    Evaluate    ${posOfCol}+2
     END
@@ -45,7 +142,7 @@ Get Value By Main Sales Rep On SG Report
     ${value}   Set Variable    0
 
     ${searchStr}        Set Variable    ${year}.Q${quarter} ${transType}
-    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchCol}    ${searchStr}
+    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchPosOfCol}    ${searchStr}
     IF    '${attribute}' == 'AMOUNT'
          ${posOfCol}    Evaluate    ${posOfCol}+2
     END
