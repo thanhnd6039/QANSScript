@@ -9,6 +9,7 @@ ${marginFilePath}           C:\\RobotFramework\\Downloads\\Margin Reporting By O
 
 ${startRowOnMargin}                 7
 ${rowIndexForSearchColOnMargin}     4
+#${rowIndexForSearchColOnMargin}     3
 ${posOfOEMGroupColOnMargin}         1
 ${posOfPNColOnMargin}               2
 
@@ -20,6 +21,7 @@ Create Table For Margin Report
 
     IF    '${transType}' == 'REVENUE'
          ${searchStr}   Set Variable    ${year} Q${quarter} Actual
+#         ${searchStr}   Set Variable    ${year} Q${quarter}
     ELSE IF     '${transType}' == 'BACKLOG'
          ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
     ELSE IF     '${transType}' == 'CUSTOMER FORECAST'

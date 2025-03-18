@@ -4,7 +4,7 @@ Resource    ../../Pages/Reports/MarginPage.robot
 *** Test Cases ***
 Testcase1
     @{table}    Create List
-    ${table}    Create Table For Margin Report  transType=BACKLOG   attribute=QTY    year=2025   quarter=2
+    ${table}    Create Table For Margin Report  transType=BACKLOG   attribute=AMOUNT    year=2025   quarter=4
 
     ${filePath}     Set Variable    C:\\RobotFramework\\Downloads\\test.xlsx
     @{listNameOfCols}   Create List
