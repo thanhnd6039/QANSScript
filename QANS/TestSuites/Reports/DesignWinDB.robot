@@ -4,7 +4,7 @@ Resource    ../../Pages/Reports/DesignWinDBPage.robot
 
 *** Test Cases ***
 Verify Sales Forecast on Design Win DB report
-    Get List OEM GROUP And PN For Every Quarter    year=2025    quarter=1
+    Create Table For SS Revenue Cost Dump    transType=REVENUE    attribute=AMOUNT    year=2025    quarter=1
 #    ${filePath}     Set Variable    C:\\RobotFramework\\Downloads\\test.xlsx
 #    @{listNameOfCols}   Create List
 #    Append To List    ${listNameOfCols}  OEM GROUP
