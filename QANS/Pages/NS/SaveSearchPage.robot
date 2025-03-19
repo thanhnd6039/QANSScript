@@ -9,7 +9,11 @@ ${txtDateCreateTo}             //input[@id='BaseTran_DATECREATEDto']
 
 ${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
 ${SSRCDFilePath}               C:\\RobotFramework\\Downloads\\SS Revenue Cost Dump.xlsx
-${startRowOnSSRCD}                       2
+${startRowOnSSRCD}                             2
+${posOfOEMGroupColOnSSRCD}                     2
+${posOfParentClassColOnSSRCD}                  9
+${posOfPNColOnSSRCD}                           11
+${posOfQuarterColOnSSRCD}                      18
 ${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
@@ -32,8 +36,54 @@ Create Table For SS Revenue Cost Dump
          Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
     END
 
+    File Should Exist      path=${SSRCDFilePath}
+    Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
+    ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
+#    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
+#
+#    END
+
     [Return]    ${table}
 
+Get List OEM GROUP And PN For Every Quarter
+    [Arguments]     ${year}     ${quarter}
+    @{listOEMGroupAndPN}    Create List
+    ${quarterStr}  Set Variable    Q${quarter}-${year}
+    File Should Exist      path=${SSRCDFilePath}
+    Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
+    ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
+    ${listParentClass}  Get List Parent Class
+    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
+        ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
+        IF    '${parentClassCol}' in ${listParentClass}
+             ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
+             IF    '${quarterCol}' == '${quarterStr}'
+                  ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
+                  ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
+                  ${rowOnTable}   Create List
+                  ...             ${oemGroupCol}
+                  ...             ${pnCol}
+                  Append To List    ${listOEMGroupAndPN}   ${rowOnTable}
+             END
+        END
+    END
+    ${before}   Get Length    ${listOEMGroupAndPN}
+    ${listOEMGroupAndPN}    Remove Duplicates    ${listOEMGroupAndPN}
+    ${after}    Get Length    ${listOEMGroupAndPN}
+    Log To Console    Before: ${before}
+    Log To Console    After: ${after}
+
+    [Return]    ${listOEMGroupAndPN}
+
+Get List Parent Class
+    @{listParentClass}   Create List
+    Append To List    ${listParentClass}    COMPONENTS
+    Append To List    ${listParentClass}    MEM
+    Append To List    ${listParentClass}    NI ITEMS
+    Append To List    ${listParentClass}    SERVICE
+    Append To List    ${listParentClass}    STORAGE
+
+    [Return]    ${listParentClass}
 
 #Get List Of OPP JOIN ID On SS Master OPP
 #    @{listOfOPPJoinID}  Create List
