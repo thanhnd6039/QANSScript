@@ -12,8 +12,51 @@ ${SGWeeklyActionDBFilePath}       C:\\RobotFramework\\Downloads\\SalesGap Weekly
 ${posOfOEMGroupColOnWoWChange}              1
 
 *** Keywords ***
+Check Commit, WoW,  On WoW Change
+Create Table On WoW Change On VDC
+    [Arguments]     ${table}    ${nameOfCol}
+
+    @{tableOnWoWChangeOnVDC}     Create List
+    ${result}       Set Variable    ${True}
+    ${startRow}     Set Variable    0
+    ${endRow}       Set Variable    0
+    ${othersRow}    Set Variable    0
+    ${totalRow}     Set Variable    0
+
+    IF    '${table}' != 'OEM East' and '${table}' != 'OEM West + Channel'
+         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
+    END
+
+    ${startRow}     Get Start Row On WoW Change    table=${table}
+    ${endRow}       Get End Row On WoW Change    table=${table}
+    ${othersRow}    Evaluate    ${endRow}+1
+    ${totalRow}     Evaluate    ${endRow}+2
+
+    IF    '${nameOfCol}' == 'LW Commit'
+         ${posOfValueCol}    Set Variable    4
+    ELSE IF  '${nameOfCol}' == 'TW Commit'
+         ${posOfValueCol}    Set Variable    5
+    ELSE
+        ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    END
+
+    File Should Exist      path=${wowChangeOnVDCFilePath}
+    Open Excel Document    filename=${wowChangeOnVDCFilePath}           doc_id=WoWChangeOnVDC
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${wowChangeOnVDCFilePath}
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
+        ${oemGroupColOnWoWChangeOnVDC}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnWoWChange}
+        ${valueColOnWoWChangeOnVDC}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        ${rowOnTable}   Create List
+        ...             ${oemGroupColOnWoWChangeOnVDC}
+        ...             ${valueColOnWoWChangeOnVDC}
+        Append To List    ${tableOnWoWChangeOnVDC}   ${rowOnTable}
+    END
+
+    Close Current Excel Document
+    [Return]    ${tableOnWoWChangeOnVDC}
+
 Create Table On WoW Change
-    [Arguments]     ${table}
+    [Arguments]     ${table}    ${nameOfCol}
 
     @{tableOnWoWChange}     Create List
     ${result}       Set Variable    ${True}
@@ -31,10 +74,27 @@ Create Table On WoW Change
     ${othersRow}    Evaluate    ${endRow}+1
     ${totalRow}     Evaluate    ${endRow}+2
 
+    IF    '${nameOfCol}' == 'LW Commit'
+         ${posOfValueCol}    Set Variable    4
+    ELSE IF  '${nameOfCol}' == 'TW Commit'
+         ${posOfValueCol}    Set Variable    5
+    ELSE
+        ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    END
+
     File Should Exist      path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
     ${numOfRows}  Get Number Of Rows In Excel    filePath=${wowChangeFilePath}
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
+        ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnWoWChange}
+        ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        ${rowOnTable}   Create List
+        ...             ${oemGroupColOnWoWChange}
+        ...             ${valueColOnWoWChange}
+        Append To List    ${tableOnWoWChange}   ${rowOnTable}
+    END
 
+    Close Current Excel Document
     [Return]    ${tableOnWoWChange}
 
 Check BGT, Ship, Backlog, LOS On WoW Change
@@ -63,7 +123,7 @@ Check BGT, Ship, Backlog, LOS On WoW Change
     ELSE IF  '${nameOfCol}' == 'Current Q Budget'
          ${posOfValueCol}    Set Variable    4
     ELSE
-        ${posOfValueCol}     Get Position Of Col    table=${table}    nameOfCol=${nameOfCol}
+        ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
     END
 
     IF    '${posOfValueCol}' == '0'
@@ -213,7 +273,7 @@ Get Row Index For Search Col
     Close Current Excel Document
     [Return]    ${rowIndexForSearchCol}
 
-Get Position Of Col
+Get Position Of Column On WoW Change
     [Arguments]     ${table}    ${nameOfCol}
     ${pos}  Set Variable    0
     ${rowIndexForSearchCol}     Set Variable    0
@@ -228,7 +288,7 @@ Get Start Row On WoW Change
     [Arguments]     ${table}
 
     ${startRow}     Set Variable    0
-    ${posOfCol}     Get Position Of Col    table=${table}   nameOfCol=${table}
+    ${posOfCol}     Get Position Of Column On WoW Change    table=${table}   nameOfCol=${table}
 
     File Should Exist    path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}    doc_id=WoWChange
@@ -251,7 +311,7 @@ Get End Row On WoW Change
     ${endRow}   Set Variable    0
     ${count}    Set Variable    0
 
-    ${posOfCol}     Get Position Of Col    table=${table}   nameOfCol=${table}
+    ${posOfCol}     Get Position Of Column On WoW Change    table=${table}   nameOfCol=${table}
 
     File Should Exist    path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}    doc_id=WoWChange
