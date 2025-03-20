@@ -28,7 +28,7 @@ Verify LW Commit for the OEM East table
      [Tags]  WoWChange_0003
      [Documentation]     Verify the data of LW Commit column for the OEM East table
 
-     Check The Commit Or Comment Data   table=OEM East   nameOfCol=LW Commit    posOfColOnWoWChange=${posOfColOnWoWChange}
+     Check Commit, WoW, Comment On WoW Change   table=OEM East  nameOfCol=LW Commit
 
 Verify Ships for the OEM East table
     [Tags]  WoWChange_0005

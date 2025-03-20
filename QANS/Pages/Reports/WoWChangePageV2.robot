@@ -12,7 +12,33 @@ ${SGWeeklyActionDBFilePath}       C:\\RobotFramework\\Downloads\\SalesGap Weekly
 ${posOfOEMGroupColOnWoWChange}              1
 
 *** Keywords ***
-Check Commit, WoW,  On WoW Change
+Check Commit, WoW, Comment On WoW Change
+    [Arguments]     ${table}    ${nameOfCol}
+    ${result}   Set Variable    ${True}
+    ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    ${tableOnWoWChangeOnVDC}    Create Table On WoW Change On VDC    table=${table}    nameOfCol=${nameOfCol}
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[0]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        FOR    ${rowOnWoWChangeOnVDC}    IN    @{tableOnWoWChangeOnVDC}
+            ${oemGroupOnWoWChangeOnVDC}  Set Variable    ${rowOnWoWChangeOnVDC[0]}
+            ${valueOnWoWChangeOnVDC}     Set Variable    ${rowOnWoWChangeOnVDC[1]}
+            IF    '${oemGroupOnWoWChange}' == '${oemGroupOnWoWChangeOnVDC}'
+                 IF    '${valueOnWoWChange}' != '${valueOnWoWChangeOnVDC}'
+                      ${result}     Set Variable    ${False}
+                      IF    '${oemGroupOnWoWChange}' == 'Total'
+                           Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} Total    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnWoWChangeOnVDC}
+                      ELSE IF   '${oemGroupOnWoWChange}' == 'OTHERS'
+                           Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} OTHERS    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnWoWChangeOnVDC}
+                      ELSE
+                           Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupOnWoWChange}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnWoWChangeOnVDC}
+                      END
+                 END
+                 BREAK
+            END
+        END
+    END
+
 Create Table On WoW Change On VDC
     [Arguments]     ${table}    ${nameOfCol}
 
