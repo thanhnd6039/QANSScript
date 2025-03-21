@@ -12,7 +12,91 @@ ${SGWeeklyActionDBFilePath}       C:\\RobotFramework\\Downloads\\SalesGap Weekly
 ${posOfOEMGroupColOnWoWChange}              1
 
 *** Keywords ***
-Check Commit, WoW, Comment On WoW Change
+Get WoW By Formular By OEM GRoup
+    [Arguments]     ${table}    ${nameOfCol}    ${oemGroup}
+    ${wowByFormula}           Set Variable    0
+    ${valueOnWoWChange}       Set Variable    0
+    ${valueOnWoWChangeOnVDC}  Set Variable    0
+
+
+    ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    ${tableOnWoWChangeOnVDC}    Create Table On WoW Change On VDC    table=${table}    nameOfCol=${nameOfCol}
+
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[0]}
+        IF    '${oemGroupOnWoWChange}' == '${oemGroup}'
+            ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+            BREAK
+        END
+    END
+
+    FOR    ${rowOnWoWChangeOnVDC}    IN    @{tableOnWoWChangeOnVDC}
+        ${oemGroupOnWoWChangeOnVDC}  Set Variable    ${rowOnWoWChangeOnVDC[0]}
+        IF    '${oemGroupOnWoWChangeOnVDC}' == '${oemGroup}'
+            ${valueOnWoWChangeOnVDC}     Set Variable    ${rowOnWoWChangeOnVDC[1]}
+            BREAK
+        END
+    END
+
+    ${wowByFormula}     Evaluate    ${valueOnWoWChange}-${valueOnWoWChangeOnVDC}
+    [Return]    ${wowByFormula}
+
+Check WoW On WoW Change
+    [Arguments]     ${table}    ${nameOfCol}
+    ${result}   Set Variable    ${True}
+    ${tableOnWoWChange}                    Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    ${wowByFormula}     Set Variable    0
+
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[0]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        IF    '${nameOfCol}' == 'WoW Of Ships'
+             ${wowByFormula}         Get WoW By Formular By OEM GRoup    table=${table}    nameOfCol=Ships    oemGroup=${oemGroupOnWoWChange}
+        ELSE
+             ${wowByFormula}         Get WoW By Formular By OEM GRoup    table=${table}    nameOfCol=LOS    oemGroup=${oemGroupOnWoWChange}
+        END
+
+        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+        ${wowByFormula}          Evaluate  "%.2f" % ${wowByFormula}
+
+        IF    '${valueOnWoWChange}' != '${wowByFormula}'
+              ${result}     Set Variable    ${False}
+              IF    '${oemGroupOnWoWChange}' == 'Total'
+                   Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} Total    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${wowByFormula}
+              ELSE IF   '${oemGroupOnWoWChange}' == 'OTHERS'
+                   Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} OTHERS    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${wowByFormula}
+              ELSE
+                   Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupOnWoWChange}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${wowByFormula}
+              END
+        END
+    END
+    IF    '${result}' == '${False}'
+         Fail   The ${nameOfCol} data for the ${table} table is wrong
+    END
+
+Check TW Commit On WoW Change
+    [Arguments]     ${table}    ${nameOfCol}
+    ${result}   Set Variable    ${True}
+    ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[0]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        IF    '${valueOnWoWChange}' != '${EMPTY}'
+             ${result}     Set Variable    ${False}
+             IF    '${oemGroupOnWoWChange}' == 'Total'
+                  Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} Total    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${EMPTY}
+             ELSE IF   '${oemGroupOnWoWChange}' == 'OTHERS'
+                  Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} OTHERS    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${EMPTY}
+             ELSE
+                  Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupOnWoWChange}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${EMPTY}
+             END
+        END
+    END
+    IF    '${result}' == '${False}'
+         Fail   The ${nameOfCol} data for the ${table} table is wrong
+    END
+Check LW Commit, Comment On WoW Change
     [Arguments]     ${table}    ${nameOfCol}
     ${result}   Set Variable    ${True}
     ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
@@ -38,6 +122,9 @@ Check Commit, WoW, Comment On WoW Change
             END
         END
     END
+    IF    '${result}' == '${False}'
+         Fail   The ${nameOfCol} data for the ${table} table is different between the WoW Change Report and WoW Change on VDC
+    END
 
 Create Table On WoW Change On VDC
     [Arguments]     ${table}    ${nameOfCol}
@@ -59,9 +146,11 @@ Create Table On WoW Change On VDC
     ${totalRow}     Evaluate    ${endRow}+2
 
     IF    '${nameOfCol}' == 'LW Commit'
-         ${posOfValueCol}    Set Variable    4
-    ELSE IF  '${nameOfCol}' == 'TW Commit'
          ${posOfValueCol}    Set Variable    5
+    ELSE IF   '${nameOfCol}' == 'WoW Of Ships'
+         ${posOfValueCol}    Set Variable    7
+    ELSE IF   '${nameOfCol}' == 'WoW Of LOS'
+         ${posOfValueCol}    Set Variable    10
     ELSE
         ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
     END
@@ -104,6 +193,10 @@ Create Table On WoW Change
          ${posOfValueCol}    Set Variable    4
     ELSE IF  '${nameOfCol}' == 'TW Commit'
          ${posOfValueCol}    Set Variable    5
+    ELSE IF  '${nameOfCol}' == 'WoW Of Ships'
+         ${posOfValueCol}    Set Variable    7
+    ELSE IF  '${nameOfCol}' == 'WoW Of LOS'
+         ${posOfValueCol}    Set Variable    10
     ELSE
         ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
     END

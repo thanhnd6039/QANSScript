@@ -28,7 +28,13 @@ Verify LW Commit for the OEM East table
      [Tags]  WoWChange_0003
      [Documentation]     Verify the data of LW Commit column for the OEM East table
 
-     Check Commit, WoW, Comment On WoW Change   table=OEM East  nameOfCol=LW Commit
+     Check LW Commit, Comment On WoW Change   table=OEM East  nameOfCol=LW Commit
+
+Verify TW Commit for the OEM East table
+    [Tags]  WoWChange_0004
+    [Documentation]     Verify the data of TW Commit column for the OEM East table
+
+    Check TW Commit On WoW Change  table=OEM East  nameOfCol=TW Commit
 
 Verify Ships for the OEM East table
     [Tags]  WoWChange_0005
@@ -37,6 +43,12 @@ Verify Ships for the OEM East table
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
     Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Ships  transType=REVENUE   attribute=AMOUNT     year=${currentYear}     quarter=${currentQuarter}
+
+Verify WoW of Ships for the OEM East table
+    [Tags]  WoWChange_0006
+    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM East table
+
+    Check WoW On WoW Change  table=OEM East     nameOfCol=WoW Of Ships
 
 Verify Backlog for the OEM East table
     [Tags]  WoWChange_0007
@@ -53,4 +65,17 @@ Verify LOS for the OEM East table
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
     Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=LOS  transType=LOS   attribute=AMOUNT     year=${currentYear}     quarter=${currentQuarter}
+
+Verify WoW of LOS for the OEM East table
+    [Tags]  WoWChange_0009
+    [Documentation]     Verify the data of WoW(WoW of LOS column) column for the OEM East table
+
+    Check WoW On WoW Change  table=OEM East     nameOfCol=WoW Of LOS
+
+Veify Comments for the OEM East table
+     [Tags]  WoWChange_0011
+     [Documentation]     Verify the data of Comments column for the OEM East table
+
+     Check LW Commit, Comment On WoW Change  table=OEM East     nameOfCol=Comments
+
 
