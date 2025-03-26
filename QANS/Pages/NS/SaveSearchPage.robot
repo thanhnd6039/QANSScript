@@ -9,8 +9,8 @@ ${txtDateCreateTo}             //input[@id='BaseTran_DATECREATEDto']
 
 ${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
 ${SSRCDFilePath}               C:\\RobotFramework\\Downloads\\SS Revenue Cost Dump.xlsx
-${startRowOnSSRCD}                             2
 ${rowIndexForSearchColOnSSRCD}                 1
+${startRowOnSSRCD}                             2
 ${posOfOEMGroupColOnSSRCD}                     2
 ${posOfParentClassColOnSSRCD}                  9
 ${posOfPNColOnSSRCD}                           11
@@ -21,49 +21,87 @@ ${posOfOEMGroupColOnSSMasterOPP}               6
 ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
-Create Table For SS Revenue Cost Dump
-    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
+#Create Table For SS Revenue Cost Dump
+#    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
+#    @{table}    Create List
+#    ${quarterStr}  Set Variable    Q${quarter}-${year}
+#    IF    '${transType}' == 'REVENUE'
+#         ${searchStr}   Set Variable    ${year} Q${quarter} Actual
+#    ELSE IF     '${transType}' == 'BACKLOG'
+#         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
+#    ELSE IF     '${transType}' == 'TOTAL BACKLOG'
+#         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
+#    ELSE IF     '${transType}' == 'CUSTOMER FORECAST'
+#         ${searchStr}   Set Variable    ${year} Q${quarter} Customer Forecast
+#    ELSE
+#         Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
+#    END
+#    ${posOfValueCol}     Get Position Of Column    filePath=${SSRCDFilePath}    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${searchStr}
+#    ${listOEMGroupAndPN}    Get List OEM GROUP And PN For Every Quarter    year=${year}    quarter=${quarter}
+#    ${listParentClass}  Get List Parent Class
+#    File Should Exist      path=${SSRCDFilePath}
+#    Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
+#    ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
+#
+#    FOR    ${oemGroupAndPN}    IN    @{listOEMGroupAndPN}
+#        ${value}    Set Variable    0
+##        FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
+##            ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
+##            IF    '${parentClassCol}' in ${listParentClass}
+##                ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
+##                IF    '${quarterCol}' == '${quarterStr}'
+##                    ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
+##                    ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
+##                    IF    '${oemGroupCol}' == '${oemGroupAndPN[0]}' and '${pnCol}' == '${oemGroupAndPN[1]}'
+##                        ${valueCol}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+##                        ${value}   Evaluate    ${value}+${valueCol}
+##                    END
+##                END
+##            END
+##        END
+#        Log To Console    OEM GRoup: ${oemGroupAndPN[0]}; PN: ${oemGroupAndPN[1]}; Value: ${value}
+#
+#    END
+#
+#    Close Current Excel Document
+#    [Return]    ${table}
+
+Get All Transactions On SS RCD For Every Quarter
+    [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List
     ${quarterStr}  Set Variable    Q${quarter}-${year}
-    IF    '${transType}' == 'REVENUE'
-         ${searchStr}   Set Variable    ${year} Q${quarter} Actual
-    ELSE IF     '${transType}' == 'BACKLOG'
-         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
-    ELSE IF     '${transType}' == 'TOTAL BACKLOG'
-         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
-    ELSE IF     '${transType}' == 'CUSTOMER FORECAST'
-         ${searchStr}   Set Variable    ${year} Q${quarter} Customer Forecast
-    ELSE
-         Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
+    ${posOfValueCol}     Get Position Of Column    filePath=${SSRCDFilePath}    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${nameOfCol}
+    IF    '${posOfValueCol}' == '0'
+         Fail   Not found the position of ${nameOfCol} column
     END
-    ${posOfValueCol}     Get Position Of Column    filePath=${SSRCDFilePath}    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${searchStr}
-    ${listOEMGroupAndPN}    Get List OEM GROUP And PN For Every Quarter    year=${year}    quarter=${quarter}
-    ${listParentClass}  Get List Parent Class
+
     File Should Exist      path=${SSRCDFilePath}
     Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
     ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
-    
-    FOR    ${oemGroupAndPN}    IN    @{listOEMGroupAndPN}
-        ${value}    Set Variable    0
-#        FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
-#            ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
-#            IF    '${parentClassCol}' in ${listParentClass}
-#                ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
-#                IF    '${quarterCol}' == '${quarterStr}'
-#                    ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
-#                    ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
-#                    IF    '${oemGroupCol}' == '${oemGroupAndPN[0]}' and '${pnCol}' == '${oemGroupAndPN[1]}'
-#                        ${valueCol}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
-#                        ${value}   Evaluate    ${value}+${valueCol}
-#                    END
-#                END
-#            END
-#        END
-        Log To Console    OEM GRoup: ${oemGroupAndPN[0]}; PN: ${oemGroupAndPN[1]}; Value: ${value}
-         
+    ${listParentClass}  Get List Parent Class
+    FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
+        ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
+        IF    '${parentClassCol}' in ${listParentClass}
+            ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
+            IF    '${quarterCol}' == '${quarterStr}'
+                ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
+                ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
+                ${valueCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+                ${tempValue}    Set Variable    ${valueCol}
+                ${tempValue}    Convert To Integer    ${tempValue}
+                IF    '${tempValue}' == '0'
+                     Continue For Loop
+                END
+                ${rowOnTable}   Create List
+                ...             ${oemGroupCol}
+                ...             ${pnCol}
+                ...             ${valueCol}
+                Append To List    ${table}   ${rowOnTable}
+            END
+        END
     END
-
     Close Current Excel Document
+
     [Return]    ${table}
 
 Get List OEM GROUP And PN For Every Quarter
