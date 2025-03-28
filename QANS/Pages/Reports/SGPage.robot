@@ -35,10 +35,10 @@ Create Table For SG Report
         END
         IF    '${attribute}' == 'QTY'
              ${posOfRCol}   Evaluate    ${posOfRCol}+0
-        ELSE IF     '${attribute}' == 'AMOUNT'
+        ELSE IF     '${attribute}' == 'REV'
              ${posOfRCol}   Evaluate    ${posOfRCol}+2
         ELSE
-            Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+            Fail    The Attribute parameter ${attribute} is invalid
         END
         ${searchStr}   Set Variable    ${year}.Q${quarter} B
         ${posOfBCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
@@ -63,10 +63,10 @@ Create Table For SG Report
         END
         IF    '${attribute}' == 'QTY'
              ${posOfValueCol}   Evaluate    ${posOfValueCol}+0
-        ELSE IF     '${attribute}' == 'AMOUNT'
+        ELSE IF     '${attribute}' == 'REV'
              ${posOfValueCol}   Evaluate    ${posOfValueCol}+2
         ELSE
-            Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+            Fail    The Attribute parameter ${attribute} is invalid.
         END
     END
 
@@ -97,9 +97,12 @@ Create Table For SG Report
             IF    '${valueCol}' == '0.00'
                  Continue For Loop
             END
+#            Tạm thời set PN trong SG là Empty, sẽ update sau
+            ${pnCol}    Set Variable    ${EMPTY}
             ${rowOnTable}   Create List
             ...             ${oemGroupCol}
             ...             ${mainSalesRepCol}
+            ...             ${pnCol}
             ...             ${valueCol}
             Append To List    ${table}   ${rowOnTable}
         END
@@ -110,6 +113,20 @@ Create Table For SG Report
     [Return]    ${table}
 
 Get Value By OEM Group On SG Report
+    [Arguments]     ${tableOnSG}    ${oemGroup}     ${transType}    ${attribute}    ${year}     ${quarter}
+    ${valueOnSG}    Set Variable    ${EMPTY}
+
+    FOR    ${rowOnSG}    IN    @{tableOnSG}
+        ${oemGroupCol}  Set Variable    ${rowOnSG[0]}
+        IF    '${oemGroupCol}' == '${oemGroup}'
+             ${valueOnSG}   Set Variable    ${rowOnSG[3]}
+             BREAK
+        END
+    END
+
+    [Return]    ${valueOnSG}
+
+Get Value By OEM Group On SG Report Old
     [Arguments]     ${oemGroup}     ${transType}    ${year}     ${quarter}  ${attribute}
     ${value}   Set Variable    0
 

@@ -185,11 +185,15 @@ Create Table On WoW Change
     END
 
     ${startRow}     Get Start Row On WoW Change    table=${table}
-    ${endRow}       Get End Row On WoW Change    table=${table}
+    ${endRow}       Get End Row On WoW Change      table=${table}
     ${othersRow}    Evaluate    ${endRow}+1
     ${totalRow}     Evaluate    ${endRow}+2
 
-    IF    '${nameOfCol}' == 'LW Commit'
+    IF    '${nameOfCol}' == 'Pre Q Ships'
+         ${posOfValueCol}    Set Variable    2
+    ELSE IF    '${nameOfCol}' == 'LW Commit'
+         ${posOfValueCol}    Set Variable    4
+    ELSE IF    '${nameOfCol}' == 'LW Commit'
          ${posOfValueCol}    Set Variable    4
     ELSE IF  '${nameOfCol}' == 'TW Commit'
          ${posOfValueCol}    Set Variable    5
@@ -217,6 +221,81 @@ Create Table On WoW Change
     [Return]    ${tableOnWoWChange}
 
 Check BGT, Ship, Backlog, LOS On WoW Change
+    [Arguments]     ${table}    ${nameOfCol}     ${transType}   ${attribute}   ${year}     ${quarter}
+    ${result}       Set Variable    ${True}
+    ${sumOfValueOfOEMGroup}     Set Variable    0
+    
+    ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
+    ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
+    ${listOfSalesMemberInOEMWestTable}       Get List Of Sales Member In OEM West Table
+    ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
+    
+    ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+#    ${tableOnSG}            Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+#    #   Verify the data for each OEM Group
+#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+#        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+#        IF    '${oemGroupCol}' == 'OTHERS' or '${oemGroupCol}' == 'Total'
+#             Continue For Loop
+#        END
+#        ${valueOnSG}    Get Value By OEM Group On SG Report     tableOnSG=${tableOnSG}    oemGroup=${oemGroupCol}    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+#        ${sumOfValueOfOEMGroup}     Evaluate    ${sumOfValueOfOEMGroup}+${valueOnSG}
+#        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+#        ${valueOnSG}             Evaluate  "%.2f" % ${valueOnSG}
+#        IF    '${valueOnWoWChange}' != '${valueOnSG}'
+#             ${result}     Set Variable    ${False}
+#              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupCol}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
+#        END
+#    END
+#    #   Verify the Total data
+#    ${totalOnSG}    Set Variable    0
+#    ${valueOnSG}    Set Variable    0
+#    FOR    ${rawData}    IN    @{tableOnSG}
+#        ${mainSalesRepColOnSG}  Set Variable    ${rawData[1]}
+#        IF    '${table}' == 'OEM East'
+#             IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
+#                ${valueOnSG}    Set Variable    ${rawData[3]}
+#                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
+#             END
+#        END
+#    END
+#    ${totalOnWoWchange}     Set Variable    0
+#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+#        IF    '${oemGroupCol}' == 'Total'
+#             ${totalOnWoWchange}    Set Variable    ${rowOnWoWChange[1]}
+#             BREAK
+#        END
+#    END
+#    ${totalOnSG}          Evaluate  "%.2f" % ${totalOnSG}
+#    ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
+#    IF    ${totalOnWoWchange} != ${totalOnSG}
+#         ${result}     Set Variable    ${False}
+#         Write Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSG}
+#    END
+#    #  Verify the OTHERS data
+#    ${othersOnSG}   Evaluate    ${totalOnSG}-${sumOfValueOfOEMGroup}
+#    ${othersOnWoWChange}     Set Variable    0
+#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+#        IF    '${oemGroupCol}' == 'OTHERS'
+#             ${othersOnWoWChange}    Set Variable    ${rowOnWoWChange[1]}
+#             BREAK
+#        END
+#    END
+#    ${othersOnSG}          Evaluate  "%.2f" % ${othersOnSG}
+#    ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
+#    IF    ${othersOnWoWChange} != ${othersOnSG}
+#         ${result}     Set Variable    ${False}
+#         Write Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSG}
+#    END
+#
+#    IF    '${result}' == '${False}'
+#         Fail   The ${nameOfCol} data for the ${table} table is different between the WoW Change Report and SG Report
+#    END
+
+Check BGT, Ship, Backlog, LOS On WoW Change Old
     [Arguments]     ${table}    ${nameOfCol}     ${transType}   ${attribute}   ${year}     ${quarter}
 
     ${result}       Set Variable    ${True}
