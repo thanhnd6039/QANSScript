@@ -191,8 +191,8 @@ Create Table On WoW Change
 
     IF    '${nameOfCol}' == 'Pre Q Ships'
          ${posOfValueCol}    Set Variable    2
-    ELSE IF    '${nameOfCol}' == 'LW Commit'
-         ${posOfValueCol}    Set Variable    4
+    ELSE IF    '${nameOfCol}' == 'Current Q Budget'
+         ${posOfValueCol}    Set Variable    3
     ELSE IF    '${nameOfCol}' == 'LW Commit'
          ${posOfValueCol}    Set Variable    4
     ELSE IF  '${nameOfCol}' == 'TW Commit'
@@ -207,7 +207,6 @@ Create Table On WoW Change
 
     File Should Exist      path=${wowChangeFilePath}
     Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
-    ${numOfRows}  Get Number Of Rows In Excel    filePath=${wowChangeFilePath}
     FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
         ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnWoWChange}
         ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
@@ -231,131 +230,22 @@ Check BGT, Ship, Backlog, LOS On WoW Change
     ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
     
     ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
-#    ${tableOnSG}            Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
-#    #   Verify the data for each OEM Group
-#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-#        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
-#        IF    '${oemGroupCol}' == 'OTHERS' or '${oemGroupCol}' == 'Total'
-#             Continue For Loop
-#        END
-#        ${valueOnSG}    Get Value By OEM Group On SG Report     tableOnSG=${tableOnSG}    oemGroup=${oemGroupCol}    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
-#        ${sumOfValueOfOEMGroup}     Evaluate    ${sumOfValueOfOEMGroup}+${valueOnSG}
-#        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
-#        ${valueOnSG}             Evaluate  "%.2f" % ${valueOnSG}
-#        IF    '${valueOnWoWChange}' != '${valueOnSG}'
-#             ${result}     Set Variable    ${False}
-#              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupCol}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
-#        END
-#    END
-#    #   Verify the Total data
-#    ${totalOnSG}    Set Variable    0
-#    ${valueOnSG}    Set Variable    0
-#    FOR    ${rawData}    IN    @{tableOnSG}
-#        ${mainSalesRepColOnSG}  Set Variable    ${rawData[1]}
-#        IF    '${table}' == 'OEM East'
-#             IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
-#                ${valueOnSG}    Set Variable    ${rawData[3]}
-#                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
-#             END
-#        END
-#    END
-#    ${totalOnWoWchange}     Set Variable    0
-#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-#        IF    '${oemGroupCol}' == 'Total'
-#             ${totalOnWoWchange}    Set Variable    ${rowOnWoWChange[1]}
-#             BREAK
-#        END
-#    END
-#    ${totalOnSG}          Evaluate  "%.2f" % ${totalOnSG}
-#    ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
-#    IF    ${totalOnWoWchange} != ${totalOnSG}
-#         ${result}     Set Variable    ${False}
-#         Write Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSG}
-#    END
-#    #  Verify the OTHERS data
-#    ${othersOnSG}   Evaluate    ${totalOnSG}-${sumOfValueOfOEMGroup}
-#    ${othersOnWoWChange}     Set Variable    0
-#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-#        IF    '${oemGroupCol}' == 'OTHERS'
-#             ${othersOnWoWChange}    Set Variable    ${rowOnWoWChange[1]}
-#             BREAK
-#        END
-#    END
-#    ${othersOnSG}          Evaluate  "%.2f" % ${othersOnSG}
-#    ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
-#    IF    ${othersOnWoWChange} != ${othersOnSG}
-#         ${result}     Set Variable    ${False}
-#         Write Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSG}
-#    END
-#
-#    IF    '${result}' == '${False}'
-#         Fail   The ${nameOfCol} data for the ${table} table is different between the WoW Change Report and SG Report
-#    END
-
-Check BGT, Ship, Backlog, LOS On WoW Change Old
-    [Arguments]     ${table}    ${nameOfCol}     ${transType}   ${attribute}   ${year}     ${quarter}
-
-    ${result}       Set Variable    ${True}
-    ${startRow}     Set Variable    0
-    ${endRow}       Set Variable    0
-    ${othersRow}    Set Variable    0
-    ${totalRow}     Set Variable    0   
-    ${sumOfValueOfOEMGroup}     Set Variable    0
-
-    IF    '${table}' != 'OEM East' and '${table}' != 'OEM West + Channel'
-         Fail    The table parameter ${table} is invalid. Please contact with the Administrator for supporting
-    END
-
-    ${startRow}     Get Start Row On WoW Change    table=${table}
-    ${endRow}       Get End Row On WoW Change    table=${table}
-    ${othersRow}    Evaluate    ${endRow}+1
-    ${totalRow}     Evaluate    ${endRow}+2
-
-    IF    '${nameOfCol}' == 'Pre Q Ships'
-         ${posOfValueCol}    Set Variable    2
-    ELSE IF  '${nameOfCol}' == 'Current Q Budget'
-         ${posOfValueCol}    Set Variable    3
-    ELSE IF  '${nameOfCol}' == 'Current Q Budget'
-         ${posOfValueCol}    Set Variable    4
-    ELSE
-        ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
-    END
-
-    IF    '${posOfValueCol}' == '0'
-         Fail   Not found the position of column
-    END
-
-    ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
-    ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
-    ${listOfSalesMemberInOEMWestTable}       Get List Of Sales Member In OEM West Table
-    ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
-    ${tableOnSG}    Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
-    
-    File Should Exist      path=${wowChangeFilePath}
-    Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
-    ${numOfRows}  Get Number Of Rows In Excel    filePath=${wowChangeFilePath}
-   #   Verify the data for each OEM Group
-    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${endRow}+1
-        ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnWoWChange}
-        ${valueOnWoWChange}                Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
-        ${valueOnSG}   Set Variable     ${EMPTY}
-        FOR    ${rowData}    IN    @{tableOnSG}
-            ${oemGroupColOnSG}  Set Variable    ${rowData[0]}
-            IF    '${oemGroupColOnWoWChange}' == '${oemGroupColOnSG}'
-                 ${valueOnSG}   Set Variable    ${rowData[2]}
-                 BREAK
-            END
+    ${tableOnSG}            Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    #   Verify the data for each OEM Group
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        IF    '${oemGroupCol}' == 'OTHERS' or '${oemGroupCol}' == 'Total'
+             Continue For Loop
         END
-        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
-        ${valueOnSG}              Evaluate  "%.2f" % ${valueOnSG}
-        IF    ${valueOnWoWChange} != ${valueOnSG}
-              ${result}     Set Variable    ${False}
-              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupColOnWoWChange}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
-        END
+        ${valueOnSG}    Get Value By OEM Group On SG Report     tableOnSG=${tableOnSG}    oemGroup=${oemGroupCol}    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
         ${sumOfValueOfOEMGroup}     Evaluate    ${sumOfValueOfOEMGroup}+${valueOnSG}
+        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+        ${valueOnSG}             Evaluate  "%.2f" % ${valueOnSG}
+        IF    '${valueOnWoWChange}' != '${valueOnSG}'
+             ${result}     Set Variable    ${False}
+              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupCol}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
+        END
     END
     #   Verify the Total data
     ${totalOnSG}    Set Variable    0
@@ -364,14 +254,25 @@ Check BGT, Ship, Backlog, LOS On WoW Change Old
         ${mainSalesRepColOnSG}  Set Variable    ${rawData[1]}
         IF    '${table}' == 'OEM East'
              IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
-                ${valueOnSG}    Set Variable    ${rawData[2]}
+                ${valueOnSG}    Set Variable    ${rawData[3]}
                 ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
              END
+        ELSE
+            IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
+                ${valueOnSG}    Set Variable    ${rawData[3]}
+                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
+            END
         END
     END
-
-    ${totalOnWoWchange}   Read Excel Cell    row_num=${totalRow}    col_num=${posOfValueCol}
-    ${totalOnSG}   Evaluate  "%.2f" % ${totalOnSG}
+    ${totalOnWoWchange}     Set Variable    0
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+        IF    '${oemGroupCol}' == 'Total'
+             ${totalOnWoWchange}    Set Variable    ${rowOnWoWChange[1]}
+             BREAK
+        END
+    END
+    ${totalOnSG}          Evaluate  "%.2f" % ${totalOnSG}
     ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
     IF    ${totalOnWoWchange} != ${totalOnSG}
          ${result}     Set Variable    ${False}
@@ -379,8 +280,15 @@ Check BGT, Ship, Backlog, LOS On WoW Change Old
     END
     #  Verify the OTHERS data
     ${othersOnSG}   Evaluate    ${totalOnSG}-${sumOfValueOfOEMGroup}
-    ${othersOnWoWChange}   Read Excel Cell    row_num=${othersRow}    col_num=${posOfValueCol}
-    ${othersOnSG}   Evaluate  "%.2f" % ${othersOnSG}
+    ${othersOnWoWChange}     Set Variable    0
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+        IF    '${oemGroupCol}' == 'OTHERS'
+             ${othersOnWoWChange}    Set Variable    ${rowOnWoWChange[1]}
+             BREAK
+        END
+    END
+    ${othersOnSG}          Evaluate  "%.2f" % ${othersOnSG}
     ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
     IF    ${othersOnWoWChange} != ${othersOnSG}
          ${result}     Set Variable    ${False}
@@ -388,11 +296,56 @@ Check BGT, Ship, Backlog, LOS On WoW Change Old
     END
 
     IF    '${result}' == '${False}'
-         Close Current Excel Document
          Fail   The ${nameOfCol} data for the ${table} table is different between the WoW Change Report and SG Report
     END
+
+Check GAP On WoW Change
+    [Arguments]     ${table}    ${nameOfCol}
+    ${result}       Set Variable    ${True}
+    ${startRow}     Set Variable    0
+    ${endRow}       Set Variable    0
+    ${othersRow}    Set Variable    0
+    ${totalRow}     Set Variable    0
+
+    IF    '${table}' != 'OEM East' and '${table}' != 'OEM West + Channel'
+         Fail    The table parameter ${table} is invalid.
+    END
+
+    ${startRow}     Get Start Row On WoW Change    table=${table}
+    ${endRow}       Get End Row On WoW Change      table=${table}
+    ${othersRow}    Evaluate    ${endRow}+1
+    ${totalRow}     Evaluate    ${endRow}+2
+
+    File Should Exist      path=${wowChangeFilePath}
+    Open Excel Document    filename=${wowChangeFilePath}    doc_id=WoWChange
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
+        ${oemGroupColOnWoWChange}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnWoWChange}
+        ${lwCommitColOnWoWChange}       Read Excel Cell    row_num=${rowIndex}    col_num=4
+        ${losColOnWoWChange}            Read Excel Cell    row_num=${rowIndex}    col_num=9
+        ${gapByFormula}                 Evaluate    ${losColOnWoWChange}-${lwCommitColOnWoWChange}
+        ${gapColOnWoWChange}            Read Excel Cell    row_num=${rowIndex}    col_num=11
+        ${gapByFormula}                 Evaluate  "%.2f" % ${gapByFormula}
+        ${gapColOnWoWChange}            Evaluate  "%.2f" % ${gapColOnWoWChange}
+        IF    '${gapColOnWoWChange}' != '${gapByFormula}'
+             ${result}     Set Variable    ${False}
+             IF    '${oemGroupColOnWoWChange}' == 'Total'
+                  Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} Total    valueOnWoWChange=${gapColOnWoWChange}    valueOnSG=${gapByFormula}
+             ELSE IF    '${oemGroupColOnWoWChange}' == 'OTHERS'
+                  Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} OTHERS    valueOnWoWChange=${gapColOnWoWChange}    valueOnSG=${gapByFormula}
+             ELSE
+                  Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupColOnWoWChange}    valueOnWoWChange=${gapColOnWoWChange}    valueOnSG=${gapByFormula}
+             END
+
+        END
+
+    END
+
+    IF    '${result}' == '${False}'
+         Close Current Excel Document
+         Fail   The ${nameOfCol} data for the ${table} table is wrong
+    END
     Close Current Excel Document
-    
+
 Write Test Result Of WoW Change Report To Excel
     [Arguments]     ${item}     ${oemGroup}     ${valueOnWoWChange}   ${valueOnSG}
     File Should Exist      path=${wowChangeResultFilePath}

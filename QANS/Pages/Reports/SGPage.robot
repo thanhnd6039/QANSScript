@@ -47,13 +47,13 @@ Create Table For SG Report
         END
         IF    '${attribute}' == 'QTY'
              ${posOfBCol}   Evaluate    ${posOfBCol}+0
-        ELSE IF     '${attribute}' == 'AMOUNT'
+        ELSE IF     '${attribute}' == 'REV'
              ${posOfBCol}   Evaluate    ${posOfBCol}+2
         ELSE
-            Fail    The Attribute parameter ${attribute} is invalid. Please contact with the Administrator for supporting
+            Fail    The Attribute parameter ${attribute} is invalid.
         END
     ELSE
-         Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
+         Fail    The TransType parameter ${transType} is invalid.
     END
 
     IF    '${transType}' != 'LOS'
@@ -90,11 +90,13 @@ Create Table For SG Report
                 END
                 ${valueCol}     Evaluate    ${valueOfRCol}+${valueOfBCol}
             END
-            IF    '${valueCol}' == 'None'
+            IF    '${valueCol}' == 'None' or '${valueCol}' == '${EMPTY}'
                  ${valueCol}    Set Variable    0
             END
-            ${valueCol}      Evaluate  "%.2f" % ${valueCol}
-            IF    '${valueCol}' == '0.00'
+            ${tempValue}    Set Variable    ${valueCol}
+            ${tempValue}    Convert To Integer    ${tempValue}
+
+            IF    '${tempValue}' == '0'
                  Continue For Loop
             END
 #            Tạm thời set PN trong SG là Empty, sẽ update sau
@@ -114,7 +116,7 @@ Create Table For SG Report
 
 Get Value By OEM Group On SG Report
     [Arguments]     ${tableOnSG}    ${oemGroup}     ${transType}    ${attribute}    ${year}     ${quarter}
-    ${valueOnSG}    Set Variable    ${EMPTY}
+    ${valueOnSG}    Set Variable    0
 
     FOR    ${rowOnSG}    IN    @{tableOnSG}
         ${oemGroupCol}  Set Variable    ${rowOnSG[0]}
