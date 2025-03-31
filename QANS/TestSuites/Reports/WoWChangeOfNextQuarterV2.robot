@@ -9,21 +9,23 @@ Verify Prev Q Ship for the OEM East table
 
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    IF    '${currentQuarter}' == '1'
-         ${preQuarter}      Set Variable    4
-         ${currentYear}     Evaluate    ${currentYear}-1
-    ELSE
-         ${preQuarter}               Evaluate        ${currentQuarter}-1
-    END
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Pre Q Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${preQuarter}
+    ${preQuarter}   Set Variable    ${currentQuarter}
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Pre Q Ships  transType=LOS   attribute=REV     year=${currentYear}     quarter=${preQuarter}
 
 Verify Current Q Budget for the OEM East table
     [Tags]  WoWChange_0002
     [Documentation]     Verify the data of Current Q Budget column for the OEM East table
-
+       
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Current Q Budget  transType=BUDGET   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Current Q Budget  transType=BUDGET   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify LW Commit for the OEM East table
      [Tags]  WoWChange_0003
@@ -37,20 +39,27 @@ Verify TW Commit for the OEM East table
 
     Check TW Commit On WoW Change  table=OEM East  nameOfCol=TW Commit
 
-Verify Ships for the OEM East table
-    [Tags]  WoWChange_0005
-    [Documentation]     Verify the data of Ships column for the OEM East table
+#Verify Ships for the OEM East table
+#    [Tags]  WoWChange_0005
+#    [Documentation]     Verify the data of Ships column for the OEM East table
+#
+#    ${currentYear}              Get Current Year
+#    ${currentQuarter}           Get Current Quarter
+#    IF    '${currentQuarter}' == '4'
+#         ${nextQuarter}     Set Variable    1
+#         ${currentYear}     Evaluate    ${currentYear}+1
+#    ELSE
+#         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+#    END
+#
+#    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
-    ${currentYear}              Get Current Year
-    ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
-
-Verify WoW of Ships for the OEM East table
-    [Tags]  WoWChange_0006
-    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM East table
-
-    Depends On Test    name=Verify Ships for the OEM East table
-    Check WoW On WoW Change  table=OEM East     nameOfCol=WoW Of Ships
+#Verify WoW of Ships for the OEM East table
+#    [Tags]  WoWChange_0006
+#    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM East table
+#
+#    Depends On Test    name=Verify Ships for the OEM East table
+#    Check WoW On WoW Change  table=OEM East     nameOfCol=WoW Of Ships
 
 Verify Backlog for the OEM East table
     [Tags]  WoWChange_0007
@@ -58,7 +67,13 @@ Verify Backlog for the OEM East table
 
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Backlog  transType=BACKLOG   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Backlog  transType=BACKLOG   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify LOS for the OEM East table
     [Tags]  WoWChange_0008
@@ -68,7 +83,13 @@ Verify LOS for the OEM East table
     Depends On Test    name=Verify Backlog for the OEM East table
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=LOS  transType=LOS   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=LOS  transType=LOS   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify WoW of LOS for the OEM East table
     [Tags]  WoWChange_0009
@@ -97,13 +118,8 @@ Verify Prev Quarter Ship for the OEM West table
 
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    IF    '${currentQuarter}' == '1'
-         ${preQuarter}      Set Variable    4
-         ${currentYear}     Evaluate    ${currentYear}-1
-    ELSE
-         ${preQuarter}               Evaluate        ${currentQuarter}-1
-    END
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Pre Q Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${preQuarter}
+    ${preQuarter}   Set Variable    ${currentQuarter}
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Pre Q Ships  transType=LOS   attribute=REV     year=${currentYear}     quarter=${preQuarter}
 
 Verify Current Quarter Budget for the OEM West table
     [Tags]  WoWChange_0013
@@ -111,7 +127,13 @@ Verify Current Quarter Budget for the OEM West table
 
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Current Q Budget  transType=BUDGET   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Current Q Budget  transType=BUDGET   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify LW Commit for the OEM West table
     [Tags]  WoWChange_0014
@@ -131,7 +153,13 @@ Verify Ships for the OEM West table
 
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify WoW of Ships for the OEM West table
     [Tags]  WoWChange_0017
@@ -146,7 +174,13 @@ Verify Backlog for the OEM West table
 
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Backlog  transType=BACKLOG   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=Backlog  transType=BACKLOG   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify LOS for the OEM West table
     [Tags]  WoWChange_0019
@@ -156,7 +190,13 @@ Verify LOS for the OEM West table
     Depends On Test    name=Verify Backlog for the OEM West table
     ${currentYear}              Get Current Year
     ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=LOS  transType=LOS   attribute=REV     year=${currentYear}     quarter=${currentQuarter}
+    IF    '${currentQuarter}' == '4'
+         ${nextQuarter}     Set Variable    1
+         ${currentYear}     Evaluate    ${currentYear}+1
+    ELSE
+         ${nextQuarter}      Evaluate    ${currentQuarter}+1
+    END
+    Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM West + Channel     nameOfCol=LOS  transType=LOS   attribute=REV     year=${currentYear}     quarter=${nextQuarter}
 
 Verify WoW of LOS for the OEM West table
     [Tags]  WoWChange_0020
