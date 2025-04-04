@@ -21,50 +21,6 @@ ${posOfOEMGroupColOnSSMasterOPP}               6
 ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
-#Create Table For SS Revenue Cost Dump
-#    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
-#    @{table}    Create List
-#    ${quarterStr}  Set Variable    Q${quarter}-${year}
-#    IF    '${transType}' == 'REVENUE'
-#         ${searchStr}   Set Variable    ${year} Q${quarter} Actual
-#    ELSE IF     '${transType}' == 'BACKLOG'
-#         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
-#    ELSE IF     '${transType}' == 'TOTAL BACKLOG'
-#         ${searchStr}   Set Variable    ${year} Q${quarter} Backlog
-#    ELSE IF     '${transType}' == 'CUSTOMER FORECAST'
-#         ${searchStr}   Set Variable    ${year} Q${quarter} Customer Forecast
-#    ELSE
-#         Fail    The TransType parameter ${transType} is invalid. Please contact with the Administrator for supporting
-#    END
-#    ${posOfValueCol}     Get Position Of Column    filePath=${SSRCDFilePath}    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${searchStr}
-#    ${listOEMGroupAndPN}    Get List OEM GROUP And PN For Every Quarter    year=${year}    quarter=${quarter}
-#    ${listParentClass}  Get List Parent Class
-#    File Should Exist      path=${SSRCDFilePath}
-#    Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
-#    ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
-#
-#    FOR    ${oemGroupAndPN}    IN    @{listOEMGroupAndPN}
-#        ${value}    Set Variable    0
-##        FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
-##            ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
-##            IF    '${parentClassCol}' in ${listParentClass}
-##                ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
-##                IF    '${quarterCol}' == '${quarterStr}'
-##                    ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
-##                    ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
-##                    IF    '${oemGroupCol}' == '${oemGroupAndPN[0]}' and '${pnCol}' == '${oemGroupAndPN[1]}'
-##                        ${valueCol}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
-##                        ${value}   Evaluate    ${value}+${valueCol}
-##                    END
-##                END
-##            END
-##        END
-#        Log To Console    OEM GRoup: ${oemGroupAndPN[0]}; PN: ${oemGroupAndPN[1]}; Value: ${value}
-#
-#    END
-#
-#    Close Current Excel Document
-#    [Return]    ${table}
 Create Table For SS Revenue Cost Dump
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List
