@@ -4,8 +4,9 @@ Resource    ../../Pages/Reports/MarginPageV2.robot
 *** Test Cases ***
 Verify QTY on Margin report for every quarter
 #    ${totalQTYOnMargin}   Get Total Value On Margin Report    transType=REVENUE    attribute=REV     year=2025    quarter=1
-#    ${table}    Get All Transactions On SS RCD For Every Quarter    nameOfCol=COGS AMOUNT    year=2024    quarter=4
-    ${table}    Create Table For Margin Report    transType=REVENUE    attribute=COST    year=2024    quarter=4
+#    ${table}    Get All Transactions On SS RCD For Every Quarter    nameOfCol=REVQTY    year=2025    quarter=1
+    ${table}    Create Table For SS Revenue Cost Dump   nameOfCol=REVQTY    year=2025    quarter=1
+#    ${table}    Create Table For Margin Report    transType=REVENUE    attribute=COST    year=2024    quarter=4
     ${filePath}     Set Variable    C:\\RobotFramework\\Downloads\\test.xlsx
     @{listNameOfCols}   Create List
     Append To List    ${listNameOfCols}     OEM GROUP

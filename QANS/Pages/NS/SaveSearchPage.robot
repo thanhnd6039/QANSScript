@@ -14,7 +14,7 @@ ${startRowOnSSRCD}                             2
 ${posOfOEMGroupColOnSSRCD}                     2
 ${posOfParentClassColOnSSRCD}                  9
 ${posOfPNColOnSSRCD}                           11
-${posOfQuarterColOnSSRCD}                      18
+${posOfQuarterColOnSSRCD}                      19
 ${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
@@ -65,7 +65,33 @@ ${posOfPNColOnSSMasterOPP}                     7
 #
 #    Close Current Excel Document
 #    [Return]    ${table}
+Create Table For SS Revenue Cost Dump
+    [Arguments]     ${nameOfCol}    ${year}     ${quarter}
+    @{table}    Create List
 
+    ${listOEMGroupAndPN}                 Get List OEM GROUP And PN For Every Quarter    year=${year}    quarter=${quarter}
+    ${allTransactionsForEveryQuarter}    Get All Transactions On SS RCD For Every Quarter    nameOfCol=${nameOfCol}    year=${year}    quarter=${quarter}
+    FOR    ${oemGroupAndPN}    IN    @{listOEMGroupAndPN}
+        ${oemGroup}     Set Variable    ${oemGroupAndPN[0]}
+        ${pn}           Set Variable    ${oemGroupAndPN[1]}
+        ${value}        Set Variable    0
+        FOR    ${transaction}    IN    @{allTransactionsForEveryQuarter}
+            ${oemGroupOnTransaction}      Set Variable    ${transaction[0]}
+            ${pnOnTransaction}            Set Variable    ${transaction[1]}
+            ${valueOnTransaction}         Set Variable    ${transaction[2]}
+            IF    '${oemGroup}' == '${oemGroupOnTransaction}' and '${pn}' == '${pnOnTransaction}'
+                 ${value}    Evaluate    ${value}+${valueOnTransaction}
+            END        
+        END
+        Log To Console    OEM:${oemGroup};PN:${pn};VALUE:${value}
+        ${rowOnTable}   Create List
+        ...             ${oemGroup}
+        ...             ${pn}
+        ...             ${value}
+        Append To List    ${table}   ${rowOnTable}
+    END
+    [Return]    ${table}
+    
 Get All Transactions On SS RCD For Every Quarter
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List

@@ -36,19 +36,19 @@ Get WoW By Formular By OEM GRoup
             BREAK
         END
     END
-
     ${wowByFormula}     Evaluate    ${valueOnWoWChange}-${valueOnWoWChangeOnVDC}
     [Return]    ${wowByFormula}
 
 Check WoW On WoW Change
     [Arguments]     ${table}    ${nameOfCol}
     ${result}   Set Variable    ${True}
-    ${tableOnWoWChange}                    Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    ${tableOnWoWChange}      Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
     ${wowByFormula}     Set Variable    0
 
     FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
         ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[0]}
         ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+
         IF    '${nameOfCol}' == 'WoW Of Ships'
              ${wowByFormula}         Get WoW By Formular By OEM GRoup    table=${table}    nameOfCol=Ships    oemGroup=${oemGroupOnWoWChange}
         ELSE

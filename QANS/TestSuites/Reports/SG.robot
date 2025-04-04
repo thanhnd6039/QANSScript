@@ -6,7 +6,6 @@ ${flatSGFilePath}                           C:\\RobotFramework\\Downloads\\Flat 
 ${ssRCDFilePath}                            C:\\RobotFramework\\Downloads\\RevenueCostDump.xlsx
 ${ssRCDForPivotFilePath}                    C:\\RobotFramework\\Downloads\\RevenueCostDumpForPivot.xlsx
 
-
 *** Test Cases ***
 Verify REV QTY for every quarter by OEM Group
     @{listOfOEMGroupGetWrongData}   Create List 
