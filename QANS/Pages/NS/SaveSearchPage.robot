@@ -25,13 +25,13 @@ Create Table For SS Revenue Cost Dump
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List
 
-    ${listOEMGroupAndPN}                 Get List OEM GROUP And PN For Every Quarter    year=${year}    quarter=${quarter}
-    ${allTransactionsForEveryQuarter}    Get All Transactions On SS RCD For Every Quarter    nameOfCol=${nameOfCol}    year=${year}    quarter=${quarter}
+    ${listOEMGroupAndPN}    Get List OEM GROUP And PN For Every Quarter     year=${year}    quarter=${quarter}
+    ${allTransactions}      Get All Transactions On SS RCD For Every Quarter    nameOfCol=${nameOfCol}    year=${year}    quarter=${quarter}
     FOR    ${oemGroupAndPN}    IN    @{listOEMGroupAndPN}
         ${oemGroup}     Set Variable    ${oemGroupAndPN[0]}
         ${pn}           Set Variable    ${oemGroupAndPN[1]}
         ${value}        Set Variable    0
-        FOR    ${transaction}    IN    @{allTransactionsForEveryQuarter}
+        FOR    ${transaction}    IN    @{allTransactions}
             ${oemGroupOnTransaction}      Set Variable    ${transaction[0]}
             ${pnOnTransaction}            Set Variable    ${transaction[1]}
             ${valueOnTransaction}         Set Variable    ${transaction[2]}
@@ -39,7 +39,11 @@ Create Table For SS Revenue Cost Dump
                  ${value}    Evaluate    ${value}+${valueOnTransaction}
             END        
         END
-        Log To Console    OEM:${oemGroup};PN:${pn};VALUE:${value}
+        ${tempValue}    Set Variable    ${value}
+        ${tempValue}    Convert To Integer    ${tempValue}
+        IF    '${tempValue}' == '0'
+             Continue For Loop
+        END
         ${rowOnTable}   Create List
         ...             ${oemGroup}
         ...             ${pn}
@@ -90,6 +94,7 @@ Get List OEM GROUP And PN For Every Quarter
     [Arguments]     ${year}     ${quarter}
     @{listOEMGroupAndPN}    Create List
     ${quarterStr}  Set Variable    Q${quarter}-${year}
+
     File Should Exist      path=${SSRCDFilePath}
     Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
     ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
