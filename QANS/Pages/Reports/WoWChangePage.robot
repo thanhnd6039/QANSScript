@@ -98,16 +98,29 @@ Check TW Commit On WoW Change
 Check LW Commit, Comment On WoW Change
     [Arguments]     ${table}    ${nameOfCol}
     ${result}   Set Variable    ${True}
-    ${tableOnWoWChange}     Create Table On WoW Change    table=${table}    nameOfCol=${nameOfCol}
+    ${tableOnWoWChange}         Create Table On WoW Change           table=${table}    nameOfCol=${nameOfCol}
     ${tableOnWoWChangeOnVDC}    Create Table On WoW Change On VDC    table=${table}    nameOfCol=${nameOfCol}
     FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
         ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[0]}
         ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        IF    '${valueOnWoWChange}' == 'None'
+             ${valueOnWoWChange}    Set Variable    ${EMPTY}
+        END
+        IF    '${nameOfCol}' == 'LW Commit'
+             ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+        END
         FOR    ${rowOnWoWChangeOnVDC}    IN    @{tableOnWoWChangeOnVDC}
             ${oemGroupOnWoWChangeOnVDC}  Set Variable    ${rowOnWoWChangeOnVDC[0]}
             ${valueOnWoWChangeOnVDC}     Set Variable    ${rowOnWoWChangeOnVDC[1]}
+            IF    '${valueOnWoWChangeOnVDC}' == 'None'
+                 ${valueOnWoWChangeOnVDC}   Set Variable    ${EMPTY}
+            END
+            IF    '${nameOfCol}' == 'LW Commit'
+                ${valueOnWoWChangeOnVDC}      Evaluate  "%.2f" % ${valueOnWoWChangeOnVDC}
+            END
             IF    '${oemGroupOnWoWChange}' == '${oemGroupOnWoWChangeOnVDC}'
                  IF    '${valueOnWoWChange}' != '${valueOnWoWChangeOnVDC}'
+                      Log To Console    OEM Group:${oemGroupOnWoWChange};valueOnWoWChange:${valueOnWoWChange};valueOnWoWChangeOnVDC:${valueOnWoWChangeOnVDC}
                       ${result}     Set Variable    ${False}
                       IF    '${oemGroupOnWoWChange}' == 'Total'
                            Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${table} Total    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnWoWChangeOnVDC}
