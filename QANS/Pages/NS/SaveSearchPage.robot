@@ -14,7 +14,7 @@ ${startRowOnSSRCD}                             2
 ${posOfOEMGroupColOnSSRCD}                     2
 ${posOfParentClassColOnSSRCD}                  9
 ${posOfPNColOnSSRCD}                           11
-${posOfQuarterColOnSSRCD}                      19
+${posOfQuarterColOnSSRCD}                      18
 ${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
@@ -44,6 +44,7 @@ Create Table For SS Revenue Cost Dump
         IF    '${tempValue}' == '0'
              Continue For Loop
         END
+        Log To Console    OEM GROUP:${oemGroup}; PN:${pn}; VALUE:${value}
         ${rowOnTable}   Create List
         ...             ${oemGroup}
         ...             ${pn}
