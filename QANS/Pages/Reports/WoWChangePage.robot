@@ -107,6 +107,9 @@ Check LW Commit, Comment On WoW Change
              ${valueOnWoWChange}    Set Variable    ${EMPTY}
         END
         IF    '${nameOfCol}' == 'LW Commit'
+             IF    '${valueOnWoWChange}' == 'None'
+                ${valueOnWoWChange}    Set Variable    0
+             END
              ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
         END
         FOR    ${rowOnWoWChangeOnVDC}    IN    @{tableOnWoWChangeOnVDC}
