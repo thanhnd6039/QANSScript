@@ -10,7 +10,12 @@ ${posOfOEMGroupColOnMargin}         2
 ${posOfPNColOnMargin}               4
 
 *** Keywords ***
-Comparing Data Between Margin And SS RCD For Every PN
+Comparing Data For Every PN Between Margin And SS RCD
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}
+
+    ${tableMargin}      Create Table For Margin Report           transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    ${tableSSRCD}       Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
+
 
 Get Total Value On Margin Report
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
