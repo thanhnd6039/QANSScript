@@ -44,7 +44,7 @@ Create Table For SS Revenue Cost Dump
         IF    '${tempValue}' == '0'
              Continue For Loop
         END
-        Log To Console    OEM GROUP:${oemGroup}; PN:${pn}; VALUE:${value}
+
         ${rowOnTable}   Create List
         ...             ${oemGroup}
         ...             ${pn}
