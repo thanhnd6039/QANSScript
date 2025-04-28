@@ -14,7 +14,7 @@ ${startRowOnSSRCD}                             2
 ${posOfOEMGroupColOnSSRCD}                     2
 ${posOfParentClassColOnSSRCD}                  9
 ${posOfPNColOnSSRCD}                           11
-${posOfQuarterColOnSSRCD}                      18
+${posOfQuarterColOnSSRCD}                      19
 ${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
