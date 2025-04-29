@@ -4,6 +4,7 @@ Resource    ../NS/SaveSearchPage.robot
 
 *** Variables ***
 ${flatSGFilePath}           C:\\RobotFramework\\Downloads\\Flat Sales Gap.xlsx
+${flatSGResultFilePath}     C:\\RobotFramework\\Results\\FlatSGResult.xlsx
 
 ${startRowOnFlatSG}                 5
 ${rowIndexForSearchColOnFlatSG}     4
@@ -13,20 +14,10 @@ ${posOfPNColOnFlatSG}               2
 *** Keywords ***
 Comparing Data For Every PN Between Flat SG and SS RCD
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}  ${nameOfColOnSSRCD}
-    ${result}       Set Variable    ${True}
     @{tableError}   Create List
 
     ${tableFlatSG}   Create Table For Flat SG    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
     ${tableSSRCD}    Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
-
-#    ${filePath1}     Set Variable    C:\\RobotFramework\\Downloads\\FlatSG.xlsx
-#    ${filePath2}     Set Variable    C:\\RobotFramework\\Downloads\\SSRCD.xlsx
-#    @{listNameOfCols}   Create List
-#    Append To List    ${listNameOfCols}  OEM GROUP
-#    Append To List    ${listNameOfCols}  PN
-#    Append To List    ${listNameOfCols}  VALUE
-#    Write Table To Excel    filePath=${filePath1}    listNameOfCols=${listNameOfCols}    table=${tableFlatSG}
-#    Write Table To Excel    filePath=${filePath2}    listNameOfCols=${listNameOfCols}    table=${tableSSRCD}
 
     FOR    ${rowOnFlatSG}    IN    @{tableFlatSG}
         ${oemGroupColOnFlatSG}      Set Variable    ${rowOnFlatSG[0]}
@@ -37,17 +28,19 @@ Comparing Data For Every PN Between Flat SG and SS RCD
             ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
             ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
             ${valueOnSSRCD}           Set Variable    ${rowOnSSRCD[2]}
+            ${oemGroupColOnFlatSG}      Convert To Upper Case    ${oemGroupColOnFlatSG}
+            ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
             IF    '${oemGroupColOnFlatSG}' == '${oemGroupColOnSSRCD}' and '${pnColOnFlatSG}' == '${pnColOnSSRCD}'
                  ${valueOnFlatSG}   Convert To Integer    ${valueOnFlatSG}
                  ${valueOnSSRCD}    Convert To Integer    ${valueOnSSRCD}
                  IF    '${valueOnFlatSG}' != '${valueOnSSRCD}'
                     @{rowOnTableError}   Create List
+                    Append To List    ${rowOnTableError}    Q${quarter}-${year}
                     Append To List    ${rowOnTableError}    ${oemGroupColOnFlatSG}
                     Append To List    ${rowOnTableError}    ${pnColOnFlatSG}
                     Append To List    ${rowOnTableError}    ${valueOnFlatSG}
                     Append To List    ${rowOnTableError}    ${valueOnSSRCD}
                     Append To List    ${tableError}     ${rowOnTableError}
-                    Log To Console    OEM Group:${oemGroupColOnFlatSG}; PN:${pnColOnFlatSG}; SG:${valueOnFlatSG}; NS:${valueOnSSRCD}
                  END
                  ${isFoundOEMGroupAndPN}    Set Variable    ${True}
                  BREAK
@@ -55,55 +48,53 @@ Comparing Data For Every PN Between Flat SG and SS RCD
         END
         IF    '${isFoundOEMGroupAndPN}' == '${False}'
             @{rowOnTableError}   Create List
+            Append To List    ${rowOnTableError}    Q${quarter}-${year}
             Append To List    ${rowOnTableError}    ${oemGroupColOnFlatSG}
             Append To List    ${rowOnTableError}    ${pnColOnFlatSG}
             Append To List    ${rowOnTableError}    ${valueOnFlatSG}
             Append To List    ${rowOnTableError}    ${EMPTY}
             Append To List    ${tableError}     ${rowOnTableError}
-            Log To Console    OEM Group:${oemGroupColOnFlatSG}; PN:${pnColOnFlatSG}; SG:${valueOnFlatSG}; NS:${EMPTY}
         END
     END
 
-#    FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
-#        ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
-#        ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
-#        ${valueOnSSRCD}           Set Variable    ${rowOnSSRCD[2]}
-#        ${isFoundOEMGroupAndPN}     Set Variable    ${False}
-#        FOR    ${rowOnFlatSG}    IN    @{tableFlatSG}
-#            ${oemGroupColOnFlatSG}      Set Variable    ${rowOnFlatSG[0]}
-#            ${pnColOnFlatSG}            Set Variable    ${rowOnFlatSG[1]}
-#            ${valueOnFlatSG}            Set Variable    ${rowOnFlatSG[2]}
-#            IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnFlatSG}' and '${pnColOnSSRCD}' == '${pnColOnFlatSG}'
-#                IF    '${valueOnSSRCD}' != '${valueOnFlatSG}'
-#                    @{rowOnTableError}   Create List
-#                    Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
-#                    Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
-#                    Append To List    ${rowOnTableError}    ${valueOnFlatSG}
-#                    Append To List    ${rowOnTableError}    ${valueOnSSRCD}
-#                    Append To List    ${tableError}     ${rowOnTableError}
-#                END
-#                ${isFoundOEMGroupAndPN}     Set Variable    ${True}
-#                BREAK
-#            END
-#        END
-#        IF    '${isFoundOEMGroupAndPN}' == '${False}'
-#            @{rowOnTableError}   Create List
-#            Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
-#            Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
-#            Append To List    ${rowOnTableError}    ${EMPTY}
-#            Append To List    ${rowOnTableError}    ${valueOnSSRCD}
-#            Append To List    ${tableError}     ${rowOnTableError}
-#        END
-#    END
-    
+    FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+        ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
+        ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
+        ${valueOnSSRCD}           Set Variable    ${rowOnSSRCD[2]}
+        ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+        FOR    ${rowOnFlatSG}    IN    @{tableFlatSG}
+            ${oemGroupColOnFlatSG}      Set Variable    ${rowOnFlatSG[0]}
+            ${pnColOnFlatSG}            Set Variable    ${rowOnFlatSG[1]}
+            ${valueOnFlatSG}            Set Variable    ${rowOnFlatSG[2]}
+            ${oemGroupColOnFlatSG}      Convert To Upper Case    ${oemGroupColOnFlatSG}
+            ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
+            IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnFlatSG}' and '${pnColOnSSRCD}' == '${pnColOnFlatSG}'
+                ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                BREAK
+            END
+        END
+        IF    '${isFoundOEMGroupAndPN}' == '${False}'
+            @{rowOnTableError}   Create List
+            Append To List    ${rowOnTableError}    Q${quarter}-${year}
+            Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+            Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+            Append To List    ${rowOnTableError}    ${EMPTY}
+            Append To List    ${rowOnTableError}    ${valueOnSSRCD}
+            Append To List    ${tableError}     ${rowOnTableError}
+        END
+    END
 
-#    FOR    ${rowOnTableError}    IN    @{tableError}
-#        ${oemGroup}     Set Variable    ${tableError[0]}
-#        ${pn}           Set Variable    ${tableError[1]}
-#        ${valueOnFlatSG}    Set Variable    ${tableError[2]}
-#        ${valueOnSSRCD}     Set Variable    ${tableError[3]}
-#        Log To Console    OEM GROUP:${oemGroup}; PN:${pn}; FLAT SG:${valueOnFlatSG}; SS RCD:${valueOnSSRCD}
-#    END
+    ${lengthTableError}  Get Length    ${tableError}
+    IF    ${lengthTableError} > 0
+         @{listNameOfColsForHeader}   Create List
+         Append To List    ${listNameOfColsForHeader}  QUARTER
+         Append To List    ${listNameOfColsForHeader}  OEM GROUP
+         Append To List    ${listNameOfColsForHeader}  PN
+         Append To List    ${listNameOfColsForHeader}  ON FLAT SG
+         Append To List    ${listNameOfColsForHeader}  ON NS
+         Write Table To Excel    filePath=${flatSGResultFilePath}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}
+         Fail   The data is different between SG report and SS Revenue Cost Dump
+    END
 
 Create Table For Flat SG
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
