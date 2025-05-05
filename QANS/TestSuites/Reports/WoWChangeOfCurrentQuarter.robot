@@ -15,6 +15,7 @@ Verify Prev Q Ship for the OEM East table
     ELSE
          ${preQuarter}               Evaluate        ${currentQuarter}-1
     END
+
     Check BGT, Ship, Backlog, LOS On WoW Change    table=OEM East     nameOfCol=Pre Q Ships  transType=REVENUE   attribute=REV     year=${currentYear}     quarter=${preQuarter}
 
 Verify Current Q Budget for the OEM East table
