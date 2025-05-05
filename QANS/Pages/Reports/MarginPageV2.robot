@@ -3,7 +3,8 @@ Resource    ../CommonPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
 *** Variables ***
-${marginFilePath}           C:\\RobotFramework\\Downloads\\Margin Reporting By OEM Part_Rebuild.xlsx
+${marginFilePath}                 C:\\RobotFramework\\Downloads\\Margin Reporting By OEM Part_Rebuild.xlsx
+${marginResultFilePath}           C:\\RobotFramework\\Results\\Margin\\MarginResult.xlsx
 ${rowIndexForSearchColOnMargin}     3
 ${startRowOnMargin}                 6
 ${posOfOEMGroupColOnMargin}         2
@@ -12,10 +13,89 @@ ${posOfPNColOnMargin}               4
 *** Keywords ***
 Comparing Data For Every PN Between Margin And SS RCD
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}
+    @{tableError}   Create List
 
     ${tableMargin}      Create Table For Margin Report           transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
     ${tableSSRCD}       Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
+    
+    FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+        ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
+        ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
+        ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
+        ${valueOnSSRCD}           Set Variable    ${rowOnSSRCD[2]}
+        ${valueOnSSRCD}    Convert To Integer    ${valueOnSSRCD}
+        ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+        FOR    ${rowOnMargin}    IN    @{tableMargin}
+            ${oemGroupColOnMargin}      Set Variable    ${rowOnMargin[0]}
+            ${oemGroupColOnMargin}      Convert To Upper Case    ${oemGroupColOnMargin}
+            ${pnColOnMargin}            Set Variable    ${rowOnMargin[1]}
+            ${valueOnMargin}            Set Variable    ${rowOnMargin[2]}
+            ${valueOnMargin}   Convert To Integer    ${valueOnMargin}
+            IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnMargin}' and '${pnColOnSSRCD}' == '${pnColOnMargin}'
+                 ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                 IF    ${valueOnSSRCD} != ${valueOnMargin}
+                      @{rowOnTableError}   Create List
+                      Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                      Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+                      Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+                      Append To List    ${rowOnTableError}    ${valueOnMargin}
+                      Append To List    ${rowOnTableError}    ${valueOnSSRCD}
+                      Append To List    ${tableError}     ${rowOnTableError}
+                 END
+                 BREAK
+            END
+        END
+        IF    '${isFoundOEMGroupAndPN}' == '${False}'
+            @{rowOnTableError}   Create List
+            Append To List    ${rowOnTableError}    Q${quarter}-${year}
+            Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+            Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+            Append To List    ${rowOnTableError}    ${EMPTY}
+            Append To List    ${rowOnTableError}    ${valueOnSSRCD}
+            Append To List    ${tableError}     ${rowOnTableError}
+        END
+    END
 
+    FOR    ${rowOnMargin}    IN    @{tableMargin}
+        ${oemGroupColOnMargin}      Set Variable    ${rowOnMargin[0]}
+        ${oemGroupColOnMargin}      Convert To Upper Case    ${oemGroupColOnMargin}
+        ${pnColOnMargin}            Set Variable    ${rowOnMargin[1]}
+        ${valueOnMargin}            Set Variable    ${rowOnMargin[2]}
+        ${valueOnMargin}            Convert To Integer    ${valueOnMargin}
+        ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+        FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+            ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
+            ${oemGroupColOnSSRCD}     Convert To Upper Case    ${oemGroupColOnSSRCD}
+            ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
+            ${valueOnSSRCD}           Set Variable    ${rowOnSSRCD[2]}
+            ${valueOnSSRCD}           Convert To Integer    ${valueOnSSRCD}
+            IF    '${oemGroupColOnMargin}' == '${oemGroupColOnSSRCD}' and '${pnColOnMargin}' == '${pnColOnSSRCD}'
+                 ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                 BREAK
+            END
+        END
+        IF    '${isFoundOEMGroupAndPN}' == '${False}'
+            @{rowOnTableError}   Create List
+            Append To List    ${rowOnTableError}    Q${quarter}-${year}
+            Append To List    ${rowOnTableError}    ${oemGroupColOnMargin}
+            Append To List    ${rowOnTableError}    ${pnColOnMargin}
+            Append To List    ${rowOnTableError}    ${valueOnMargin}
+            Append To List    ${rowOnTableError}    ${EMPTY}
+            Append To List    ${tableError}     ${rowOnTableError}
+        END
+    END
+
+    ${lengthTableError}  Get Length    ${tableError}
+    IF    ${lengthTableError} > 0
+         @{listNameOfColsForHeader}   Create List
+         Append To List    ${listNameOfColsForHeader}  QUARTER
+         Append To List    ${listNameOfColsForHeader}  OEM GROUP
+         Append To List    ${listNameOfColsForHeader}  PN
+         Append To List    ${listNameOfColsForHeader}  ON MARGIN
+         Append To List    ${listNameOfColsForHeader}  ON NS
+         Write Table To Excel    filePath=${marginResultFilePath}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}
+         Fail   The data is different between Margin report and SS Revenue Cost Dump
+    END
 
 Get Total Value On Margin Report
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
