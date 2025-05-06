@@ -11,10 +11,13 @@ class CExcel(object):
         sheet = file.active
         numOfCols = sheet.max_column
         return numOfCols
-    def get_number_of_rows_in_excel(self, filePath):
+    def get_number_of_rows_in_excel(self, filePath, sheetName=''):
         numOfRows = 0
         file = load_workbook(filePath)
-        sheet = file.active
+        if sheetName == '':
+            sheet = file.active
+        else:
+            sheet = file[sheetName]
         numOfRows = sheet.max_row
         return numOfRows
     def convert_csv_to_xlsx(self, csvFilePath, xlsxFilePath):

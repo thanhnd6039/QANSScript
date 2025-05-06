@@ -24,6 +24,9 @@ ${RESULT_DIR}       C:\\RobotFramework\\Results
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
 
+${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
+
+
 *** Keywords ***
 Setup
     [Arguments]     ${browser}
