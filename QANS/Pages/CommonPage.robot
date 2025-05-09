@@ -16,6 +16,7 @@ Resource    UtilityPage.robot
 
 
 *** Variables ***
+${CONFIG_DIR}       C:\\RobotFramework\\Config
 ${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
 ${TIMEOUT}          60s
 ${DOWNLOAD_DIR}     C:\\RobotFramework\\Downloads
@@ -25,7 +26,6 @@ ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${iconExportDataReport}   //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonImg']
 
 ${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
-
 
 *** Keywords ***
 Setup
@@ -95,6 +95,10 @@ Write Table To Excel
     END
     Save Excel Document    ${filePath}
     Close Current Excel Document
+
+
+
+
 
 
 
