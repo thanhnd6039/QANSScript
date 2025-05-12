@@ -31,7 +31,6 @@ Login To NS With Account
         Should See Account Is SANDBOX
     END
 
-
 Login To NS
     ${configFileObject}     Load Json From File    ${CONFIG_FILE}
     ${url}               Get Value From Json    ${configFileObject}    $.nsUrl
