@@ -19,7 +19,7 @@ Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
-${TIMEOUT}          180s
+${TIMEOUT}          60s
 ${OUTPUT_DIR}       C:\\RobotFramework\\Output
 ${RESULT_DIR}       C:\\RobotFramework\\Results
 ${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
@@ -45,7 +45,7 @@ TearDown
     Close Browser
 
 Wait Until Page Load Completed
-    FOR    ${count}    IN RANGE    1    61
+    FOR    ${count}    IN RANGE    1    181
         ${stage}    Execute Javascript      return document.readyState
         Exit For Loop If    '${stage}' == 'complete'
         Sleep    1s
@@ -59,15 +59,6 @@ Navigate To Report
     ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SGConfig.json
     ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
     ${url}  Set Variable    ${url[0]}
-#    IF    '${browser}' == 'chrome'
-#         ${options}    Get Chrome Options
-#    ELSE IF  '${browser}' == 'firefox'
-#         ${options}     Get Firefox Options
-#    ELSE
-#        Fail    The Browser parameter ${browser} is invalid
-#    END
-#    Open Browser    url=${url}  browser=${browser}   options=${options}
-#    Maximize Browser Window
     Go To    url=${url}
     Wait Until Element Is Visible    locator=${btnViewReport}   timeout=${TIMEOUT}
     Wait Until Element Is Enabled    locator=${btnViewReport}   timeout=${TIMEOUT}
@@ -121,7 +112,18 @@ Write Table To Excel
     Save Excel Document    ${filePath}
     Close Current Excel Document
 
-
+Get Fully File Name From Given Name
+    [Arguments]     ${givenName}    ${dirPath}
+    ${fullyFileName}    Set Variable    ${EMPTY}
+    @{files}    List Files In Directory    ${dirPath}
+    FOR    ${file}    IN    @{files}
+        ${contains}     Evaluate    "${givenName}" in """${file}"""
+        IF    '${contains}' == '${True}'
+             ${fullyFileName}   Set Variable    ${file}
+             Exit For Loop
+        END
+    END
+    [Return]    ${fullyFileName}
 
 
 
