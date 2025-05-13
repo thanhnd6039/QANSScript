@@ -6,13 +6,12 @@ Library     Collections
 Library     String
 Library     XML
 Library     DateTime
+Library    Dialogs
 
 Library     ../Libs/CExcel.py
 Library     ../Libs/COTP.py
 Library     ../Libs/CBrowser.py
 Library     ../Libs/CDateTime.py
-Library    Dialogs
-
 
 Resource    UtilityPage.robot
 
@@ -20,10 +19,8 @@ Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
-${CONFIG_FILE}      C:\\RobotFramework\\Config\\Config.json
-${CHROMEDRIVER_PATH}    C:\\RobotFramework\\Drivers\\chromedriver.exe
-${TIMEOUT}          60s
-${OUTPUT_DIR}       ${EXECDIR}
+${TIMEOUT}          180s
+${OUTPUT_DIR}       C:\\RobotFramework\\Output
 ${RESULT_DIR}       C:\\RobotFramework\\Results
 ${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
 
@@ -31,13 +28,17 @@ ${btnExport}        //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonLink']
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']
 ${lstExcel}         //*/div/a[@title='Excel']
 
-
-
 *** Keywords ***
 Setup
     [Arguments]     ${browser}
-    ${chromeOptions}      Get Chrome Options
-    Open Browser    browser=${browser}      options=${chromeOptions}
+    IF    '${browser}' == 'chrome'
+         ${options}    Get Chrome Options
+    ELSE IF  '${browser}' == 'firefox'
+         ${options}     Get Firefox Options
+    ELSE
+        Fail    The Browser parameter ${browser} is invalid
+    END
+    Open Browser    browser=${browser}      options=${options}
     Maximize Browser Window
 
 TearDown
@@ -54,13 +55,20 @@ Wait Until Page Load Completed
     END
 
 Navigate To Report
-    [Arguments]     ${browser}   ${configFileName}
+    [Arguments]     ${configFileName}
     ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SGConfig.json
     ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
     ${url}  Set Variable    ${url[0]}
-    ${options}    Get Firefox Options
-    Open Browser    url=${url}  browser=${browser}   options=${options}
-    Maximize Browser Window
+#    IF    '${browser}' == 'chrome'
+#         ${options}    Get Chrome Options
+#    ELSE IF  '${browser}' == 'firefox'
+#         ${options}     Get Firefox Options
+#    ELSE
+#        Fail    The Browser parameter ${browser} is invalid
+#    END
+#    Open Browser    url=${url}  browser=${browser}   options=${options}
+#    Maximize Browser Window
+    Go To    url=${url}
     Wait Until Element Is Visible    locator=${btnViewReport}   timeout=${TIMEOUT}
     Wait Until Element Is Enabled    locator=${btnViewReport}   timeout=${TIMEOUT}
 

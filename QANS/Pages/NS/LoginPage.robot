@@ -5,13 +5,13 @@ Resource    ../CommonPage.robot
 ${txtEmail}        //*[@id='email']
 ${txtPassword}     //*[@id='password']
 ${btnLogin}        //*[@id='login-submit']
-${txtLoginTitle}    //*[@id='uif43']
-${txtAccountTitle}  //*[@class='tableTitle']
-${txtVerificationCode}    //*[@id='uif51']
-${chkTrustThisDeviceFor30Days}    //*[@id='uif67']
-${btnSubmit}    //*[@id='uif71']
-${imgSANDBOXIcon}   //*[@id='uif128']
-${imgLogoIcon}      //*[@id='uif129']
+${txtLoginTitle}    //*[@id='uif49']
+${txtAccountTitle}  //*[@class='uir-roleswitch-section-title']
+${txtVerificationCode}    //*[@id='uif56_input']
+${chkTrustThisDeviceFor30Days}    //*[@id='uif70_check']
+${btnSubmit}    //label[normalize-space()='Submit']
+${imgSANDBOXIcon}   //*[@aria-label='sandbox']
+${imgLogoIcon}      //img[@id='uif40']
 
 *** Keywords ***
 Login To NS With Account
@@ -21,24 +21,24 @@ Login To NS With Account
     Choose Account    ${account}
     IF    '${account}' == 'PRODUCTION'
         Should See Login Title    Logging in to Virtium
-    ELSE IF     '${account}' == 'SANDBOX4'
-        Should See Login Title    Logging in to Virtium__SB4
+    ELSE IF     '${account}' == 'SANDBOX1'
+        Should See Login Title    Logging in to Virtium_SB1
     END
     Input Verification Code And Click Submit
     IF    '${account}' == 'PRODUCTION'
         Should See Account Is PRODUCTION
-    ELSE IF     '${account}' == 'SANDBOX4'
+    ELSE IF     '${account}' == 'SANDBOX1'
         Should See Account Is SANDBOX
     END
 
 Login To NS
-    ${configFileObject}     Load Json From File    ${CONFIG_FILE}
-    ${url}               Get Value From Json    ${configFileObject}    $.nsUrl
-    ${url}               Set Variable       ${url}[0]
-    ${email}             Get Value From Json    ${configFileObject}    $.accounts[1].email
-    ${email}             Set Variable       ${email}[0]
-    ${pass}              Get Value From Json    ${configFileObject}    $.accounts[1].password
-    ${pass}              Set Variable       ${pass}[0]
+    ${configFileObject}     Load Json From File    ${CONFIG_DIR}\\NSConfig.json
+    ${url}                  Get Value From Json    ${configFileObject}    $.url
+    ${url}               Set Variable       ${url[0]}
+    ${email}             Get Value From Json    ${configFileObject}    $.accounts[0].email
+    ${email}             Set Variable       ${email[0]}
+    ${pass}              Get Value From Json    ${configFileObject}    $.accounts[0].password
+    ${pass}              Set Variable       ${pass[0]}
     Go To    ${url}
     Wait Until Element Is Enabled    ${txtEmail}       ${TIMEOUT}
     Input Text    ${txtEmail}    ${email}
@@ -49,33 +49,33 @@ Login To NS
 
 Choose Account
     [Arguments]     ${account}
-    @{listOfAccountElements}    Get WebElements    //*[@class='listTable']/tbody/tr
+    @{listOfAccountElements}    Get WebElements    //*[@class='uir-roleswitch-table']/tbody/tr
     ${numOfAccounts}     Get Length    ${listOfAccountElements}
 
     FOR    ${accountIndex}    IN RANGE    2    ${numOfAccounts}+1
-        ${company}      Get Text    //*[@class='listTable']/tbody/tr[${accountIndex}]/td[1]
-        ${accountType}  Get Text    //*[@class='listTable']/tbody/tr[${accountIndex}]/td[2]
+        ${company}      Get Text    //*[@class='uir-roleswitch-table']/tbody/tr[${accountIndex}]/td[1]
+        ${accountType}  Get Text    //*[@class='uir-roleswitch-table']/tbody/tr[${accountIndex}]/td[2]
         IF    '${account}' == 'PRODUCTION'
             IF    '${company}' == 'Virtium' and '${accountType}' == 'PRODUCTION'
-                 Wait Until Element Is Visible    //*[@class='listTable']/tbody/tr[${accountIndex}]/td[3]/a     ${TIMEOUT}
-                 Click Element    //*[@class='listTable']/tbody/tr[${accountIndex}]/td[3]/a
+                 Wait Until Element Is Visible    //*[@class='uir-roleswitch-table']/tbody/tr[${accountIndex}]/td[3]/a     ${TIMEOUT}
+                 Click Element    //*[@class='uir-roleswitch-table']/tbody/tr[${accountIndex}]/td[3]/a
                  Exit For Loop
             END
-        ELSE IF     '${account}' == 'SANDBOX4'
-            IF    '${company}' == 'Virtium__SB4' and '${accountType}' == 'SANDBOX'
-                Wait Until Element Is Visible    //*[@class='listTable']/tbody/tr[${accountIndex}]/td[3]/a      ${TIMEOUT}
-                Click Element    //*[@class='listTable']/tbody/tr[${accountIndex}]/td[3]/a
+        ELSE IF     '${account}' == 'SANDBOX1'
+            IF    '${company}' == 'Virtium_SB1' and '${accountType}' == 'SANDBOX'
+                Wait Until Element Is Visible    //*[@class='uir-roleswitch-table']/tbody/tr[${accountIndex}]/td[3]/a      ${TIMEOUT}
+                Click Element    //*[@class='uir-roleswitch-table']/tbody/tr[${accountIndex}]/td[3]/a
                 Exit For Loop
             END
         ELSE
-             Fail   The Account ${account} is invalid. Please contact with Admin!
+             Fail   The Account parameter ${account} is invalid
         END
     END
 
 Should See Login Title
     [Arguments]     ${title}
     Wait Until Element Is Visible    ${txtLoginTitle}       ${TIMEOUT}
-    Element Text Should Be    ${txtLoginTitle}    ${title}
+    Element Text Should Be           ${txtLoginTitle}       ${title}
 
 Should See Account Title
     [Arguments]     ${title}
@@ -83,9 +83,9 @@ Should See Account Title
     Element Text Should Be    ${txtAccountTitle}    ${title}
 
 Input Verification Code And Click Submit
-    ${configFileObject}     Load Json From File    ${CONFIG_FILE}
-    ${key}      Get Value From Json    ${configFileObject}    $.nsKey
-    ${key}      Set Variable    ${key}[0]
+    ${configFileObject}     Load Json From File    ${CONFIG_DIR}\\NSConfig.json
+    ${key}      Get Value From Json    ${configFileObject}    $.key
+    ${key}      Set Variable    ${key[0]}
     ${otp}      Generate Otp    ${key}
     Wait Until Element Is Enabled    ${txtVerificationCode}     ${TIMEOUT}
     Input Text    ${txtVerificationCode}    ${otp}
@@ -96,8 +96,7 @@ Input Verification Code And Click Submit
 
 Should See Account Is SANDBOX
     Wait Until Element Is Visible    ${imgSANDBOXIcon}      ${TIMEOUT}
-    Wait Until Element Is Visible    ${imgLogoIcon}     ${TIMEOUT}
-    
+
 Should See Account Is PRODUCTION
     Wait Until Element Is Visible    ${imgLogoIcon}     ${TIMEOUT}
     
