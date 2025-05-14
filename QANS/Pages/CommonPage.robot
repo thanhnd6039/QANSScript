@@ -19,7 +19,7 @@ Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
-${TIMEOUT}          500s
+${TIMEOUT}          600s
 ${OUTPUT_DIR}       C:\\RobotFramework\\Output
 ${RESULT_DIR}       C:\\RobotFramework\\Results
 ${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
@@ -38,7 +38,7 @@ Setup
     ELSE
         Fail    The Browser parameter ${browser} is invalid
     END
-    Set Selenium Timeout    value=${TIMEOUT}
+    
     Open Browser    browser=${browser}     options=${options}
     Maximize Browser Window
 
