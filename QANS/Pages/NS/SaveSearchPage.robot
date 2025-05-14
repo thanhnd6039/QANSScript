@@ -20,11 +20,10 @@ ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
 Navigate To SS Revenue Cost Dump
-#    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
-    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchresults.nl?searchid=4002&whence=
-    Wait Until Page Load Completed
-#    SS Should Contain Title    title=Revenue Cost Dump - BL - BL FC - CUS FC Last Year
-    SS Should Contain Title    title=_test Master Opportunity
+    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
+#    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchresults.nl?searchid=4002&whence=
+    SS Should Contain Title    title=Revenue Cost Dump - BL - BL FC - CUS FC Last Year
+#    SS Should Contain Title    title=_test Master Opportunity
     Export SS To CSV
 
 Create Table For SS Revenue Cost Dump

@@ -1,8 +1,9 @@
 from openpyxl import load_workbook
-from pyexcel.cookbook import merge_all_to_a_book
+# from pyexcel.cookbook import merge_all_to_a_book
 import glob
 import os
 from robot.api import logger
+import pandas as pd
 
 class CExcel(object):
     def get_number_of_cols_in_excel(self, filePath):
@@ -23,7 +24,8 @@ class CExcel(object):
     def convert_csv_to_xlsx(self, csvFilePath, xlsxFilePath):
         # logger.console(csvFilePath)
         # logger.console(xlsxFilePath)
-        merge_all_to_a_book(glob.glob(csvFilePath), xlsxFilePath)
+        df = pd.read_csv(csvFilePath)
+        df.to_excel(xlsxFilePath, index=False)
         os.remove(csvFilePath)
 
     def get_position_of_column(self, filePath, rowIndex, searchStr):
@@ -40,6 +42,8 @@ class CExcel(object):
                 posOfColumn = colIndex
                 break
         return posOfColumn
+
+
 
 # if __name__ == '__main__':
 #     cExcel = CExcel()

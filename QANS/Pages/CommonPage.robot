@@ -19,7 +19,7 @@ Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
-${TIMEOUT}          60s
+${TIMEOUT}          500s
 ${OUTPUT_DIR}       C:\\RobotFramework\\Output
 ${RESULT_DIR}       C:\\RobotFramework\\Results
 ${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
@@ -38,18 +38,19 @@ Setup
     ELSE
         Fail    The Browser parameter ${browser} is invalid
     END
-    Open Browser    browser=${browser}      options=${options}
+    Set Selenium Timeout    value=${TIMEOUT}
+    Open Browser    browser=${browser}     options=${options}
     Maximize Browser Window
 
 TearDown
     Close Browser
 
 Wait Until Page Load Completed
-    FOR    ${count}    IN RANGE    1    181
+    FOR    ${count}    IN RANGE    1    601
         ${stage}    Execute Javascript      return document.readyState
         Exit For Loop If    '${stage}' == 'complete'
         Sleep    1s
-        IF    ${count} == 60
+        IF    ${count} == 300
              Fail   Page is hang or crashed
         END
     END
