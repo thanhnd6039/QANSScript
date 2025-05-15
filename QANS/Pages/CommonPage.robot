@@ -15,8 +15,6 @@ Library     ../Libs/CDateTime.py
 
 Resource    UtilityPage.robot
 
-
-
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
 ${TIMEOUT}          600s
@@ -79,11 +77,11 @@ Export Report To
 Open New Tab
     Execute Javascript      window.open('https://www.google.com')
 
-Remove All Files in Specified Directory
+Remove All Files In Specified Directory
     [Arguments]     ${dirPath}
     @{fileNames}    List Files In Directory    ${dirPath}
     FOR    ${fileName}    IN    @{fileNames}
-        Remove File    ${dirPath}${fileName}
+        Remove File    ${dirPath}\\${fileName}
     END
 
 Write Table To Excel
@@ -125,6 +123,7 @@ Get Fully File Name From Given Name
         END
     END
     [Return]    ${fullyFileName}
+
 
 
 

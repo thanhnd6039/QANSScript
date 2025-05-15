@@ -6,6 +6,10 @@ from robot.api import logger
 import pandas as pd
 
 class CExcel(object):
+    def create_excel_file(self, filePath):
+        df = pd.DataFrame()
+        df.to_excel(filePath, index=False)
+
     def get_number_of_cols_in_excel(self, filePath):
         numOfCols = 0
         file = load_workbook(filePath)
