@@ -24,6 +24,16 @@ Navigate To SS Revenue Cost Dump
 #    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
     SS Should Contain Title    title=Revenue Cost Dump - BL - BL FC - CUS FC Last Year
 
+Get Total Value On SS Revenue Cost Dump
+    [Arguments]     ${table}
+    ${totalValue}   Set Variable    0
+
+    FOR    ${rowOnTable}    IN    @{table}
+        ${valueCol}     Set Variable    ${rowOnTable[2]}
+        ${totalValue}   Evaluate    ${totalValue}+${valueCol}
+    END
+
+    [Return]    ${totalValue}
 
 Create Table For SS Revenue Cost Dump
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
@@ -59,7 +69,7 @@ Create Table For SS Revenue Cost Dump
     
 Get All Transactions On SS RCD For Every Quarter
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
-    @{table}    Create List
+    @{table}       Create List
     ${quarterStr}  Set Variable    Q${quarter}-${year}
     ${posOfValueCol}     Get Position Of Column    filePath=${SSRCDFilePath}    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${nameOfCol}
     IF    '${posOfValueCol}' == '0'
@@ -129,6 +139,7 @@ Get List Parent Class
     Append To List    ${listParentClass}    NI ITEMS
     Append To List    ${listParentClass}    SERVICE
     Append To List    ${listParentClass}    STORAGE
+    Append To List    ${listParentClass}    DOC
 
     [Return]    ${listParentClass}
 

@@ -22,6 +22,26 @@ Setup Test Environment For SG Report
     ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
     Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
 
+Comparing Data For Every PN Between SG And SS RCD
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}
+
+    ${tableSG}       Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    ${tableSSRCD}    Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
+    ${totalValueOnSG}   Get Total Value On SG Report    table=${tableSG}
+    ${totalValueOnSSRCD}    Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}
+    Log To Console    totalValueOnSG:${totalValueOnSG};totalValueOnSSRCD:${totalValueOnSSRCD}
+
+Get Total Value On SG Report
+    [Arguments]     ${table}
+    ${totalValue}   Set Variable    0
+
+    FOR    ${rowOnTable}    IN    @{table}
+        ${valueCol}     Set Variable    ${rowOnTable[3]}
+        ${totalValue}   Evaluate    ${totalValue}+${valueCol} 
+    END
+
+    [Return]    ${totalValue}
+    
 Create Table For SG Report
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
     @{table}        Create List
@@ -68,23 +88,32 @@ Create Table For SG Report
     File Should Exist    path=${SGFilePath}
     Open Excel Document    filename=${SGFilePath}    doc_id=SG
     ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
+    ${oemGroupTemp}         Set Variable    ${EMPTY}
+    ${mainSalesRepTemp}     Set Variable    ${EMPTY}
     FOR    ${rowIndex}    IN RANGE    ${startRow}    ${numOfRows}+1
         ${oemGroupCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupCol}
+        ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepCol}
+        ${pnCol}                Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNCol}
         IF    '${oemGroupCol}' != 'None'
-            ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepCol}
-            ${pnCol}                Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNCol}
+             ${oemGroupTemp}    Set Variable    ${oemGroupCol}
+             ${mainSalesRepTemp}    Set Variable    ${mainSalesRepCol}
+        END
+        IF    '${pnCol}' != '${EMPTY}'
             ${valueCol}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
             IF    '${valueCol}' == 'None' or '${valueCol}' == '${EMPTY}'
+                Continue For Loop
+            END
+            ${tempValue}    Set Variable    ${valueCol}
+            ${tempValue}     Convert To Integer    ${tempValue}
+            IF    ${tempValue} == 0
                  Continue For Loop
             END
-            ${valueCol}     Convert To Integer    ${valueCol}
-            IF    ${valueCol} == 0
-                 Continue For Loop
+            IF    '${attribute}' == 'AMOUNT'
+                 ${valueCol}      Evaluate  "%.2f" % ${valueCol}
             END
-
             ${rowOnTable}   Create List
-            ...             ${oemGroupCol}
-            ...             ${mainSalesRepCol}
+            ...             ${oemGroupTemp}
+            ...             ${mainSalesRepTemp}
             ...             ${pnCol}
             ...             ${valueCol}
             Append To List    ${table}   ${rowOnTable}
