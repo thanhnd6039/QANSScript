@@ -21,15 +21,111 @@ Setup Test Environment For SG Report
     Sleep    120s
     ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
     Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    @{emptyTable}   Create List
+    @{listNameOfColsForHeader}   Create List
+     Append To List    ${listNameOfColsForHeader}  QUARTER
+     Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+     Append To List    ${listNameOfColsForHeader}  OEM GROUP
+     Append To List    ${listNameOfColsForHeader}  PN
+     Append To List    ${listNameOfColsForHeader}  ON SG
+     Append To List    ${listNameOfColsForHeader}  ON SS RCD
+     Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
+     Close Browser
 
 Comparing Data For Every PN Between SG And SS RCD
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}
+    @{tableError}   Create List
 
-    ${tableSG}       Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
-    ${tableSSRCD}    Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
-    ${totalValueOnSG}   Get Total Value On SG Report    table=${tableSG}
+    ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    ${tableSSRCD}           Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
+    ${totalValueOnSG}       Get Total Value On SG Report    table=${tableSG}
     ${totalValueOnSSRCD}    Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}
+    IF    '${attribute}' == 'AMOUNT'
+         ${totalValueOnSG}         Evaluate  "%.2f" % ${totalValueOnSG}
+         ${totalValueOnSSRCD}      Evaluate  "%.2f" % ${totalValueOnSSRCD}
+    END
     Log To Console    totalValueOnSG:${totalValueOnSG};totalValueOnSSRCD:${totalValueOnSSRCD}
+    ${diff}     Evaluate    ${totalValueOnSG}-${totalValueOnSSRCD}
+    IF    ${diff} > 1
+         FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+            ${oemGroupColOnSSRCD}       Set Variable    ${rowOnSSRCD[0]}
+            ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
+            ${pnColOnSSRCD}             Set Variable    ${rowOnSSRCD[1]}
+            ${valueColOnSSRCD}          Set Variable    ${rowOnSSRCD[2]}
+            ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+            FOR    ${rowOnSG}    IN    @{tableSG}
+                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[0]}
+                ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
+                ${pnColOnSG}            Set Variable    ${rowOnSG[2]}
+                ${valueColOnSG}         Set Variable    ${rowOnSG[3]}
+                IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnSG}' and '${pnColOnSSRCD}' == '${pnColOnSG}'
+                    ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                    IF    '${attribute}' == 'AMOUNT'
+                         ${valueColOnSSRCD}      Evaluate  "%.2f" % ${valueColOnSSRCD}
+                         ${valueColOnSG}         Evaluate  "%.2f" % ${valueColOnSG}
+                    END
+                    IF    ${valueColOnSSRCD} != ${valueColOnSG}
+                        @{rowOnTableError}   Create List
+                        Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                        Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                        Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+                        Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+                        Append To List    ${rowOnTableError}    ${valueColOnSG}
+                        Append To List    ${rowOnTableError}    ${valueColOnSSRCD}
+                        Append To List    ${tableError}     ${rowOnTableError}
+                    END
+                    BREAK
+                END
+            END
+            IF    '${isFoundOEMGroupAndPN}' == '${False}'
+                @{rowOnTableError}   Create List
+                Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+                Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+                Append To List    ${rowOnTableError}    ${EMPTY}
+                Append To List    ${rowOnTableError}    ${valueColOnSSRCD}
+                Append To List    ${tableError}     ${rowOnTableError}
+            END
+         END
+         FOR    ${rowOnSG}    IN    @{tableSG}
+            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[0]}
+            ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
+            ${pnColOnSG}            Set Variable    ${rowOnSG[2]}
+            ${valueColOnSG}         Set Variable    ${rowOnSG[3]}
+            ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+            FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+                ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
+                ${oemGroupColOnSSRCD}     Convert To Upper Case    ${oemGroupColOnSSRCD}
+                ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
+                IF    '${oemGroupColOnsg}' == '${oemGroupColOnSSRCD}' and '${pnColOnsg}' == '${pnColOnSSRCD}'
+                    ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                    BREAK
+                END
+            END
+            IF    '${isFoundOEMGroupAndPN}' == '${False}'
+                @{rowOnTableError}   Create List
+                Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                Append To List    ${rowOnTableError}    ${oemGroupColOnSG}
+                Append To List    ${rowOnTableError}    ${pnColOnSG}
+                Append To List    ${rowOnTableError}    ${valueColOnSG}
+                Append To List    ${rowOnTableError}    ${EMPTY}
+                Append To List    ${tableError}     ${rowOnTableError}
+            END
+         END
+         ${lengthTableError}  Get Length    ${tableError}
+         IF    ${lengthTableError} > 0
+             @{listNameOfColsForHeader}   Create List
+             Append To List    ${listNameOfColsForHeader}  QUARTER
+             Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+             Append To List    ${listNameOfColsForHeader}  OEM GROUP
+             Append To List    ${listNameOfColsForHeader}  PN
+             Append To List    ${listNameOfColsForHeader}  ON SG
+             Append To List    ${listNameOfColsForHeader}  ON SS RCD
+             Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}  hasHeader=${False}
+         END
+    END
 
 Get Total Value On SG Report
     [Arguments]     ${table}

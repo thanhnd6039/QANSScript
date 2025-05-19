@@ -19,6 +19,7 @@ Resource    UtilityPage.robot
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
 ${TIMEOUT}          600s
 ${OUTPUT_DIR}       C:\\RobotFramework\\Output
+${TEST_DATA_DIR}    C:\\RobotFramework\\TestData
 ${RESULT_DIR}       C:\\RobotFramework\\Results
 ${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
 
@@ -85,16 +86,19 @@ Remove All Files In Specified Directory
     END
 
 Write Table To Excel
-    [Arguments]     ${filePath}     ${listNameOfCols}     ${table}
+    [Arguments]     ${filePath}     ${listNameOfCols}     ${table}   ${hasHeader}=${True}
 
     File Should Exist      path=${filePath}
     Open Excel Document    filename=${filePath}    doc_id=Table
 #    Add Header to File
-    ${count}    Set Variable    1
-    FOR    ${nameOfCol}    IN    @{listNameOfCols}
-        Write Excel Cell    row_num=1    col_num=${count}     value=${nameOfCol}
-        ${count}    Evaluate    ${count}+1
+    IF    '${hasHeader}' == '${True}'
+         ${count}    Set Variable    1
+        FOR    ${nameOfCol}    IN    @{listNameOfCols}
+            Write Excel Cell    row_num=1    col_num=${count}     value=${nameOfCol}
+            ${count}    Evaluate    ${count}+1
+        END
     END
+
     ${latestRow}   Get Number Of Rows In Excel    ${filePath}
     ${nextRow}     Evaluate    ${latestRow}+1
 #    Add Raw Data to File

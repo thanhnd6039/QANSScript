@@ -6,13 +6,13 @@ ${iconExportSSToCSV}           //div[@title='Export - CSV']
 ${iconFilters}                 //*[@aria-label='Expand/Collapse filters']
 
 ${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
-${SSRCDFilePath}               C:\\RobotFramework\\Downloads\\SS Revenue Cost Dump.xlsx
-${rowIndexForSearchColOnSSRCD}                 1
-${startRowOnSSRCD}                             2
-${posOfOEMGroupColOnSSRCD}                     2
-${posOfParentClassColOnSSRCD}                  9
-${posOfPNColOnSSRCD}                           11
-${posOfQuarterColOnSSRCD}                      19
+#${SSRCDFilePath}               C:\\RobotFramework\\Downloads\\SS Revenue Cost Dump.xlsx
+#${rowIndexForSearchColOnSSRCD}                 1
+#${startRowOnSSRCD}                             2
+#${posOfOEMGroupColOnSSRCD}                     2
+#${posOfParentClassColOnSSRCD}                  9
+#${posOfPNColOnSSRCD}                           11
+#${posOfQuarterColOnSSRCD}                      19
 ${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
@@ -20,8 +20,10 @@ ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
 Navigate To SS Revenue Cost Dump
-    Run Keyword And Ignore Error    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
-#    Go To    url=https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
+    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
+    ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
+    ${url}  Set Variable    ${url[0]}
+    Run Keyword And Ignore Error    Go To    url=${url}
     SS Should Contain Title    title=Revenue Cost Dump - BL - BL FC - CUS FC Last Year
 
 Get Total Value On SS Revenue Cost Dump
@@ -71,14 +73,28 @@ Get All Transactions On SS RCD For Every Quarter
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}       Create List
     ${quarterStr}  Set Variable    Q${quarter}-${year}
-    ${posOfValueCol}     Get Position Of Column    filePath=${SSRCDFilePath}    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${nameOfCol}
+
+    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
+    ${rowIndexForSearchColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.rowIndexForSearchPosOfCol
+    ${rowIndexForSearchColOnSSRCD}  Set Variable    ${rowIndexForSearchColOnSSRCD[0]}
+    ${startRowOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
+    ${startRowOnSSRCD}  Set Variable    ${startRowOnSSRCD[0]}
+    ${posOfParentClassColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfParentClassCol
+    ${posOfParentClassColOnSSRCD}  Set Variable    ${posOfParentClassColOnSSRCD[0]}
+    ${posOfQuarterColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfQuarterCol
+    ${posOfQuarterColOnSSRCD}  Set Variable    ${posOfQuarterColOnSSRCD[0]}
+    ${posOfOEMGroupColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
+    ${posOfOEMGroupColOnSSRCD}  Set Variable    ${posOfOEMGroupColOnSSRCD[0]}
+    ${posOfPNColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
+    ${posOfPNColOnSSRCD}  Set Variable    ${posOfPNColOnSSRCD[0]}
+    ${posOfValueCol}     Get Position Of Column    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${nameOfCol}
     IF    '${posOfValueCol}' == '0'
          Fail   Not found the position of ${nameOfCol} column
     END
 
-    File Should Exist      path=${SSRCDFilePath}
-    Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
-    ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
+    File Should Exist      path=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    Open Excel Document    filename=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx    doc_id=SSRCD
+    ${numOfRows}    Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
     ${listParentClass}  Get List Parent Class
     FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
         ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
@@ -110,10 +126,23 @@ Get List OEM GROUP And PN For Every Quarter
     @{listOEMGroupAndPN}    Create List
     ${quarterStr}  Set Variable    Q${quarter}-${year}
 
-    File Should Exist      path=${SSRCDFilePath}
-    Open Excel Document    filename=${SSRCDFilePath}    doc_id=SSRCD
-    ${numOfRows}    Get Number Of Rows In Excel    filePath=${SSRCDFilePath}
+    File Should Exist      path=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    Open Excel Document    filename=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx    doc_id=SSRCD
+    ${numOfRows}    Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
     ${listParentClass}  Get List Parent Class
+
+    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
+    ${startRowOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
+    ${startRowOnSSRCD}  Set Variable    ${startRowOnSSRCD[0]}
+    ${posOfParentClassColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfParentClassCol
+    ${posOfParentClassColOnSSRCD}  Set Variable    ${posOfParentClassColOnSSRCD[0]}
+    ${posOfQuarterColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfQuarterCol
+    ${posOfQuarterColOnSSRCD}  Set Variable    ${posOfQuarterColOnSSRCD[0]}
+    ${posOfOEMGroupColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
+    ${posOfOEMGroupColOnSSRCD}  Set Variable    ${posOfOEMGroupColOnSSRCD[0]}
+    ${posOfPNColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
+    ${posOfPNColOnSSRCD}  Set Variable    ${posOfPNColOnSSRCD[0]}
+
     FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
         ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
         IF    '${parentClassCol}' in ${listParentClass}
