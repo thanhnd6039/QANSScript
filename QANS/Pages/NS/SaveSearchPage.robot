@@ -6,13 +6,6 @@ ${iconExportSSToCSV}           //div[@title='Export - CSV']
 ${iconFilters}                 //*[@aria-label='Expand/Collapse filters']
 
 ${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
-#${SSRCDFilePath}               C:\\RobotFramework\\Downloads\\SS Revenue Cost Dump.xlsx
-#${rowIndexForSearchColOnSSRCD}                 1
-#${startRowOnSSRCD}                             2
-#${posOfOEMGroupColOnSSRCD}                     2
-#${posOfParentClassColOnSSRCD}                  9
-#${posOfPNColOnSSRCD}                           11
-#${posOfQuarterColOnSSRCD}                      19
 ${startRowOnSSMasterOPP}                       2
 ${posOfOPPJoinIDColOnSSMasterOPP}              3
 ${posOfOEMGroupColOnSSMasterOPP}               6
