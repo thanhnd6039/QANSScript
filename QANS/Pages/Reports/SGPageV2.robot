@@ -3,7 +3,6 @@ Resource    ../CommonPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
-
 *** Keywords ***
 Setup Test Environment For SG Report
     [Arguments]     ${browser}
