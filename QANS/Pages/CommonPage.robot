@@ -17,7 +17,7 @@ Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
-${TIMEOUT}          600s
+${TIMEOUT}          60s
 ${OUTPUT_DIR}       C:\\RobotFramework\\Output
 ${TEST_DATA_DIR}    C:\\RobotFramework\\TestData
 ${RESULT_DIR}       C:\\RobotFramework\\Results

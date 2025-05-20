@@ -10,26 +10,30 @@ Setup Test Environment For SG Report
     Create Excel File     filePath=${OUTPUT_DIR}\\SGResult.xlsx
     Wait Until Created    path=${OUTPUT_DIR}\\SGResult.xlsx
     Setup    browser=${browser}
-    Navigate To Report    configFileName=SGConfig.json
-    Export Report To      option=Excel
-    ${SGFilePath}   Set Variable    ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
-    Wait Until Created    path=${SGFilePath}    timeout=${TIMEOUT}
+#    Navigate To Report    configFileName=SGConfig.json
+#    Export Report To      option=Excel
+#    ${SGFilePath}   Set Variable    ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+#    Wait Until Created    path=${SGFilePath}    timeout=${TIMEOUT}
     Login To NS With Account    account=PRODUCTION
-    Navigate To SS Revenue Cost Dump
-    Export SS To CSV
-    Sleep    120s
-    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
-    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
-    @{emptyTable}   Create List
-    @{listNameOfColsForHeader}   Create List
-     Append To List    ${listNameOfColsForHeader}  QUARTER
-     Append To List    ${listNameOfColsForHeader}  TRANS TYPE
-     Append To List    ${listNameOfColsForHeader}  OEM GROUP
-     Append To List    ${listNameOfColsForHeader}  PN
-     Append To List    ${listNameOfColsForHeader}  ON SG
-     Append To List    ${listNameOfColsForHeader}  ON SS RCD
-     Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
-     Close Browser
+#    Navigate To SS Revenue Cost Dump
+#    Export SS To CSV
+#    Sleep    120s
+#    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
+#    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+#    @{emptyTable}   Create List
+#    @{listNameOfColsForHeader}   Create List
+#     Append To List    ${listNameOfColsForHeader}  QUARTER
+#     Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+#     Append To List    ${listNameOfColsForHeader}  OEM GROUP
+#     Append To List    ${listNameOfColsForHeader}  PN
+#     Append To List    ${listNameOfColsForHeader}  ON SG
+#     Append To List    ${listNameOfColsForHeader}  ON SS RCD
+#     Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
+     Navigate To SS Approved Sales Forecast
+     Expand Filters On SS
+     Set Year On SS Approved Sales Forecast    year=2025
+
+#     Close Browser
 
 Comparing Data For Every PN Between SG And SS RCD
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}

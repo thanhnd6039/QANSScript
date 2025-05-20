@@ -1,5 +1,5 @@
 *** Settings ***
-#Suite Setup     Setup Test Environment For SG Report    browser=firefox
+Suite Setup     Setup Test Environment For SG Report    browser=firefox
 Resource    ../../Pages/Reports/SGPageV2.robot
 
 *** Test Cases ***
@@ -195,6 +195,9 @@ Verify Customer Forecast Amount on SG Report
     END
     Close All Excel Documents
 
-
+Verify Budget QTY on SG Report
+    [Tags]  SG_0009
+    [Documentation]     Verify the QTY data of Budget on SG report
+    Log To Console    Verify Budget
 
 

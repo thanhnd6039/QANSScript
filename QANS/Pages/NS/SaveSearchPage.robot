@@ -4,6 +4,7 @@ Resource    ../CommonPage.robot
 *** Variables ***   
 ${iconExportSSToCSV}           //div[@title='Export - CSV']
 ${iconFilters}                 //*[@aria-label='Expand/Collapse filters']
+${txtYearFilterOnSSApprovedSalesForecast}   //input[@id='CUSTRECORD_APP_SF_YEAR']
 
 ${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
 ${startRowOnSSMasterOPP}                       2
@@ -12,6 +13,13 @@ ${posOfOEMGroupColOnSSMasterOPP}               6
 ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
+Navigate To SS Approved Sales Forecast
+    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSApprovedSalesForecastConfig.json
+    ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
+    ${url}  Set Variable    ${url[0]}
+    Go To    url=${url}
+    SS Should Contain Title    title=Approved Sales Forecast
+
 Navigate To SS Revenue Cost Dump
     ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
     ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
@@ -216,6 +224,13 @@ Export SS To CSV
 Expand Filters On SS
     Wait Until Element Is Visible    ${iconFilters}     ${TIMEOUT}
     Click Element    ${iconFilters}
+
+Set Year On SS Approved Sales Forecast
+    [Arguments]     ${year}
+    Wait Until Element Is Visible    locator=${txtYearFilterOnSSApprovedSalesForecast}      timeout=${TIMEOUT}
+    Wait Until Element Is Enabled    locator=${txtYearFilterOnSSApprovedSalesForecast}      timeout=${TIMEOUT}
+    Input Text    locator=${txtYearFilterOnSSApprovedSalesForecast}    text=${year}
+    Press Keys      locator=${txtYearFilterOnSSApprovedSalesForecast}   \TAB
 
 #Set Date Create On SS
 #    [Arguments]     ${from}     ${to}
