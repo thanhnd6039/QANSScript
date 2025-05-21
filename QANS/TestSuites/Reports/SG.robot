@@ -198,6 +198,6 @@ Verify Customer Forecast Amount on SG Report
 Verify Budget QTY on SG Report
     [Tags]  SG_0009
     [Documentation]     Verify the QTY data of Budget on SG report
-    Log To Console    Verify Budget
+    Comparing Data For Every PN Between SG And SS Approved SF    transType=BUDGET    attribute=QTY    year=2025    quarter=2    nameOfColOnSSApprovedSF=QTY
 
 

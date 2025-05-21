@@ -14,7 +14,8 @@ ${posOfPNColOnSSMasterOPP}                     7
 
 *** Keywords ***
 Navigate To SS Approved Sales Forecast
-    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSApprovedSalesForecastConfig.json
+    ${SSApprovedSFConfigFilePath}     Set Variable    ${CONFIG_DIR}\\SSApprovedSFConfig.json
+    ${configFileObject}     Load Json From File    file_name=${SSApprovedSFConfigFilePath}
     ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
     ${url}  Set Variable    ${url[0]}
     Go To    url=${url}
@@ -38,6 +39,70 @@ Get Total Value On SS Revenue Cost Dump
 
     [Return]    ${totalValue}
 
+Get Total Value On SS Approved Sales Forecast
+    [Arguments]     ${table}
+    ${totalValue}   Set Variable    0
+
+    FOR    ${rowOnTable}    IN    @{table}
+        ${valueCol}     Set Variable    ${rowOnTable[2]}
+        ${totalValue}   Evaluate    ${totalValue}+${valueCol}
+    END
+
+    [Return]    ${totalValue}
+
+Create Table For SS Approved Sales Forecast
+    [Arguments]     ${nameOfCol}    ${year}     ${quarter}
+    @{table}    Create List
+    ${approvedSFFilePath}   Set Variable    ${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
+    ${SSApprovedSFConfigFilePath}   Set Variable    ${CONFIG_DIR}\\SSApprovedSFConfig.json
+
+    
+    File Should Exist    path=${approvedSFFilePath}
+    Open Excel Document    filename=${approvedSFFilePath}    doc_id=ApprovedSF
+    ${numOfRows}    Get Number Of Rows In Excel    filePath=${approvedSFFilePath}
+
+    ${configFileObject}     Load Json From File    file_name=${SSApprovedSFConfigFilePath}
+    ${startRow}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
+    ${startRow}  Set Variable    ${startRow[0]}
+    ${posOfOEMGroupCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
+    ${posOfOEMGroupCol}  Set Variable    ${posOfOEMGroupCol[0]}
+    ${posOfPNCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
+    ${posOfPNCol}  Set Variable    ${posOfPNCol[0]}
+    ${posOfYearCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfYearCol
+    ${posOfYearCol}  Set Variable    ${posOfYearCol[0]}
+    ${posOfQuarterCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfQuarterCol
+    ${posOfQuarterCol}  Set Variable    ${posOfQuarterCol[0]}
+    ${rowIndexForSearchPosOfCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.rowIndexForSearchPosOfCol
+    ${rowIndexForSearchPosOfCol}  Set Variable    ${rowIndexForSearchPosOfCol[0]}
+
+    ${posOfValueCol}     Get Position Of Column    filePath=${approvedSFFilePath}   rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${nameOfCol}
+    IF    '${posOfValueCol}' == '0'
+         Fail   Not found the position of ${nameOfCol} column
+    END
+
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${numOfRows}+1
+        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupCol}
+        ${pnCol}            Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNCol}
+        ${yearCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfYearCol}
+        ${quarterCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterCol}
+        ${valueCol}         Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        IF    '${yearCol}' == '${year}' and '${quarterCol}' == '${quarter}'
+             ${tempValue}   Set Variable    ${valueCol}
+             ${tempValue}   Convert To Integer    ${tempValue}
+             IF    ${tempValue} == 0
+                  Continue For Loop
+             END
+             ${rowOnTable}   Create List
+             ...             ${oemGroupCol}
+             ...             ${pnCol}
+             ...             ${valueCol}
+             Append To List    ${table}   ${rowOnTable}
+        END
+         
+    END
+    Close All Excel Documents
+    [Return]    ${table}
+    
 Create Table For SS Revenue Cost Dump
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List
@@ -230,20 +295,8 @@ Set Year On SS Approved Sales Forecast
     Wait Until Element Is Visible    locator=${txtYearFilterOnSSApprovedSalesForecast}      timeout=${TIMEOUT}
     Wait Until Element Is Enabled    locator=${txtYearFilterOnSSApprovedSalesForecast}      timeout=${TIMEOUT}
     Input Text    locator=${txtYearFilterOnSSApprovedSalesForecast}    text=${year}
-    Press Keys      locator=${txtYearFilterOnSSApprovedSalesForecast}   \TAB
+    Press Keys     None    TAB
 
-#Set Date Create On SS
-#    [Arguments]     ${from}     ${to}
-#    IF    '${from}' != '${EMPTY}'
-#         Wait Until Element Is Visible    ${txtDateCreatedFrom}  ${TIMEOUT}
-#         Input Text    ${txtDateCreatedFrom}    ${from}
-#         Press Keys     None    TAB
-#    END
-#    IF    '${to}' != '${EMPTY}'
-#         Wait Until Element Is Visible    ${txtDateCreateTo}    ${TIMEOUT}
-#         Input Text    ${txtDateCreateTo}    ${to}
-#         Press Keys     None    TAB
-#    END
 
 
 
