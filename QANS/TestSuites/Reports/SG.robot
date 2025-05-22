@@ -1,5 +1,5 @@
 *** Settings ***
-Suite Setup     Setup Test Environment For SG Report    browser=firefox
+#Suite Setup     Setup Test Environment For SG Report    browser=firefox
 Resource    ../../Pages/Reports/SGPageV2.robot
 
 *** Test Cases ***
@@ -19,8 +19,8 @@ Verify Revenue QTY on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "REVENUE-QTY" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "REVENUE-QTY" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Revenue QTY data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -43,8 +43,8 @@ Verify Revenue Amount on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "REVENUE-AMOUNT" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "REVENUE-AMOUNT" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Revenue Amount data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -67,8 +67,8 @@ Verify Backlog QTY on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "BACKLOG-QTY" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "BACKLOG-QTY" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Backlog QTY data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -91,8 +91,8 @@ Verify Backlog Amount on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "BACKLOG-AMOUNT" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "BACKLOG-AMOUNT" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Backlog Amount data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -115,8 +115,8 @@ Verify Backlog Forecast QTY on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "BACKLOG FORECAST-QTY" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-QTY" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Backlog Forecast QTY data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -139,8 +139,8 @@ Verify Backlog Forecast Amount on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "BACKLOG FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Backlog Forecast Amount data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -163,8 +163,8 @@ Verify Customer Forecast QTY on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "CUSTOMER FORECAST-QTY" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-QTY" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Customer Forecast QTY data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -187,8 +187,8 @@ Verify Customer Forecast Amount on SG Report
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
-        ${transTypesColIsContainRevenueQTY}    Evaluate    "CUSTOMER FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
-        IF    '${transTypesColIsContainRevenueQTY}' == '${True}'
+        ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
              Fail   The Customer Forecast Amount data is different between SG report and SS Revenue Cost Dump
              BREAK
         END
@@ -198,6 +198,52 @@ Verify Customer Forecast Amount on SG Report
 Verify Budget QTY on SG Report
     [Tags]  SG_0009
     [Documentation]     Verify the QTY data of Budget on SG report
-    Comparing Data For Every PN Between SG And SS Approved SF    transType=BUDGET    attribute=QTY    year=2025    quarter=2    nameOfColOnSSApprovedSF=QTY
+    ${testDataForSGFilePath}    Set Variable    ${TEST_DATA_DIR}\\TestDataForSG.xlsx
+    ${SGResultFilePath}         Set Variable    ${OUTPUT_DIR}\\SGResult.xlsx
+    File Should Exist      path=${testDataForSGFilePath}
+    Open Excel Document    filename=${testDataForSGFilePath}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${testDataForSGFilePath}    sheetName=Budget
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
+        ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
+        ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
+        Comparing Data For Every PN Between SG And SS Approved SF    transType=BUDGET    attribute=QTY    year=${year}    quarter=${quarter}    nameOfColOnSSApprovedSF=QTY
+    END
+    Open Excel Document    filename=${SGResultFilePath}    doc_id=SGResult
+    Switch Current Excel Document    doc_id=SGResult
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SGResultFilePath}
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
+        ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
+        ${transTypesColIsContain}    Evaluate    "BUDGET-QTY" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
+             Fail   The Budget QTY data is different between SG report and SS Approved SF
+             BREAK
+        END
+    END
+    Close All Excel Documents
 
+Verify Budget Amount on SG Report
+    [Tags]  SG_0010
+    [Documentation]     Verify the QTY data of Budget on SG report
+    ${testDataForSGFilePath}    Set Variable    ${TEST_DATA_DIR}\\TestDataForSG.xlsx
+    ${SGResultFilePath}         Set Variable    ${OUTPUT_DIR}\\SGResult.xlsx
+    File Should Exist      path=${testDataForSGFilePath}
+    Open Excel Document    filename=${testDataForSGFilePath}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${testDataForSGFilePath}    sheetName=Budget
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
+        ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
+        ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
+        Comparing Data For Every PN Between SG And SS Approved SF    transType=BUDGET    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSApprovedSF=Sales FC
+    END
+    Open Excel Document    filename=${SGResultFilePath}    doc_id=SGResult
+    Switch Current Excel Document    doc_id=SGResult
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SGResultFilePath}
+    FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
+        ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
+        ${transTypesColIsContain}    Evaluate    "BUDGET-AMOUNT" in """${transTypeColOnSGResult}"""
+        IF    '${transTypesColIsContain}' == '${True}'
+             Fail   The Budget Amount data is different between SG report and SS Approved SF
+             BREAK
+        END
+    END
+    Close All Excel Documents
 

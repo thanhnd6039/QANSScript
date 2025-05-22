@@ -53,7 +53,8 @@ Comparing Data For Every PN Between SG And SS Approved SF
          ${totalValueOnSSApprovedSF}      Evaluate  "%.2f" % ${totalValueOnSSApprovedSF}
     END
     Log To Console    totalValueOnSG:${totalValueOnSG}; totalValueOnSSApprovedSF:${totalValueOnSSApprovedSF}
-    ${diff}     Evaluate    ${totalValueOnSG}-${totalValueOnSSApprovedSF}
+    ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSApprovedSF})
+    Log To Console    DIFF:${diff}
     IF    ${diff} > 1
          FOR    ${rowOnSSApprovedSF}    IN    @{tableSSApprovedSF}
             ${oemGroupColOnSSApprovedSF}       Set Variable    ${rowOnSSApprovedSF[0]}
@@ -148,7 +149,7 @@ Comparing Data For Every PN Between SG And SS RCD
          ${totalValueOnSSRCD}      Evaluate  "%.2f" % ${totalValueOnSSRCD}
     END
     
-    ${diff}     Evaluate    ${totalValueOnSG}-${totalValueOnSSRCD}
+    ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSRCD})
     IF    ${diff} > 1
          FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
             ${oemGroupColOnSSRCD}       Set Variable    ${rowOnSSRCD[0]}
