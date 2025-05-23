@@ -15,11 +15,11 @@ Setup Test Environment For SG Report
     Export Report To      option=Excel
     Wait Until Created    path=${SGFilePath}    timeout=${TIMEOUT}
     Login To NS With Account    account=PRODUCTION
-#    Navigate To SS Revenue Cost Dump
-#    Export SS To CSV
-#    Sleep    120s
-#    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
-#    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    Navigate To SS Revenue Cost Dump
+    Export SS To CSV
+    Sleep    120s
+    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
+    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
     @{emptyTable}   Create List
     @{listNameOfColsForHeader}   Create List
      Append To List    ${listNameOfColsForHeader}  QUARTER

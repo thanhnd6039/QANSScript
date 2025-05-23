@@ -1,22 +1,26 @@
 *** Settings ***
-#Suite Setup     Setup Test Environment For SG Report    browser=firefox
+Suite Setup     Setup Test Environment For SG Report    browser=firefox
 Resource    ../../Pages/Reports/SGPageV2.robot
+
+*** Variables ***
+${TEST_DATA_FOR_SG_FILE_PATH}       ${TEST_DATA_DIR}\\TestDataForSG.xlsx
+${SG_RESULT_FILE_PATH}              ${OUTPUT_DIR}\\SGResult.xlsx
 
 *** Test Cases ***
 Verify Revenue QTY on SG Report
     [Tags]  SG_0001
     [Documentation]     Verify the QTY data of Revenue on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Revenue
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}     doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Revenue
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=REVENUE    attribute=QTY    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=REV QTY
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "REVENUE-QTY" in """${transTypeColOnSGResult}"""
@@ -30,17 +34,17 @@ Verify Revenue QTY on SG Report
 Verify Revenue Amount on SG Report
     [Tags]  SG_0002
     [Documentation]     Verify the Amount data of Revenue on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Revenue
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Revenue
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=REVENUE    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=REV AMOUNT
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "REVENUE-AMOUNT" in """${transTypeColOnSGResult}"""
@@ -54,17 +58,17 @@ Verify Revenue Amount on SG Report
 Verify Backlog QTY on SG Report
     [Tags]  SG_0003
     [Documentation]     Verify the QTY data of Backlog on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Backlog
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Backlog
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=BACKLOG    attribute=QTY    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=BL QTY
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG-QTY" in """${transTypeColOnSGResult}"""
@@ -78,17 +82,17 @@ Verify Backlog QTY on SG Report
 Verify Backlog Amount on SG Report
     [Tags]  SG_0004
     [Documentation]     Verify the Amount data of Backlog on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Backlog
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}   sheetName=Backlog
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=BACKLOG    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=BL AMOUNT
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG-AMOUNT" in """${transTypeColOnSGResult}"""
@@ -102,17 +106,17 @@ Verify Backlog Amount on SG Report
 Verify Backlog Forecast QTY on SG Report
     [Tags]  SG_0005
     [Documentation]     Verify the QTY data of Backlog Forecast on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Backlog Forecast
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Backlog Forecast
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=BACKLOG FORECAST    attribute=QTY    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=BL FC QTY
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-QTY" in """${transTypeColOnSGResult}"""
@@ -126,17 +130,17 @@ Verify Backlog Forecast QTY on SG Report
 Verify Backlog Forecast Amount on SG Report
     [Tags]  SG_0006
     [Documentation]     Verify the Amount data of Backlog Forecast on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Backlog Forecast
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Backlog Forecast
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=BACKLOG FORECAST    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=BL FC AMOUNT
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
@@ -150,17 +154,17 @@ Verify Backlog Forecast Amount on SG Report
 Verify Customer Forecast QTY on SG Report
     [Tags]  SG_0007
     [Documentation]     Verify the QTY data of Customer Forecast on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Customer Forecast
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Customer Forecast
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=CUSTOMER FORECAST    attribute=QTY    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=FORECAST QTY
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-QTY" in """${transTypeColOnSGResult}"""
@@ -174,17 +178,17 @@ Verify Customer Forecast QTY on SG Report
 Verify Customer Forecast Amount on SG Report
     [Tags]  SG_0008
     [Documentation]     Verify the Amount data of Customer Forecast on SG report
-    File Should Exist      path=${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    Open Excel Document    filename=${TEST_DATA_DIR}\\TestDataForSG.xlsx    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_DIR}\\TestDataForSG.xlsx    sheetName=Customer Forecast
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Customer Forecast
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS RCD    transType=CUSTOMER FORECAST    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=FORECAST
     END
-    Open Excel Document    filename=${OUTPUT_DIR}\\SGResult.xlsx    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
@@ -198,19 +202,17 @@ Verify Customer Forecast Amount on SG Report
 Verify Budget QTY on SG Report
     [Tags]  SG_0009
     [Documentation]     Verify the QTY data of Budget on SG report
-    ${testDataForSGFilePath}    Set Variable    ${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    ${SGResultFilePath}         Set Variable    ${OUTPUT_DIR}\\SGResult.xlsx
-    File Should Exist      path=${testDataForSGFilePath}
-    Open Excel Document    filename=${testDataForSGFilePath}    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${testDataForSGFilePath}    sheetName=Budget
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Budget
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS Approved SF    transType=BUDGET    attribute=QTY    year=${year}    quarter=${quarter}    nameOfColOnSSApprovedSF=QTY
     END
-    Open Excel Document    filename=${SGResultFilePath}    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SGResultFilePath}
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BUDGET-QTY" in """${transTypeColOnSGResult}"""
@@ -223,20 +225,18 @@ Verify Budget QTY on SG Report
 
 Verify Budget Amount on SG Report
     [Tags]  SG_0010
-    [Documentation]     Verify the QTY data of Budget on SG report
-    ${testDataForSGFilePath}    Set Variable    ${TEST_DATA_DIR}\\TestDataForSG.xlsx
-    ${SGResultFilePath}         Set Variable    ${OUTPUT_DIR}\\SGResult.xlsx
-    File Should Exist      path=${testDataForSGFilePath}
-    Open Excel Document    filename=${testDataForSGFilePath}    doc_id=TestDataForSG
-    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${testDataForSGFilePath}    sheetName=Budget
+    [Documentation]     Verify the Amount data of Budget on SG report
+    File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
+    Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
+    ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Budget
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForSG}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
         Comparing Data For Every PN Between SG And SS Approved SF    transType=BUDGET    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSApprovedSF=Sales FC
     END
-    Open Excel Document    filename=${SGResultFilePath}    doc_id=SGResult
+    Open Excel Document    filename=${SG_RESULT_FILE_PATH}    doc_id=SGResult
     Switch Current Excel Document    doc_id=SGResult
-    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SGResultFilePath}
+    ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BUDGET-AMOUNT" in """${transTypeColOnSGResult}"""
