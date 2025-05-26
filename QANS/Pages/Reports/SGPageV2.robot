@@ -3,17 +3,33 @@ Resource    ../CommonPage.robot
 Resource    ../../Pages/NS/LoginPage.robot
 Resource    ../NS/SaveSearchPage.robot
 
+*** Variables ***
+${POS_OEM_GROUP_COL_ON_SG_TABLE}         0
+${POS_MAIN_SALES_REP_COL_ON_SG_TABLE}    1
+${POS_PN_COL_ON_SG_TABLE}                2
+${POS_VALUE_COL_ON_SG_TABLE}             3
+
+${START_ROW_ON_SG}      6
+${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SG}    3
+${POS_OEM_GROUP_COL_ON_SG}               2
+${POS_MAIN_SALES_REP_COL_ON_SG}          3
+${POS_PN_COL_ON_SG}                      4
+
+${SG_RESULT_FILE_PATH}              ${OUTPUT_DIR}\\SGResult.xlsx
+${SG_FILE_PATH}                     ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+${TEST_DATA_FOR_SG_FILE_PATH}       ${TEST_DATA_DIR}\\TestDataForSG.xlsx
+
+
 *** Keywords ***
 Setup Test Environment For SG Report
     [Arguments]     ${browser}
-    ${SGFilePath}   Set Variable    ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
     Remove All Files In Specified Directory    dirPath=${OUTPUT_DIR}
-    Create Excel File     filePath=${OUTPUT_DIR}\\SGResult.xlsx
-    Wait Until Created    path=${OUTPUT_DIR}\\SGResult.xlsx
+    Create Excel File     filePath=${SG_RESULT_FILE_PATH}
+    Wait Until Created    path=${SG_RESULT_FILE_PATH}
     Setup    browser=${browser}
     Navigate To Report    configFileName=SGConfig.json
     Export Report To      option=Excel
-    Wait Until Created    path=${SGFilePath}    timeout=${TIMEOUT}
+    Wait Until Created    path=${SG_FILE_PATH}    timeout=${TIMEOUT}
     Login To NS With Account    account=PRODUCTION
     Navigate To SS Revenue Cost Dump
     Export SS To CSV
@@ -28,7 +44,7 @@ Setup Test Environment For SG Report
      Append To List    ${listNameOfColsForHeader}  PN
      Append To List    ${listNameOfColsForHeader}  ON SG
      Append To List    ${listNameOfColsForHeader}  ON NS
-     Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
+     Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
      Navigate To SS Approved Sales Forecast
      Expand Filters On SS
      ${currentYear}     Get Current Year
@@ -46,15 +62,13 @@ Comparing Data For Every PN Between SG And SS Approved SF
     ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
     ${tableSSApprovedSF}    Create Table For SS Approved Sales Forecast    nameOfCol=${nameOfColOnSSApprovedSF}    year=${year}    quarter=${quarter}
     
-    ${totalValueOnSG}       Get Total Value On SG Report    table=${tableSG}
+    ${totalValueOnSG}              Get Total Value On SG Report    table=${tableSG}
     ${totalValueOnSSApprovedSF}    Get Total Value On SS Approved Sales Forecast    table=${tableSSApprovedSF}
     IF    '${attribute}' == 'AMOUNT'
-         ${totalValueOnSG}         Evaluate  "%.2f" % ${totalValueOnSG}
+         ${totalValueOnSG}                Evaluate  "%.2f" % ${totalValueOnSG}
          ${totalValueOnSSApprovedSF}      Evaluate  "%.2f" % ${totalValueOnSSApprovedSF}
     END
-    Log To Console    totalValueOnSG:${totalValueOnSG}; totalValueOnSSApprovedSF:${totalValueOnSSApprovedSF}
     ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSApprovedSF})
-    Log To Console    DIFF:${diff}
     IF    ${diff} > 1
          FOR    ${rowOnSSApprovedSF}    IN    @{tableSSApprovedSF}
             ${oemGroupColOnSSApprovedSF}       Set Variable    ${rowOnSSApprovedSF[0]}
@@ -63,10 +77,10 @@ Comparing Data For Every PN Between SG And SS Approved SF
             ${valueColOnSSApprovedSF}          Set Variable    ${rowOnSSApprovedSF[2]}
             ${isFoundOEMGroupAndPN}     Set Variable    ${False}
             FOR    ${rowOnSG}    IN    @{tableSG}
-                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[0]}
+                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
                 ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
-                ${pnColOnSG}            Set Variable    ${rowOnSG[2]}
-                ${valueColOnSG}         Set Variable    ${rowOnSG[3]}
+                ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+                ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
                 IF    '${oemGroupColOnSSApprovedSF}' == '${oemGroupColOnSG}' and '${pnColOnSSApprovedSF}' == '${pnColOnSG}'
                     ${isFoundOEMGroupAndPN}     Set Variable    ${True}
                     IF    '${attribute}' == 'AMOUNT'
@@ -98,10 +112,10 @@ Comparing Data For Every PN Between SG And SS Approved SF
             END
          END
          FOR    ${rowOnSG}    IN    @{tableSG}
-            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[0]}
+            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
             ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
-            ${pnColOnSG}            Set Variable    ${rowOnSG[2]}
-            ${valueColOnSG}         Set Variable    ${rowOnSG[3]}
+            ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+            ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
             ${isFoundOEMGroupAndPN}     Set Variable    ${False}
             FOR    ${rowOnSSApprovedSF}    IN    @{tableSSApprovedSF}
                 ${oemGroupColOnSSApprovedSF}     Set Variable    ${rowOnSSApprovedSF[0]}
@@ -158,10 +172,10 @@ Comparing Data For Every PN Between SG And SS RCD
             ${valueColOnSSRCD}          Set Variable    ${rowOnSSRCD[2]}
             ${isFoundOEMGroupAndPN}     Set Variable    ${False}
             FOR    ${rowOnSG}    IN    @{tableSG}
-                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[0]}
+                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
                 ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
-                ${pnColOnSG}            Set Variable    ${rowOnSG[2]}
-                ${valueColOnSG}         Set Variable    ${rowOnSG[3]}
+                ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+                ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
                 IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnSG}' and '${pnColOnSSRCD}' == '${pnColOnSG}'
                     ${isFoundOEMGroupAndPN}     Set Variable    ${True}
                     IF    '${attribute}' == 'AMOUNT'
@@ -193,10 +207,10 @@ Comparing Data For Every PN Between SG And SS RCD
             END
          END
          FOR    ${rowOnSG}    IN    @{tableSG}
-            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[0]}
+            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
             ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
-            ${pnColOnSG}            Set Variable    ${rowOnSG[2]}
-            ${valueColOnSG}         Set Variable    ${rowOnSG[3]}
+            ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+            ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
             ${isFoundOEMGroupAndPN}     Set Variable    ${False}
             FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
                 ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
@@ -227,7 +241,7 @@ Comparing Data For Every PN Between SG And SS RCD
              Append To List    ${listNameOfColsForHeader}  PN
              Append To List    ${listNameOfColsForHeader}  ON SG
              Append To List    ${listNameOfColsForHeader}  ON NS
-             Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}  hasHeader=${False}
+             Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}  hasHeader=${False}
          END
     END
 
@@ -259,13 +273,8 @@ Create Table For SG Report
     ELSE
          Fail    The TransType parameter ${transType} is invalid.
     END
-    ${SGFilePath}   Set Variable    ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
 
-    ${configFileObject}           Load Json From File    file_name=${CONFIG_DIR}\\SGConfig.json
-    ${rowIndexForSearchPosOfCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.rowIndexForSearchPosOfCol
-    ${rowIndexForSearchPosOfCol}  Set Variable    ${rowIndexForSearchPosOfCol[0]}
-
-    ${posOfValueCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
+    ${posOfValueCol}    Get Position Of Column    filePath=${SG_FILE_PATH}    rowIndex=${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SG}    searchStr=${searchStr}
     IF    ${posOfValueCol} == 0
          Fail   Not found the position of ${searchStr} column
     END
@@ -277,25 +286,17 @@ Create Table For SG Report
         Fail    The Attribute parameter ${attribute} in invalid
     END
 
-    ${startRow}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
-    ${startRow}  Set Variable    ${startRow[0]}
-    ${posOfOEMGroupCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
-    ${posOfOEMGroupCol}  Set Variable    ${posOfOEMGroupCol[0]}
-    ${posOfMainSalesRepCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfMainSalesRepCol
-    ${posOfMainSalesRepCol}  Set Variable    ${posOfMainSalesRepCol[0]}
-    ${posOfPNCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
-    ${posOfPNCol}  Set Variable    ${posOfPNCol[0]}
-    File Should Exist    path=${SGFilePath}
-    Open Excel Document    filename=${SGFilePath}    doc_id=SG
-    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
+    File Should Exist    path=${SG_FILE_PATH}
+    Open Excel Document    filename=${SG_FILE_PATH}    doc_id=SG
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SG_FILE_PATH}
     ${oemGroupTemp}         Set Variable    ${EMPTY}
     ${mainSalesRepTemp}     Set Variable    ${EMPTY}
-    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${numOfRows}+1
-        ${oemGroupCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupCol}
-        ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepCol}
-        ${pnCol}                Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNCol}
+    FOR    ${rowIndex}    IN RANGE    ${START_ROW_ON_SG}    ${numOfRows}+1
+        ${oemGroupCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_SG}
+        ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${POS_MAIN_SALES_REP_COL_ON_SG}
+        ${pnCol}                Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PN_COL_ON_SG}
         IF    '${oemGroupCol}' != 'None'
-             ${oemGroupTemp}    Set Variable    ${oemGroupCol}
+             ${oemGroupTemp}        Set Variable    ${oemGroupCol}
              ${mainSalesRepTemp}    Set Variable    ${mainSalesRepCol}
         END
         IF    '${pnCol}' != '${EMPTY}'
@@ -303,7 +304,7 @@ Create Table For SG Report
             IF    '${valueCol}' == 'None' or '${valueCol}' == '${EMPTY}'
                 Continue For Loop
             END
-            ${tempValue}    Set Variable    ${valueCol}
+            ${tempValue}     Set Variable    ${valueCol}
             ${tempValue}     Convert To Integer    ${tempValue}
             IF    ${tempValue} == 0
                  Continue For Loop
@@ -323,6 +324,19 @@ Create Table For SG Report
     Close Current Excel Document
     [Return]    ${table}
 
+Get Value By OEM Group On SG Report
+    [Arguments]     ${tableOnSG}    ${oemGroup}
+    ${valueOnSG}    Set Variable    0
+
+    FOR    ${rowOnSG}    IN    @{tableOnSG}
+        ${oemGroupCol}  Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+        IF    '${oemGroupCol}' == '${oemGroup}'
+             ${valueOnSG}   Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
+             BREAK
+        END
+    END
+
+    [Return]    ${valueOnSG}
 
     
 

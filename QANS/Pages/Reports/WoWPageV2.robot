@@ -4,6 +4,8 @@ Resource    SGPageV2.robot
 
 *** Variables ***
 ${WOW_CHANGE_FILE_PATH}     ${OUTPUT_DIR}\\Wow Change [Current Week].xlsx
+${POS_OEM_GROUP_COL_ON_WOW_CHANGE}   1
+
 
 *** Keywords ***
 Check BGT, Ship, Backlog On WoW Change
@@ -17,23 +19,23 @@ Check BGT, Ship, Backlog On WoW Change
     ${listOfOEMGroupShownInOEMWestTable}     Get List Of OEM Group Shown In OEM West Table
 
     ${tableOnWoWChange}     Create Table On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
-#    ${tableOnSG}            Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
-#    #   Verify the data for each OEM Group
-#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-#        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
-#        IF    '${oemGroupCol}' == 'OTHERS' or '${oemGroupCol}' == 'Total'
-#             Continue For Loop
-#        END
-#        ${valueOnSG}    Get Value By OEM Group On SG Report     tableOnSG=${tableOnSG}    oemGroup=${oemGroupCol}    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
-#        ${sumOfValueOfOEMGroup}     Evaluate    ${sumOfValueOfOEMGroup}+${valueOnSG}
-#        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
-#        ${valueOnSG}             Evaluate  "%.2f" % ${valueOnSG}
-#        IF    '${valueOnWoWChange}' != '${valueOnSG}'
-#             ${result}     Set Variable    ${False}
-#              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupCol}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
-#        END
-#    END
+    ${tableOnSG}            Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    #   Verify the data for each OEM Group
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        IF    '${oemGroupCol}' == 'OTHERS' or '${oemGroupCol}' == 'Total'
+             Continue For Loop
+        END
+        ${valueOnSG}    Get Value By OEM Group On SG Report     tableOnSG=${tableOnSG}    oemGroup=${oemGroupCol}
+        ${sumOfValueOfOEMGroup}     Evaluate    ${sumOfValueOfOEMGroup}+${valueOnSG}
+        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+        ${valueOnSG}             Evaluate  "%.2f" % ${valueOnSG}
+        IF    '${valueOnWoWChange}' != '${valueOnSG}'
+             ${result}     Set Variable    ${False}
+              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupCol}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
+        END
+    END
 #    #   Verify the Total data
 #    ${totalOnSG}    Set Variable    0
 #    ${valueOnSG}    Set Variable    0
@@ -136,6 +138,39 @@ Get Start Row On WoW Change
     Close Current Excel Document
     [Return]    ${startRow}
 
+Get End Row On WoW Change
+    [Arguments]     ${nameOftable}
+
+    ${endRow}   Set Variable    0
+    ${count}    Set Variable    0
+
+    ${posOfCol}     Get Position Of Column On WoW Change    table=${nameOftable}   nameOfCol=${nameOftable}
+
+    File Should Exist      path=${WOW_CHANGE_FILE_PATH}
+    Open Excel Document    filename=${WOW_CHANGE_FILE_PATH}    doc_id=WoWChange
+    ${numOfRows}    Get Number Of Rows In Excel    filePath=${WOW_CHANGE_FILE_PATH}
+
+    FOR    ${rowIndex}    IN RANGE    1    ${numOfRows}+1
+        ${oemGroupCol}     Read Excel Cell    row_num=${rowIndex}    col_num=${posOfCol}
+        IF    '${oemGroupCol}' == 'OTHERS'
+             ${count}   Evaluate    ${count}+1
+             IF    '${nameOftable}' == 'OEM East'
+                  IF    '${count}' == '1'
+                       ${endRow}    Evaluate    ${rowIndex}-1
+                       BREAK
+                  END
+             ELSE IF     '${nameOftable}' == 'OEM West + Channel'
+                  IF    '${count}' == '2'
+                       ${endRow}    Evaluate    ${rowIndex}-1
+                       BREAK
+                  END
+             END
+        END
+    END
+
+    Close Current Excel Document
+    [Return]    ${endRow}
+
 Create Table On WoW Change
     [Arguments]     ${nameOftable}    ${nameOfCol}
 
@@ -150,39 +185,39 @@ Create Table On WoW Change
     END
 
     ${startRow}     Get Start Row On WoW Change    nameOftable=${nameOftable}
-#    ${endRow}       Get End Row On WoW Change      table=${table}
-#    ${othersRow}    Evaluate    ${endRow}+1
-#    ${totalRow}     Evaluate    ${endRow}+2
-#
-#    IF    '${nameOfCol}' == 'Pre Q Ships'
-#         ${posOfValueCol}    Set Variable    2
-#    ELSE IF    '${nameOfCol}' == 'Current Q Budget'
-#         ${posOfValueCol}    Set Variable    3
-#    ELSE IF    '${nameOfCol}' == 'LW Commit'
-#         ${posOfValueCol}    Set Variable    4
-#    ELSE IF  '${nameOfCol}' == 'TW Commit'
-#         ${posOfValueCol}    Set Variable    5
-#    ELSE IF  '${nameOfCol}' == 'WoW Of Ships'
-#         ${posOfValueCol}    Set Variable    7
-#    ELSE IF  '${nameOfCol}' == 'WoW Of LOS'
-#         ${posOfValueCol}    Set Variable    10
-#    ELSE
-#        ${posOfValueCol}     Get Position Of Column On WoW Change    table=${table}    nameOfCol=${nameOfCol}
-#    END
-#
-#    File Should Exist      path=${wowChangeFilePath}
-#    Open Excel Document    filename=${wowChangeFilePath}           doc_id=WoWChange
-#    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
-#        ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnWoWChange}
-#        ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
-#        ${rowOnTable}   Create List
-#        ...             ${oemGroupColOnWoWChange}
-#        ...             ${valueColOnWoWChange}
-#        Append To List    ${table}   ${rowOnTable}
-#    END
-#
-#    Close Current Excel Document
-#    [Return]    ${table}
+    ${endRow}       Get End Row On WoW Change      nameOftable=${nameOftable}
+    ${othersRow}    Evaluate    ${endRow}+1
+    ${totalRow}     Evaluate    ${endRow}+2
+
+    IF    '${nameOfCol}' == 'Pre Q Ships'
+         ${posOfValueCol}    Set Variable    2
+    ELSE IF    '${nameOfCol}' == 'Current Q Budget'
+         ${posOfValueCol}    Set Variable    3
+    ELSE IF    '${nameOfCol}' == 'LW Commit'
+         ${posOfValueCol}    Set Variable    4
+    ELSE IF  '${nameOfCol}' == 'TW Commit'
+         ${posOfValueCol}    Set Variable    5
+    ELSE IF  '${nameOfCol}' == 'WoW Of Ships'
+         ${posOfValueCol}    Set Variable    7
+    ELSE IF  '${nameOfCol}' == 'WoW Of LOS'
+         ${posOfValueCol}    Set Variable    10
+    ELSE
+        ${posOfValueCol}     Get Position Of Column On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+    END
+
+    File Should Exist      path=${WOW_CHANGE_FILE_PATH}
+    Open Excel Document    filename=${WOW_CHANGE_FILE_PATH}           doc_id=WoWChange
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
+        ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_WOW_CHANGE}
+        ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        ${rowOnTable}   Create List
+        ...             ${oemGroupColOnWoWChange}
+        ...             ${valueColOnWoWChange}
+        Append To List    ${table}   ${rowOnTable}
+    END
+
+    Close Current Excel Document
+    [Return]    ${table}
 
 Get List Of Sales Member In OEM East Table
     @{listOfSalesMember}    Create List

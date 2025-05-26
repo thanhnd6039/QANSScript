@@ -6,26 +6,36 @@ ${iconExportSSToCSV}           //div[@title='Export - CSV']
 ${iconFilters}                 //*[@aria-label='Expand/Collapse filters']
 ${txtYearFilterOnSSApprovedSalesForecast}   //input[@id='CUSTRECORD_APP_SF_YEAR']
 
-${SSMasterOPPFilePath}         C:\\RobotFramework\\Downloads\\SS Master OPP.xlsx
-${startRowOnSSMasterOPP}                       2
-${posOfOPPJoinIDColOnSSMasterOPP}              3
-${posOfOEMGroupColOnSSMasterOPP}               6
-${posOfPNColOnSSMasterOPP}                     7
+${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SS_APPROVED_SF}   1
+${START_ROW_ON_SS_APPROVED_SF}                      2
+${POS_OEM_GROUP_COL_ON_SS_APPROVED_SF}              2
+${POS_PN_COL_ON_SS_APPROVED_SF}                     3
+${POS_YEAR_COL_ON_SS_APPROVED_SF}                   4
+${POS_QUARTER_COL_ON_SS_APPROVED_SF}                5
+${POS_OEM_GROUP_COL_ON_SS_APPROVED_SF_TABLE}        0
+${POS_PN_COL_ON_SS_APPROVED_SF_TABLE}               1
+${POS_VALUE_COL_ON_SS_APPROVED_SF_TABLE}            2
+
+${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SS_RCD}           1
+${START_ROW_ON_SS_RCD}                              2
+${POS_OEM_GROUP_COL_ON_SS_RCD}                      2
+${POS_PARENT_CLASS_COL_ON_SS_RCD}                   9
+${POS_PN_COL_ON_SS_RCD}                             11
+${POS_QUARTER_COL_ON_SS_RCD}                        19
+${POS_OEM_GROUP_COL_ON_SS_RCD_TABLE}                0
+${POS_PN_COL_ON_SS_RCD_TABLE}                       1
+${POS_VALUE_COL_ON_SS_RCD_TABLE}                    2
+
+${URL_SS_APPROVED_SF}       https://4499123.app.netsuite.com/app/common/custom/custrecordentrylist.nl?rectype=548
+${URL_SS_RCD}               https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
 
 *** Keywords ***
 Navigate To SS Approved Sales Forecast
-    ${SSApprovedSFConfigFilePath}     Set Variable    ${CONFIG_DIR}\\SSApprovedSFConfig.json
-    ${configFileObject}     Load Json From File    file_name=${SSApprovedSFConfigFilePath}
-    ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
-    ${url}  Set Variable    ${url[0]}
-    Go To    url=${url}
+    Go To    url=${URL_SS_APPROVED_SF}
     SS Should Contain Title    title=Approved Sales Forecast
 
 Navigate To SS Revenue Cost Dump
-    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
-    ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
-    ${url}  Set Variable    ${url[0]}
-    Run Keyword And Ignore Error    Go To    url=${url}
+    Run Keyword And Ignore Error    Go To    url=${URL_SS_RCD}
     SS Should Contain Title    title=Revenue Cost Dump - BL - BL FC - CUS FC Last Year
 
 Get Total Value On SS Revenue Cost Dump

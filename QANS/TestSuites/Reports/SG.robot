@@ -2,10 +2,6 @@
 Suite Setup     Setup Test Environment For SG Report    browser=firefox
 Resource    ../../Pages/Reports/SGPageV2.robot
 
-*** Variables ***
-${TEST_DATA_FOR_SG_FILE_PATH}       ${TEST_DATA_DIR}\\TestDataForSG.xlsx
-${SG_RESULT_FILE_PATH}              ${OUTPUT_DIR}\\SGResult.xlsx
-
 *** Test Cases ***
 Verify Revenue QTY on SG Report
     [Tags]  SG_0001
