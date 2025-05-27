@@ -326,17 +326,17 @@ Create Table For SG Report
 
 Get Value By OEM Group On SG Report
     [Arguments]     ${tableOnSG}    ${oemGroup}
-    ${valueOnSG}    Set Variable    0
+    ${value}    Set Variable    0
 
     FOR    ${rowOnSG}    IN    @{tableOnSG}
         ${oemGroupCol}  Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+        ${valueCol}     Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
         IF    '${oemGroupCol}' == '${oemGroup}'
-             ${valueOnSG}   Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
-             BREAK
+             ${value}   Evaluate    ${value}+${valueCol}
         END
     END
 
-    [Return]    ${valueOnSG}
+    [Return]    ${value}
 
     
 

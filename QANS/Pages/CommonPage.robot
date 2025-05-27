@@ -97,9 +97,10 @@ Write Table To Excel
             Write Excel Cell    row_num=1    col_num=${count}     value=${nameOfCol}
             ${count}    Evaluate    ${count}+1
         END
+        ${latestRow}   Get Number Of Rows In Excel    ${filePath}
+    ELSE
+        ${latestRow}  Set Variable    0
     END
-
-    ${latestRow}   Get Number Of Rows In Excel    ${filePath}
     ${nextRow}     Evaluate    ${latestRow}+1
 #    Add Raw Data to File
     FOR    ${rawData}    IN    @{table}

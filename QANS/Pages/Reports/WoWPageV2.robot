@@ -3,15 +3,223 @@ Resource    ../CommonPage.robot
 Resource    SGPageV2.robot
 
 *** Variables ***
-${WOW_CHANGE_FILE_PATH}     ${OUTPUT_DIR}\\Wow Change [Current Week].xlsx
-${POS_OEM_GROUP_COL_ON_WOW_CHANGE}   1
+${WOW_CHANGE_FILE_PATH}                   ${OUTPUT_DIR}\\Wow Change [Current Week].xlsx
+${WOW_CHANGE_ON_VDC_FILE_PATH}            ${OUTPUT_DIR}\\Wow Change [Current Week] On VDC.xlsx
+${WOW_CHANGE_RESULT_FILE_PATH}            ${OUTPUT_DIR}\\WoWChangeResult.xlsx
+
+${POS_OEM_GROUP_COL_ON_WOW_CHANGE}         1
+${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}   0
+${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}       1
 
 
 *** Keywords ***
+Get WoW By Formular By OEM GRoup
+    [Arguments]     ${nameOftable}    ${nameOfCol}    ${oemGroup}
+    ${wowByFormula}           Set Variable    0
+    ${valueOnWoWChange}       Set Variable    0
+    ${valueOnWoWChangeOnVDC}  Set Variable    0
+
+
+    ${tableOnWoWChange}         Create Table On WoW Change           nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+    ${tableOnWoWChangeOnVDC}    Create Table On WoW Change On VDC    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        IF    '${oemGroupOnWoWChange}' == '${oemGroup}'
+            ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+            BREAK
+        END
+    END
+
+    FOR    ${rowOnWoWChangeOnVDC}    IN    @{tableOnWoWChangeOnVDC}
+        ${oemGroupOnWoWChangeOnVDC}  Set Variable    ${rowOnWoWChangeOnVDC[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        IF    '${oemGroupOnWoWChangeOnVDC}' == '${oemGroup}'
+            ${valueOnWoWChangeOnVDC}     Set Variable    ${rowOnWoWChangeOnVDC[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+            BREAK
+        END
+    END
+    ${wowByFormula}     Evaluate    ${valueOnWoWChange}-${valueOnWoWChangeOnVDC}
+    [Return]    ${wowByFormula}
+
+Check WoW On WoW Change
+    [Arguments]     ${nameOftable}    ${nameOfCol}
+    ${result}   Set Variable    ${True}
+    @{tableError}   Create List
+    ${wowByFormula}     Set Variable    0
+
+    ${tableOnWoWChange}      Create Table On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+
+        IF    '${nameOfCol}' == 'WoW Of Ships'
+             ${wowByFormula}         Get WoW By Formular By OEM GRoup    nameOftable=${nameOftable}    nameOfCol=Ships    oemGroup=${oemGroupOnWoWChange}
+        ELSE
+             ${wowByFormula}         Get WoW By Formular By OEM GRoup    nameOftable=${nameOftable}    nameOfCol=LOS    oemGroup=${oemGroupOnWoWChange}
+        END
+
+        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+        ${wowByFormula}          Evaluate  "%.2f" % ${wowByFormula}
+
+        IF    ${valueOnWoWChange} != ${wowByFormula}
+              ${result}     Set Variable    ${False}
+              @{rowOnTableError}   Create List
+              Append To List    ${rowOnTableError}   ${nameOftable}
+              Append To List    ${rowOnTableError}   ${nameOfCol}
+              Append To List    ${rowOnTableError}   ${oemGroupOnWoWChange}
+              Append To List    ${rowOnTableError}   ${valueOnWoWChange}
+              Append To List    ${rowOnTableError}   ${wowByFormula}
+              Append To List    ${tableError}    ${rowOnTableError}
+        END
+    END
+    IF    '${result}' == '${False}'
+         @{listNameOfColsForHeader}   Create List
+         Append To List    ${listNameOfColsForHeader}   TABLE
+         Append To List    ${listNameOfColsForHeader}   CHECK POINT
+         Append To List    ${listNameOfColsForHeader}   OEM GROUP
+         Append To List    ${listNameOfColsForHeader}   VALUE ON WOW CHANGE
+         Append To List    ${listNameOfColsForHeader}   VALUE ON SG
+         Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}    hasHeader=${False}
+         Fail   The ${nameOfCol} data for the ${nameOftable} table is wrong
+    END
+
+Check TW Commit On WoW Change
+    [Arguments]     ${nameOftable}    ${nameOfCol}
+    ${result}   Set Variable    ${True}
+    @{tableError}   Create List
+
+    ${tableOnWoWChange}     Create Table On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+        IF    '${valueOnWoWChange}' != '${EMPTY}'
+             ${result}     Set Variable    ${False}
+             @{rowOnTableError}   Create List
+             Append To List    ${rowOnTableError}   ${nameOftable}
+             Append To List    ${rowOnTableError}   ${nameOfCol}
+             Append To List    ${rowOnTableError}   ${oemGroupOnWoWChange}
+             Append To List    ${rowOnTableError}   ${valueOnWoWChange}
+             Append To List    ${rowOnTableError}   ${EMPTY}
+             Append To List    ${tableError}    ${rowOnTableError}
+        END
+    END
+    IF    '${result}' == '${False}'
+         @{listNameOfColsForHeader}   Create List
+         Append To List    ${listNameOfColsForHeader}   TABLE
+         Append To List    ${listNameOfColsForHeader}   CHECK POINT
+         Append To List    ${listNameOfColsForHeader}   OEM GROUP
+         Append To List    ${listNameOfColsForHeader}   VALUE ON WOW CHANGE
+         Append To List    ${listNameOfColsForHeader}   VALUE ON SG
+         Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}    hasHeader=${False}
+         Fail   The ${nameOfCol} data for the ${nameOftable} table is wrong
+    END
+Create Table On WoW Change On VDC
+    [Arguments]     ${nameOftable}    ${nameOfCol}
+
+    @{table}     Create List
+    ${result}       Set Variable    ${True}
+    ${startRow}     Set Variable    0
+    ${endRow}       Set Variable    0
+    ${othersRow}    Set Variable    0
+    ${totalRow}     Set Variable    0
+
+    IF    '${nameOftable}' != 'OEM East' and '${nameOftable}' != 'OEM West + Channel'
+         Fail    The table parameter ${nameOftable} is invalid
+    END
+
+    ${startRow}     Get Start Row On WoW Change    nameOftable=${nameOftable}
+    ${endRow}       Get End Row On WoW Change      nameOftable=${nameOftable}
+    ${othersRow}    Evaluate    ${endRow}+1
+    ${totalRow}     Evaluate    ${endRow}+2
+
+    IF    '${nameOfCol}' == 'LW Commit'
+         ${posOfValueCol}    Set Variable    5
+    ELSE IF   '${nameOfCol}' == 'WoW Of Ships'
+         ${posOfValueCol}    Set Variable    7
+    ELSE IF   '${nameOfCol}' == 'WoW Of LOS'
+         ${posOfValueCol}    Set Variable    10
+    ELSE
+        ${posOfValueCol}     Get Position Of Column On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+    END
+
+    File Should Exist      path=${WOW_CHANGE_ON_VDC_FILE_PATH}
+    Open Excel Document    filename=${WOW_CHANGE_ON_VDC_FILE_PATH}           doc_id=WoWChangeOnVDC
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${WOW_CHANGE_ON_VDC_FILE_PATH}
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
+        ${oemGroupColOnWoWChangeOnVDC}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_WOW_CHANGE}
+        ${valueColOnWoWChangeOnVDC}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        ${rowOnTable}   Create List
+        ...             ${oemGroupColOnWoWChangeOnVDC}
+        ...             ${valueColOnWoWChangeOnVDC}
+        Append To List    ${table}   ${rowOnTable}
+    END
+
+    Close Current Excel Document
+    [Return]    ${table}
+
+Check LW Commit, Comment On WoW Change
+    [Arguments]     ${nameOftable}    ${nameOfCol}
+    ${result}       Set Variable    ${True}
+    @{tableError}   Create List
+
+    ${tableOnWoWChange}         Create Table On WoW Change           nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+    ${tableOnWoWChangeOnVDC}    Create Table On WoW Change On VDC    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+        IF    '${valueOnWoWChange}' == 'None'
+             ${valueOnWoWChange}    Set Variable    ${EMPTY}
+        END
+        IF    '${nameOfCol}' == 'LW Commit'
+             IF    '${valueOnWoWChange}' == 'None'
+                ${valueOnWoWChange}    Set Variable    0
+             END
+             ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+        END
+        FOR    ${rowOnWoWChangeOnVDC}    IN    @{tableOnWoWChangeOnVDC}
+            ${oemGroupOnWoWChangeOnVDC}  Set Variable    ${rowOnWoWChangeOnVDC[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+            ${valueOnWoWChangeOnVDC}     Set Variable    ${rowOnWoWChangeOnVDC[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+            IF    '${valueOnWoWChangeOnVDC}' == 'None'
+                 ${valueOnWoWChangeOnVDC}   Set Variable    ${EMPTY}
+            END
+            IF    '${nameOfCol}' == 'LW Commit'
+                ${valueOnWoWChangeOnVDC}      Evaluate  "%.2f" % ${valueOnWoWChangeOnVDC}
+            END
+            IF    '${oemGroupOnWoWChange}' == '${oemGroupOnWoWChangeOnVDC}'
+                 IF    '${valueOnWoWChange}' != '${valueOnWoWChangeOnVDC}'
+                      ${result}     Set Variable    ${False}
+                      @{rowOnTableError}   Create List
+                      Append To List    ${rowOnTableError}   ${nameOftable}
+                      Append To List    ${rowOnTableError}   ${nameOfCol}
+                      Append To List    ${rowOnTableError}   ${oemGroupOnWoWChange}
+                      Append To List    ${rowOnTableError}   ${valueOnWoWChange}
+                      Append To List    ${rowOnTableError}   ${valueOnWoWChangeOnVDC}
+                      Append To List    ${tableError}    ${rowOnTableError}
+                 END
+                 BREAK
+            END
+        END
+    END
+    IF    '${result}' == '${False}'
+         @{listNameOfColsForHeader}   Create List
+         Append To List    ${listNameOfColsForHeader}   TABLE
+         Append To List    ${listNameOfColsForHeader}   CHECK POINT
+         Append To List    ${listNameOfColsForHeader}   OEM GROUP
+         Append To List    ${listNameOfColsForHeader}   VALUE ON WOW CHANGE
+         Append To List    ${listNameOfColsForHeader}   VALUE ON SG
+         Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}    hasHeader=${False}
+         Fail   The ${nameOfCol} data for the ${nameOftable} table is different between the WoW Change Report and WoW Change on VDC
+    END
+
+
 Check BGT, Ship, Backlog On WoW Change
     [Arguments]     ${nameOftable}    ${nameOfCol}     ${transType}   ${attribute}   ${year}     ${quarter}
     ${result}       Set Variable    ${True}
+    @{tableError}   Create List
     ${sumOfValueOfOEMGroup}     Set Variable    0
+
 
     ${listOfSalesMemberInOEMEastTable}       Get List Of Sales Member In OEM East Table
     ${listOfOEMGroupShownInOEMEastTable}     Get List Of OEM Group Shown In OEM East Table
@@ -22,72 +230,98 @@ Check BGT, Ship, Backlog On WoW Change
     ${tableOnSG}            Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
     #   Verify the data for each OEM Group
     FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[1]}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
         IF    '${oemGroupCol}' == 'OTHERS' or '${oemGroupCol}' == 'Total'
              Continue For Loop
         END
         ${valueOnSG}    Get Value By OEM Group On SG Report     tableOnSG=${tableOnSG}    oemGroup=${oemGroupCol}
+
         ${sumOfValueOfOEMGroup}     Evaluate    ${sumOfValueOfOEMGroup}+${valueOnSG}
         ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
         ${valueOnSG}             Evaluate  "%.2f" % ${valueOnSG}
-        IF    '${valueOnWoWChange}' != '${valueOnSG}'
+
+        IF    ${valueOnWoWChange} != ${valueOnSG}
              ${result}     Set Variable    ${False}
-              Write Test Result Of WoW Change Report To Excel    item=${nameOfCol}    oemGroup=${oemGroupCol}    valueOnWoWChange=${valueOnWoWChange}    valueOnSG=${valueOnSG}
+             @{rowOnTableError}   Create List
+             Append To List    ${rowOnTableError}   ${nameOftable}
+             Append To List    ${rowOnTableError}   ${nameOfCol}
+             Append To List    ${rowOnTableError}   ${oemGroupCol}
+             Append To List    ${rowOnTableError}   ${valueOnWoWChange}
+             Append To List    ${rowOnTableError}   ${valueOnSG}
+             Append To List    ${tableError}    ${rowOnTableError}
         END
     END
-#    #   Verify the Total data
-#    ${totalOnSG}    Set Variable    0
-#    ${valueOnSG}    Set Variable    0
-#    FOR    ${rawData}    IN    @{tableOnSG}
-#        ${mainSalesRepColOnSG}  Set Variable    ${rawData[1]}
-#        IF    '${table}' == 'OEM East'
-#             IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
-#                ${valueOnSG}    Set Variable    ${rawData[3]}
-#                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
-#             END
-#        ELSE
-#            IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
-#                ${valueOnSG}    Set Variable    ${rawData[3]}
-#                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
-#            END
-#        END
-#    END
-#    ${totalOnWoWchange}     Set Variable    0
-#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-#        IF    '${oemGroupCol}' == 'Total'
-#             ${totalOnWoWchange}    Set Variable    ${rowOnWoWChange[1]}
-#             BREAK
-#        END
-#    END
-#    ${totalOnSG}          Evaluate  "%.2f" % ${totalOnSG}
-#    ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
-#    IF    ${totalOnWoWchange} != ${totalOnSG}
-#         ${result}     Set Variable    ${False}
-#         Write Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} Total    ${totalOnWoWchange}    ${totalOnSG}
-#    END
-#    #  Verify the OTHERS data
-#    ${othersOnSG}   Evaluate    ${totalOnSG}-${sumOfValueOfOEMGroup}
-#    ${othersOnWoWChange}     Set Variable    0
-#    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-#        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
-#        IF    '${oemGroupCol}' == 'OTHERS'
-#             ${othersOnWoWChange}    Set Variable    ${rowOnWoWChange[1]}
-#             BREAK
-#        END
-#    END
-#    ${othersOnSG}          Evaluate  "%.2f" % ${othersOnSG}
-#    ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
-#    IF    ${othersOnWoWChange} != ${othersOnSG}
-#         ${result}     Set Variable    ${False}
-#         Write Test Result Of WoW Change Report To Excel    ${nameOfCol}    ${table} OTHERS    ${othersOnWoWChange}    ${othersOnSG}
-#    END
-#
-#    IF    '${result}' == '${False}'
-#         Fail   The ${nameOfCol} data for the ${table} table is different between the WoW Change Report and SG Report
-#    END
+    #   Verify the Total data
+    ${totalOnSG}    Set Variable    0
+    ${valueOnSG}    Set Variable    0
+    FOR    ${rawData}    IN    @{tableOnSG}
+        ${mainSalesRepColOnSG}  Set Variable    ${rawData[${POS_MAIN_SALES_REP_COL_ON_SG_TABLE}]}
+        IF    '${nameOftable}' == 'OEM East'
+             IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMEastTable}
+                ${valueOnSG}    Set Variable    ${rawData[${POS_VALUE_COL_ON_SG_TABLE}]}
+                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
+             END
+        ELSE
+            IF    '${mainSalesRepColOnSG}' in ${listOfSalesMemberInOEMWestTable}
+                ${valueOnSG}    Set Variable    ${rawData[${POS_VALUE_COL_ON_SG_TABLE}]}
+                ${totalOnSG}    Evaluate    ${totalOnSG}+${valueOnSG}
+            END
+        END
+    END
+    ${totalOnWoWchange}     Set Variable    0
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+        IF    '${oemGroupCol}' == 'Total'
+             ${totalOnWoWchange}    Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+             BREAK
+        END
+    END
+    ${totalOnSG}          Evaluate  "%.2f" % ${totalOnSG}
+    ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
+    IF    ${totalOnWoWchange} != ${totalOnSG}
+         ${result}     Set Variable    ${False}
+         @{rowOnTableError}   Create List
+         Append To List    ${rowOnTableError}   ${nameOftable}
+         Append To List    ${rowOnTableError}   ${nameOfCol}
+         Append To List    ${rowOnTableError}   ${oemGroupCol}
+         Append To List    ${rowOnTableError}   ${totalOnWoWchange}
+         Append To List    ${rowOnTableError}   ${totalOnSG}
+         Append To List    ${tableError}    ${rowOnTableError}
+    END
+    #  Verify the OTHERS data
+    ${othersOnSG}   Evaluate    ${totalOnSG}-${sumOfValueOfOEMGroup}
+    ${othersOnWoWChange}     Set Variable    0
+    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+        ${oemGroupCol}          Set Variable    ${rowOnWoWChange[0]}
+        IF    '${oemGroupCol}' == 'OTHERS'
+             ${othersOnWoWChange}    Set Variable    ${rowOnWoWChange[1]}
+             BREAK
+        END
+    END
+    ${othersOnSG}          Evaluate  "%.2f" % ${othersOnSG}
+    ${othersOnWoWChange}   Evaluate  "%.2f" % ${othersOnWoWChange}
+    IF    ${othersOnWoWChange} != ${othersOnSG}
+         ${result}     Set Variable    ${False}
+         @{rowOnTableError}   Create List
+         Append To List    ${rowOnTableError}   ${nameOftable}
+         Append To List    ${rowOnTableError}   ${nameOfCol}
+         Append To List    ${rowOnTableError}   ${oemGroupCol}
+         Append To List    ${rowOnTableError}   ${othersOnWoWChange}
+         Append To List    ${rowOnTableError}   ${othersOnSG}
+         Append To List    ${tableError}    ${rowOnTableError}
+    END
 
+    IF    '${result}' == '${False}'
+         @{listNameOfColsForHeader}   Create List
+         Append To List    ${listNameOfColsForHeader}   TABLE
+         Append To List    ${listNameOfColsForHeader}   CHECK POINT
+         Append To List    ${listNameOfColsForHeader}   OEM GROUP
+         Append To List    ${listNameOfColsForHeader}   VALUE ON WOW CHANGE
+         Append To List    ${listNameOfColsForHeader}   VALUE ON SG
+         Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}    hasHeader=${False}
+         Fail   The ${nameOfCol} data for the ${nameOftable} table is different between the WoW Change Report and SG Report
+    END
 
 Get Row Index For Search Col
     [Arguments]     ${nameOftable}
@@ -144,7 +378,7 @@ Get End Row On WoW Change
     ${endRow}   Set Variable    0
     ${count}    Set Variable    0
 
-    ${posOfCol}     Get Position Of Column On WoW Change    table=${nameOftable}   nameOfCol=${nameOftable}
+    ${posOfCol}     Get Position Of Column On WoW Change    nameOftable=${nameOftable}   nameOfCol=${nameOftable}
 
     File Should Exist      path=${WOW_CHANGE_FILE_PATH}
     Open Excel Document    filename=${WOW_CHANGE_FILE_PATH}    doc_id=WoWChange
@@ -170,6 +404,30 @@ Get End Row On WoW Change
 
     Close Current Excel Document
     [Return]    ${endRow}
+
+
+Check LOS On WoW Change
+    [Arguments]     ${nameOftable}
+    ${result}       Set Variable    ${True}
+    @{tableError}   Create List
+
+    ${startRow}     Get Start Row On WoW Change    nameOftable=${nameOftable}
+    ${endRow}       Get End Row On WoW Change      nameOftable=${nameOftable}
+    ${othersRow}    Evaluate    ${endRow}+1
+    ${totalRow}     Evaluate    ${endRow}+2
+
+    File Should Exist      path=${WOW_CHANGE_FILE_PATH}
+    Open Excel Document    filename=${WOW_CHANGE_FILE_PATH}           doc_id=WoWChange
+    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${totalRow}+1
+        ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_WOW_CHANGE}
+        ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
+        ${rowOnTable}   Create List
+        ...             ${oemGroupColOnWoWChange}
+        ...             ${valueColOnWoWChange}
+        Append To List    ${table}   ${rowOnTable}
+    END
+
+    Close Current Excel Document
 
 Create Table On WoW Change
     [Arguments]     ${nameOftable}    ${nameOfCol}
