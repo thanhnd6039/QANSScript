@@ -1,22 +1,265 @@
 *** Settings ***
 Resource    ../CommonPage.robot
+Resource    ../../Pages/NS/LoginPage.robot
+Resource    ../NS/SaveSearchPage.robot
 
 *** Variables ***
-${testResultOfSGReportByOEMGroupFilePath}   C:\\RobotFramework\\Results\\SGReport\\SGReportResultByOEMGroup.xlsx
-${testResultOfSGReportByPNFilePath}         C:\\RobotFramework\\Results\\SGReport\\SGReportResultByPN.xlsx
-${SGFilePath}                               C:\\RobotFramework\\Downloads\\Sales Gap Report NS With SO Forecast.xlsx
+${POS_OEM_GROUP_COL_ON_SG_TABLE}         0
+${POS_MAIN_SALES_REP_COL_ON_SG_TABLE}    1
+${POS_PN_COL_ON_SG_TABLE}                2
+${POS_VALUE_COL_ON_SG_TABLE}             3
 
-${startRowOnSG}                      6
-${rowIndexForSearchPosOfCol}         3
-${posOfOEMGroupColOnSG}              2
-${posOfMainSalesRepColOnSG}          3
+${START_ROW_ON_SG}      6
+${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SG}    3
+${POS_OEM_GROUP_COL_ON_SG}               2
+${POS_MAIN_SALES_REP_COL_ON_SG}          3
+${POS_PN_COL_ON_SG}                      4
+
+${SG_RESULT_FILE_PATH}              ${OUTPUT_DIR}\\SGResult.xlsx
+${SG_FILE_PATH}                     ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+${TEST_DATA_FOR_SG_FILE_PATH}       ${TEST_DATA_DIR}\\TestDataForSG.xlsx
+
 
 *** Keywords ***
+Setup Test Environment For SG Report
+    [Arguments]     ${browser}
+    Remove All Files In Specified Directory    dirPath=${OUTPUT_DIR}
+    Create Excel File     filePath=${SG_RESULT_FILE_PATH}
+    Wait Until Created    path=${SG_RESULT_FILE_PATH}
+    Setup    browser=${browser}
+    Navigate To Report    configFileName=SGConfig.json
+    Export Report To      option=Excel
+    Wait Until Created    path=${SG_FILE_PATH}    timeout=${TIMEOUT}
+    Login To NS With Account    account=PRODUCTION
+    Navigate To SS Revenue Cost Dump
+    Export SS To CSV
+    Sleep    120s
+    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
+    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    @{emptyTable}   Create List
+    @{listNameOfColsForHeader}   Create List
+     Append To List    ${listNameOfColsForHeader}  QUARTER
+     Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+     Append To List    ${listNameOfColsForHeader}  OEM GROUP
+     Append To List    ${listNameOfColsForHeader}  PN
+     Append To List    ${listNameOfColsForHeader}  ON SG
+     Append To List    ${listNameOfColsForHeader}  ON NS
+     Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
+     Navigate To SS Approved Sales Forecast
+     Expand Filters On SS
+     ${currentYear}     Get Current Year
+     Set Year On SS Approved Sales Forecast    year=${currentYear}
+     Export SS To CSV
+     Sleep    10s
+     ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
+     Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
+     Close Browser
+
+Comparing Data For Every PN Between SG And SS Approved SF
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSApprovedSF}
+    @{tableError}   Create List
+    
+    ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    ${tableSSApprovedSF}    Create Table For SS Approved Sales Forecast    nameOfCol=${nameOfColOnSSApprovedSF}    year=${year}    quarter=${quarter}
+    
+    ${totalValueOnSG}              Get Total Value On SG Report    table=${tableSG}
+    ${totalValueOnSSApprovedSF}    Get Total Value On SS Approved Sales Forecast    table=${tableSSApprovedSF}
+    IF    '${attribute}' == 'AMOUNT'
+         ${totalValueOnSG}                Evaluate  "%.2f" % ${totalValueOnSG}
+         ${totalValueOnSSApprovedSF}      Evaluate  "%.2f" % ${totalValueOnSSApprovedSF}
+    END
+    ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSApprovedSF})
+    IF    ${diff} > 1
+         FOR    ${rowOnSSApprovedSF}    IN    @{tableSSApprovedSF}
+            ${oemGroupColOnSSApprovedSF}       Set Variable    ${rowOnSSApprovedSF[0]}
+            ${oemGroupColOnSSApprovedSF}       Convert To Upper Case    ${oemGroupColOnSSApprovedSF}
+            ${pnColOnSSApprovedSF}             Set Variable    ${rowOnSSApprovedSF[1]}
+            ${valueColOnSSApprovedSF}          Set Variable    ${rowOnSSApprovedSF[2]}
+            ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+            FOR    ${rowOnSG}    IN    @{tableSG}
+                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+                ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
+                ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+                ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
+                IF    '${oemGroupColOnSSApprovedSF}' == '${oemGroupColOnSG}' and '${pnColOnSSApprovedSF}' == '${pnColOnSG}'
+                    ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                    IF    '${attribute}' == 'AMOUNT'
+                         ${valueColOnSSApprovedSF}      Evaluate  "%.2f" % ${valueColOnSSApprovedSF}
+                         ${valueColOnSG}                Evaluate  "%.2f" % ${valueColOnSG}
+                    END
+                    IF    ${valueColOnSSApprovedSF} != ${valueColOnSG}
+                        @{rowOnTableError}   Create List
+                        Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                        Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                        Append To List    ${rowOnTableError}    ${oemGroupColOnSSApprovedSF}
+                        Append To List    ${rowOnTableError}    ${pnColOnSSApprovedSF}
+                        Append To List    ${rowOnTableError}    ${valueColOnSG}
+                        Append To List    ${rowOnTableError}    ${valueColOnSSApprovedSF}
+                        Append To List    ${tableError}     ${rowOnTableError}
+                    END
+                    BREAK
+                END
+            END
+            IF    '${isFoundOEMGroupAndPN}' == '${False}'
+                @{rowOnTableError}   Create List
+                Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                Append To List    ${rowOnTableError}    ${oemGroupColOnSSApprovedSF}
+                Append To List    ${rowOnTableError}    ${pnColOnSSApprovedSF}
+                Append To List    ${rowOnTableError}    ${EMPTY}
+                Append To List    ${rowOnTableError}    ${valueColOnSSApprovedSF}
+                Append To List    ${tableError}     ${rowOnTableError}
+            END
+         END
+         FOR    ${rowOnSG}    IN    @{tableSG}
+            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+            ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
+            ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+            ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
+            ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+            FOR    ${rowOnSSApprovedSF}    IN    @{tableSSApprovedSF}
+                ${oemGroupColOnSSApprovedSF}     Set Variable    ${rowOnSSApprovedSF[0]}
+                ${oemGroupColOnSSApprovedSF}     Convert To Upper Case    ${oemGroupColOnSSApprovedSF}
+                ${pnColOnSSApprovedSF}           Set Variable    ${rowOnSSApprovedSF[1]}
+                IF    '${oemGroupColOnSG}' == '${oemGroupColOnSSApprovedSF}' and '${pnColOnSG}' == '${pnColOnSSApprovedSF}'
+                    ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                    BREAK
+                END
+            END
+            IF    '${isFoundOEMGroupAndPN}' == '${False}'
+                @{rowOnTableError}   Create List
+                Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                Append To List    ${rowOnTableError}    ${oemGroupColOnSG}
+                Append To List    ${rowOnTableError}    ${pnColOnSG}
+                Append To List    ${rowOnTableError}    ${valueColOnSG}
+                Append To List    ${rowOnTableError}    ${EMPTY}
+                Append To List    ${tableError}     ${rowOnTableError}
+            END
+         END
+         ${lengthTableError}  Get Length    ${tableError}
+         IF    ${lengthTableError} > 0
+             @{listNameOfColsForHeader}   Create List
+             Append To List    ${listNameOfColsForHeader}  QUARTER
+             Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+             Append To List    ${listNameOfColsForHeader}  OEM GROUP
+             Append To List    ${listNameOfColsForHeader}  PN
+             Append To List    ${listNameOfColsForHeader}  ON SG
+             Append To List    ${listNameOfColsForHeader}  ON NS
+             Write Table To Excel    filePath=${OUTPUT_DIR}\\SGResult.xlsx    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}  hasHeader=${False}
+         END
+    END
+
+Comparing Data For Every PN Between SG And SS RCD
+    [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}
+    @{tableError}   Create List
+
+    ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    ${tableSSRCD}           Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
+    ${totalValueOnSG}       Get Total Value On SG Report    table=${tableSG}
+    ${totalValueOnSSRCD}    Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}
+    IF    '${attribute}' == 'AMOUNT'
+         ${totalValueOnSG}         Evaluate  "%.2f" % ${totalValueOnSG}
+         ${totalValueOnSSRCD}      Evaluate  "%.2f" % ${totalValueOnSSRCD}
+    END
+    
+    ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSRCD})
+    IF    ${diff} > 1
+         FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+            ${oemGroupColOnSSRCD}       Set Variable    ${rowOnSSRCD[0]}
+            ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
+            ${pnColOnSSRCD}             Set Variable    ${rowOnSSRCD[1]}
+            ${valueColOnSSRCD}          Set Variable    ${rowOnSSRCD[2]}
+            ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+            FOR    ${rowOnSG}    IN    @{tableSG}
+                ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+                ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
+                ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+                ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
+                IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnSG}' and '${pnColOnSSRCD}' == '${pnColOnSG}'
+                    ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                    IF    '${attribute}' == 'AMOUNT'
+                         ${valueColOnSSRCD}      Evaluate  "%.2f" % ${valueColOnSSRCD}
+                         ${valueColOnSG}         Evaluate  "%.2f" % ${valueColOnSG}
+                    END
+                    IF    ${valueColOnSSRCD} != ${valueColOnSG}
+                        @{rowOnTableError}   Create List
+                        Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                        Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                        Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+                        Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+                        Append To List    ${rowOnTableError}    ${valueColOnSG}
+                        Append To List    ${rowOnTableError}    ${valueColOnSSRCD}
+                        Append To List    ${tableError}     ${rowOnTableError}
+                    END
+                    BREAK
+                END
+            END
+            IF    '${isFoundOEMGroupAndPN}' == '${False}'
+                @{rowOnTableError}   Create List
+                Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                Append To List    ${rowOnTableError}    ${oemGroupColOnSSRCD}
+                Append To List    ${rowOnTableError}    ${pnColOnSSRCD}
+                Append To List    ${rowOnTableError}    ${EMPTY}
+                Append To List    ${rowOnTableError}    ${valueColOnSSRCD}
+                Append To List    ${tableError}     ${rowOnTableError}
+            END
+         END
+         FOR    ${rowOnSG}    IN    @{tableSG}
+            ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+            ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
+            ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
+            ${valueColOnSG}         Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
+            ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+            FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+                ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
+                ${oemGroupColOnSSRCD}     Convert To Upper Case    ${oemGroupColOnSSRCD}
+                ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
+                IF    '${oemGroupColOnSG}' == '${oemGroupColOnSSRCD}' and '${pnColOnSG}' == '${pnColOnSSRCD}'
+                    ${isFoundOEMGroupAndPN}     Set Variable    ${True}
+                    BREAK
+                END
+            END
+            IF    '${isFoundOEMGroupAndPN}' == '${False}'
+                @{rowOnTableError}   Create List
+                Append To List    ${rowOnTableError}    Q${quarter}-${year}
+                Append To List    ${rowOnTableError}    ${transType}-${attribute}
+                Append To List    ${rowOnTableError}    ${oemGroupColOnSG}
+                Append To List    ${rowOnTableError}    ${pnColOnSG}
+                Append To List    ${rowOnTableError}    ${valueColOnSG}
+                Append To List    ${rowOnTableError}    ${EMPTY}
+                Append To List    ${tableError}     ${rowOnTableError}
+            END
+         END
+         ${lengthTableError}  Get Length    ${tableError}
+         IF    ${lengthTableError} > 0
+             @{listNameOfColsForHeader}   Create List
+             Append To List    ${listNameOfColsForHeader}  QUARTER
+             Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+             Append To List    ${listNameOfColsForHeader}  OEM GROUP
+             Append To List    ${listNameOfColsForHeader}  PN
+             Append To List    ${listNameOfColsForHeader}  ON SG
+             Append To List    ${listNameOfColsForHeader}  ON NS
+             Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}  hasHeader=${False}
+         END
+    END
+
+Get Total Value On SG Report
+    [Arguments]     ${table}
+    ${totalValue}   Set Variable    0
+
+    FOR    ${rowOnTable}    IN    @{table}
+        ${valueCol}     Set Variable    ${rowOnTable[3]}
+        ${totalValue}   Evaluate    ${totalValue}+${valueCol} 
+    END
+
+    [Return]    ${totalValue}
+    
 Create Table For SG Report
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}
     @{table}        Create List
     ${searchStr}    Set Variable    ${EMPTY}
-
     IF    '${transType}' == 'REVENUE'
          ${searchStr}   Set Variable    ${year}.Q${quarter} R
     ELSE IF     '${transType}' == 'BACKLOG'
@@ -27,436 +270,82 @@ Create Table For SG Report
          ${searchStr}   Set Variable    ${year}.Q${quarter} CF
     ELSE IF     '${transType}' == 'BUDGET'
          ${searchStr}   Set Variable    ${year}.Q${quarter} BGT
-    ELSE IF     '${transType}' == 'LOS'
-        ${searchStr}   Set Variable    ${year}.Q${quarter} R
-        ${posOfRCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
-        IF   '${posOfRCol}' == '0'
-            Fail   Not found the position of column
-        END
-        IF    '${attribute}' == 'QTY'
-             ${posOfRCol}   Evaluate    ${posOfRCol}+0
-        ELSE IF     '${attribute}' == 'REV'
-             ${posOfRCol}   Evaluate    ${posOfRCol}+2
-        ELSE
-            Fail    The Attribute parameter ${attribute} is invalid
-        END
-        ${searchStr}   Set Variable    ${year}.Q${quarter} B
-        ${posOfBCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
-        IF   '${posOfBCol}' == '0'
-            Fail   Not found the position of column
-        END
-        IF    '${attribute}' == 'QTY'
-             ${posOfBCol}   Evaluate    ${posOfBCol}+0
-        ELSE IF     '${attribute}' == 'REV'
-             ${posOfBCol}   Evaluate    ${posOfBCol}+2
-        ELSE
-            Fail    The Attribute parameter ${attribute} is invalid.
-        END
     ELSE
          Fail    The TransType parameter ${transType} is invalid.
     END
 
-    IF    '${transType}' != 'LOS'
-        ${posOfValueCol}    Get Position Of Column    filePath=${SGFilePath}    rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${searchStr}
-        IF    '${posOfValueCol}' == '0'
-            Fail   Not found the position of column
-        END
-        IF    '${attribute}' == 'QTY'
-             ${posOfValueCol}   Evaluate    ${posOfValueCol}+0
-        ELSE IF     '${attribute}' == 'REV'
-             ${posOfValueCol}   Evaluate    ${posOfValueCol}+2
-        ELSE
-            Fail    The Attribute parameter ${attribute} is invalid.
-        END
+    ${posOfValueCol}    Get Position Of Column    filePath=${SG_FILE_PATH}    rowIndex=${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SG}    searchStr=${searchStr}
+    IF    ${posOfValueCol} == 0
+         Fail   Not found the position of ${searchStr} column
+    END
+    IF    '${attribute}' == 'QTY'
+        ${posOfValueCol}     Evaluate    ${posOfValueCol}+0
+    ELSE IF   '${attribute}' == 'AMOUNT'
+        ${posOfValueCol}     Evaluate    ${posOfValueCol}+2
+    ELSE
+        Fail    The Attribute parameter ${attribute} in invalid
     END
 
-    File Should Exist    path=${SGFilePath}
-    Open Excel Document    filename=${SGFilePath}    doc_id=SG
-    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
-    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRows}+1
-        ${oemGroupCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSG}
+    File Should Exist    path=${SG_FILE_PATH}
+    Open Excel Document    filename=${SG_FILE_PATH}    doc_id=SG
+    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SG_FILE_PATH}
+    ${oemGroupTemp}         Set Variable    ${EMPTY}
+    ${mainSalesRepTemp}     Set Variable    ${EMPTY}
+    FOR    ${rowIndex}    IN RANGE    ${START_ROW_ON_SG}    ${numOfRows}+1
+        ${oemGroupCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_SG}
+        ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${POS_MAIN_SALES_REP_COL_ON_SG}
+        ${pnCol}                Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PN_COL_ON_SG}
         IF    '${oemGroupCol}' != 'None'
-            ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepColOnSG}
-            IF    '${transType}' != 'LOS'
-                 ${valueCol}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
-            ELSE
-                ${valueOfRCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfRCol}
-                IF    '${valueOfRCol}' == 'None'
-                     ${valueOfRCol}     Set Variable    0
-                END
-                ${valueOfBCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfBCol}
-                IF    '${valueOfBCol}' == 'None'
-                     ${valueOfBCol}     Set Variable    0
-                END
-                ${valueCol}     Evaluate    ${valueOfRCol}+${valueOfBCol}
-            END
+             ${oemGroupTemp}        Set Variable    ${oemGroupCol}
+             ${mainSalesRepTemp}    Set Variable    ${mainSalesRepCol}
+        END
+        IF    '${pnCol}' != '${EMPTY}'
+            ${valueCol}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
             IF    '${valueCol}' == 'None' or '${valueCol}' == '${EMPTY}'
-                 ${valueCol}    Set Variable    0
+                Continue For Loop
             END
-            ${tempValue}    Set Variable    ${valueCol}
-            ${tempValue}    Convert To Integer    ${tempValue}
-
-            IF    '${tempValue}' == '0'
+            ${tempValue}     Set Variable    ${valueCol}
+            ${tempValue}     Convert To Integer    ${tempValue}
+            IF    ${tempValue} == 0
                  Continue For Loop
             END
-#            Tạm thời set PN trong SG là Empty, sẽ update sau
-            ${pnCol}    Set Variable    ${EMPTY}
+            IF    '${attribute}' == 'AMOUNT'
+                 ${valueCol}      Evaluate  "%.2f" % ${valueCol}
+            END
             ${rowOnTable}   Create List
-            ...             ${oemGroupCol}
-            ...             ${mainSalesRepCol}
+            ...             ${oemGroupTemp}
+            ...             ${mainSalesRepTemp}
             ...             ${pnCol}
             ...             ${valueCol}
             Append To List    ${table}   ${rowOnTable}
         END
-
     END
 
     Close Current Excel Document
     [Return]    ${table}
 
 Get Value By OEM Group On SG Report
-    [Arguments]     ${tableOnSG}    ${oemGroup}     ${transType}    ${attribute}    ${year}     ${quarter}
-    ${valueOnSG}    Set Variable    0
+    [Arguments]     ${tableOnSG}    ${oemGroup}
+    ${value}    Set Variable    0
 
     FOR    ${rowOnSG}    IN    @{tableOnSG}
-        ${oemGroupCol}  Set Variable    ${rowOnSG[0]}
+        ${oemGroupCol}  Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
+        ${valueCol}     Set Variable    ${rowOnSG[${POS_VALUE_COL_ON_SG_TABLE}]}
         IF    '${oemGroupCol}' == '${oemGroup}'
-             ${valueOnSG}   Set Variable    ${rowOnSG[3]}
-             BREAK
-        END
-    END
-
-    [Return]    ${valueOnSG}
-
-Get Value By OEM Group On SG Report Old
-    [Arguments]     ${oemGroup}     ${transType}    ${year}     ${quarter}  ${attribute}
-    ${value}   Set Variable    0
-
-    ${searchStr}        Set Variable    ${year}.Q${quarter} ${transType}
-    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchPosOfCol}    ${searchStr}
-    IF    '${attribute}' == 'AMOUNT'
-         ${posOfCol}    Evaluate    ${posOfCol}+2
-    END
-
-    File Should Exist    path=${SGFilePath}
-    Open Excel Document    filename=${SGFilePath}    doc_id=SG
-    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
-
-    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRows}+1
-        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSG}
-        IF    '${oemGroupCol}' == '${oemGroup}'
-             ${value}  Read Excel Cell    row_num=${rowIndex}    col_num=${posOfCol}
-             IF    '${value}' == 'None'
-                  ${value}     Set Variable    0
-             END
-             BREAK
-        END
-    END
-
-    Close Current Excel Document
-    [Return]    ${value}
-
-Get Value By Main Sales Rep On SG Report
-    [Arguments]     ${mainSalesRep}     ${transType}    ${year}     ${quarter}  ${attribute}
-    ${value}   Set Variable    0
-
-    ${searchStr}        Set Variable    ${year}.Q${quarter} ${transType}
-    ${posOfCol}     Get Position Of Column    ${SGFilePath}    ${rowIndexForSearchPosOfCol}    ${searchStr}
-    IF    '${attribute}' == 'AMOUNT'
-         ${posOfCol}    Evaluate    ${posOfCol}+2
-    END
-
-    File Should Exist      path=${SGFilePath}
-    Open Excel Document    filename=${SGFilePath}    doc_id=SG
-    ${numOfRows}  Get Number Of Rows In Excel    filePath=${SGFilePath}
-
-    FOR    ${rowIndex}    IN RANGE    ${startRowOnSG}    ${numOfRows}+1
-        ${mainSalesRepCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfMainSalesRepColOnSG}
-        ${valueCol}             Read Excel Cell    row_num=${rowIndex}    col_num=${posOfCol}
-        IF    '${valueCol}' == 'None'
-             ${valueCol}    Set Variable    0
-        END
-        IF    '${mainSalesRepCol}' in ${mainSalesRep}
              ${value}   Evaluate    ${value}+${valueCol}
         END
     END
 
-    Close Current Excel Document
     [Return]    ${value}
-#Write Data To SS RCD For Pivot
-#    [Arguments]     ${ssRCDForPivotFilePath}    ${quarter}  ${oemGroup}  ${pn}  ${tranID}   ${revQty}
-#
-#    File Should Exist    ${ssRCDForPivotFilePath}
-#    Open Excel Document    ${ssRCDForPivotFilePath}    doc_id=SSRCDForPivot
-#    Switch Current Excel Document    doc_id=SSRCDForPivot
-#    ${latestRowInSSRCDForPivotFile}   Get Number Of Rows In Excel    ${ssRCDForPivotFilePath}
-#    ${nextRow}    Evaluate    ${latestRowInSSRCDForPivotFile}+1
-#    Write Excel Cell    row_num=${nextRow}    col_num=1    value=${quarter}
-#    Write Excel Cell    row_num=${nextRow}    col_num=2    value=${oemGroup}
-#    Write Excel Cell    row_num=${nextRow}    col_num=3    value=${pn}
-#    Write Excel Cell    row_num=${nextRow}    col_num=4    value=${tranID}
-#    Write Excel Cell    row_num=${nextRow}    col_num=5    value=${revQty}
-#    Save Excel Document    ${ssRCDForPivotFilePath}
-#    Close Current Excel Document
-#
-#Convert SS RCD To Pivot And Export To Excel
-#    [Arguments]     ${ssRCDFilePath}    ${ssRCDForPivotFilePath}    ${year}     ${quarter}
-#
-#    @{table}    Create List
-#    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
-#    ${startRow}     Set Variable    2
-#
-#    ${quarter}  Set Variable    Q${quarter}-${year}
-#    File Should Exist    ${ssRCDFilePath}
-#    Open Excel Document    ${ssRCDFilePath}    doc_id=SSRCD
-#    ${numOfRowsOnSSRCD}  Get Number Of Rows In Excel    ${ssRCDFilePath}
-#
-#    FOR    ${rowIndexOnSSRCD}    IN RANGE    ${startRow}    ${numOfRowsOnSSRCD}+1
-#        ${oemGroupCol}            Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
-#        ${parentClassCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-#        ${pnCol}                  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=11
-#        ${quarterCol}             Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
-#        ${tranIdCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=24
-#        ${revQtyCol}              Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
-#
-#
-#        ${sumREVQty}    Set Variable    ${revQtyCol}
-#
-#        IF    '${parentClassCol}' in ${listParentClass} and '${quarterCol}' == '${quarter}'
-#            ${isDataInTable}    Set Variable    ${False}
-#            FOR    ${rowOnTable}    IN    @{table}
-#                IF    '${rowOnTable}[0]' == '${oemGroupCol}' and '${rowOnTable}[1]' == '${pnCol}'
-#                     ${isDataInTable}   Set Variable    ${True}
-#                     BREAK
-#                END
-#            END
-#            IF    '${isDataInTable}' == '${True}'
-#                 Continue For Loop
-#            END
-#            FOR    ${rowIndexTemp}    IN RANGE    ${startRow}+1    ${numOfRowsOnSSRCD}+1
-#                      ${oemGroupColTemp}            Read Excel Cell    row_num=${rowIndexTemp}       col_num=2
-#                      ${pnColTemp}                  Read Excel Cell    row_num=${rowIndexTemp}       col_num=11
-#                      ${quarterColTemp}             Read Excel Cell    row_num=${rowIndexTemp}       col_num=18
-#                      ${revQtyColTemp}              Read Excel Cell    row_num=${rowIndexTemp}       col_num=29
-#
-#                      IF    '${oemGroupColTemp}' == '${oemGroupCol}' and '${pnColTemp}' == '${pnCol}' and '${quarterColTemp}' == '${quarter}'
-#                           ${sumREVQty}     Evaluate    ${sumREVQty}+${revQtyColTemp}
-#                      END
-#            END
-#        ELSE
-#           Continue For Loop
-#        END
-#        Log To Console    Row:${rowIndexOnSSRCD}
-#        ${rowOnTable}   Create List
-#        ...             ${oemGroupCol}
-#        ...             ${pnCol}
-#        ...             ${tranIdCol}
-#        ...             ${sumREVQty}
-#        Append To List    ${table}  ${rowOnTable}
-#    END
-#    Close All Excel Documents
-#
-#    [Return]  ${table}
-#
-#
-#Write The Test Result Of SG Report By OEM Group To Excel
-#    [Arguments]     ${oemGroup}     ${valueOnSGReport}   ${valueOnNS}
-#    File Should Exist    ${testResultOfSGReportByOEMGroupFilePath}
-#    Open Excel Document    ${testResultOfSGReportByOEMGroupFilePath}    doc_id=SGReportResult
-#    ${latestRowInSGReportResultFile}   Get Number Of Rows In Excel    ${testResultOfSGReportByOEMGroupFilePath}
-#    ${nextRow}    Evaluate    ${latestRowInSGReportResultFile}+1
-#    Write Excel Cell    row_num=${nextRow}    col_num=1    value=${oemGroup}
-#    Write Excel Cell    row_num=${nextRow}    col_num=2    value=${valueOnSGReport}
-#    Write Excel Cell    row_num=${nextRow}    col_num=3    value=${valueOnNS}
-#    Save Excel Document    ${testResultOfSGReportByOEMGroupFilePath}
-#    Close Current Excel Document
-#
-#Check Data For Every Quarter By OEM Group
-#    [Arguments]     ${sgFilePath}   ${ssRCDFilePath}     ${year}     ${quarter}     ${attribute}    ${valueType}
-#    @{listOfOEMGroupOnSSRCD}    Create List
-#    @{listOfOEMGroupOnSG}       Create List
-##    ${listOfOEMGroupOnSSRCD}    Get List Of OEM Groups From SS RCD    ssRCDFilePath=${ssRCDFilePath}    year=${year}    quarter=${quarter}    attribute=${attribute}
-#    ${listOfOEMGroupOnSG}       Get List Of OEM Groups From SG        sgFilePath=${sgFilePath}    year=${year}    quarter=${quarter}   attribute=${attribute}   valueType=${valueType}
-#
-##    ${quarterOnSSRCD}  Set Variable    Q${quarter}-${year}
-##    FOR    ${oemGroupOnSSRCD}    IN    @{listOfOEMGroupOnSSRCD}
-##        ${hasOEMGroupOnSG}  Set Variable    ${False}
-##        ${valueOnSSRCD}    Get Value By OEM Group From SSRCD    ssRCDFilePath=${ssRCDFilePath}    year=${year}    quarter=${quarterOnSSRCD}    oemGroup=${oemGroupOnSSRCD}    valueType=REV
-##        ${oemGroupOnSSRCD}  Convert To Upper Case    ${oemGroupOnSSRCD}
-##        FOR    ${oemGroupOnSG}    IN    @{listOfOEMGroupOnSG}
-##            IF    '${oemGroupOnSSRCD}' == '${oemGroupOnSG}'
-##                 ${valueOnSG}   Get Value By OEM Group From SG    sgFilePath=${sgFilePath}    year=${year}    quarter=${quarter}    oemGroup=${oemGroupOnSG}    valueType=REV
-##                 ${hasOEMGroupOnSG}     Set Variable    ${True}
-##                 ${valueOnSG}   Remove String    ${valueOnSG}   $   ,
-##                 ${valueOnSSRCD}    Convert To Integer    ${valueOnSSRCD}
-##                 ${valueOnSG}       Convert To Integer    ${valueOnSG}
-##                 ${diff}    Evaluate    abs(${valueOnSSRCD}-${valueOnSG})
-##                 IF    ${diff} > 3
-##                      Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSSRCD}    valueOnSGReport=${valueOnSG}    valueOnNS=${valueOnSSRCD}
-##                 END
-##                 BREAK
-##            END
-##        END
-##        IF    '${hasOEMGroupOnSG}' == '${False}'
-##             Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSSRCD}    valueOnSGReport=${EMPTY}    valueOnNS=${valueOnSSRCD}
-##        END
-##    END
-##
-##    FOR    ${oemGroupOnSG}    IN    @{listOfOEMGroupOnSG}
-##        ${hasOEMGroupOnSSRCD}   Set Variable    ${False}
-##        FOR    ${oemGroupOnSSRCD}    IN    @{listOfOEMGroupOnSSRCD}
-##            ${oemGroupOnSSRCD}  Convert To Upper Case    ${oemGroupOnSSRCD}
-##            IF    '${oemGroupOnSG}' == '${oemGroupOnSSRCD}'
-##                 ${hasOEMGroupOnSSRCD}  Set Variable    ${True}
-##                 BREAK
-##            END
-##        END
-##        IF    '${hasOEMGroupOnSSRCD}' == '${False}'
-##             ${valueOnSG}   Get Value By OEM Group From SG    sgFilePath=${sgFilePath}    year=${year}    quarter=${quarter}    oemGroup=${oemGroupOnSG}    valueType=REV
-##             Write The Test Result Of SG Report By OEM Group To Excel    oemGroup=${oemGroupOnSG}    valueOnSGReport=${valueOnSG}    valueOnNS=${EMPTY}
-##        END
-##    END
-#
-#Get Value By OEM Group From Flat SG
-#    [Arguments]     ${flatSGFilePath}    ${year}     ${quarter}   ${oemGroup}    ${attribute}
-#    ${value}    Set Variable    0
-#
-#    File Should Exist    ${flatSGFilePath}
-#    Open Excel Document    filename=${flatSGFilePath}    doc_id=FlatSG
-#    ${numOfRowsOnFlatSG}     Get Number Of Rows In Excel    ${flatSGFilePath}
-#
-#    IF    '${attribute}' == 'REVQTY'
-#         ${searchStr}    Set Variable    ${year}.Q${quarter} QTY
-#    END
-#
-#    ${rowIndexForSearchStr}     Convert To Number    4
-#    ${posOfCol}  Get Position Of Column    ${flatSGFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-#
-#    FOR    ${rowIndexOnFlatSG}    IN RANGE    5    ${numOfRowsOnFlatSG}+1
-#        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnFlatSG}    col_num=1
-#        ${valCol}           Read Excel Cell    row_num=${rowIndexOnFlatSG}    col_num=${posOfCol}
-##        Log To Console    OEM Group: ${oemGroupCol}; Value:${valCol}
-#
-#        IF    '${oemGroupCol}' == '${oemGroup}'
-#             ${value}   Evaluate    ${value}+${valCol}
-#        END
-#    END
-#
-#    Close All Excel Documents
-#
-#    [Return]    ${value}
-#
-#Get Value By OEM Group From SS RCD
-#    [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${oemGroup}    ${attribute}
-#    ${value}    Set Variable    0
-#    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
-#    ${quarter}  Set Variable    Q${quarter}-${year}
-#
-#    File Should Exist    ${ssRCDFilePath}
-#    Open Excel Document    filename=${ssRCDFilePath}    doc_id=SSRCD
-#    ${numOfRowsOnSSRCD}     Get Number Of Rows In Excel    ${ssRCDFilePath}
-#
-#    FOR    ${rowIndexOnSSRCD}    IN RANGE    2    ${numOfRowsOnSSRCD}+1
-#        ${parentClassCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-#        ${quarterCol}          Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
-#        IF    '${parentClassCol}' in ${listParentClass} and '${quarterCol}' == '${quarter}'
-#             ${oemGroupCol}         Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
-#             IF    '${attribute}' == 'REVQTY'
-#                  ${valCol}           Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
-#             ELSE
-#                  Fail    The value of attribute parameter ${attribute} is invalid. Please contact with Admin!
-#             END
-#             IF    '${oemGroupCol}' == '${oemGroup}'
-#                  ${value}   Evaluate    ${value}+${valCol}
-#             END
-#        END
-#    END
-#    Close All Excel Documents
-#
-#    [Return]    ${value}
-#
-#Check Parameter Year
-#    [Arguments]     ${year}
-#    ${result}   Set Variable    ${True}
-#
-#    [Return]    ${result}
-#
-#Get List Of OEM Groups From SG
-#    [Arguments]     ${sgFilePath}    ${year}     ${quarter}     ${attribute}    ${valueType}
-#    @{listOfOEMGroup}   Create List
-#
-#    ${year}     Convert To Number    ${year}
-#    ${year}     Convert To Integer    ${year}
-#    ${currentYear}  Get Current Year
-#    IF    ${year} < 0
-#         Fail   The parameter year ${year} is invalid. It must be Integer number. Please contact with Admin!
-#    END
-#
-#    ${minYear}  Set Variable    2018
-#    ${maxYear}  Evaluate    ${currentYear}+1
-#    IF    ${year} < ${minYear} or ${year} > ${maxYear}
-#         Fail   The parameter year ${year} is invalid. The range of parameter year is between ${minYear} and ${maxYear}. Please contact with Admin!
-#    END
-#
-#    ${quarter}  Convert To Number    ${quarter}
-#    ${quarter}  Convert To Integer    ${quarter}
-#    IF    ${quarter} < 0
-#         Fail   The parameter quarter ${quarter} is invalid. It must be Interger number. Please contact with Admin!
-#    END
-#    IF    ${quarter} < 1 or ${quarter} > 4
-#         Fail   The parameter quarter ${quarter} is invalid. The range of quarter is between 1 and 4. Please contact with Admin!
-#    END
-#
-##    File Should Exist    ${sgFilePath}
-##    Open Excel Document    filename=${sgFilePath}    doc_id=SG
-##    ${numOfRowsOnSG}     Get Number Of Rows In Excel    ${sgFilePath}
-##    ${currentYear}  Get Current Year
-#
-##    ${searchStr}    Set Variable    ${year}.Q${quarter} R
-##    ${rowIndexForSearchStr}     Convert To Number    3
-##    ${posOfREVCol}  Get Position Of Column    ${sgFilePath}    ${rowIndexForSearchStr}    ${searchStr}
-##    ${posOfREVCol}  Evaluate    ${posOfREVCol}+2
-##
-##    FOR    ${rownIndexOnSG}    IN RANGE    6    ${numOfRowsOnSG}+1
-##        ${oemGRoupCol}  Read Excel Cell    row_num=${rownIndexOnSG}    col_num=2
-##        ${revCol}       Read Excel Cell    row_num=${rownIndexOnSG}    col_num=${posOfREVCol}
-##        IF    '${oemGRoupCol}' != 'None' and '${revCol}' != '${EMPTY}'
-##             Append To List    ${listOfOEMGroup}    ${oemGRoupCol}
-##        END
-##    END
-##    Close All Excel Documents
-##    [Return]    ${listOfOEMGroup}
-#
-#Get List Of OEM Groups From SS RCD
-#    [Arguments]     ${ssRCDFilePath}    ${year}     ${quarter}   ${attribute}
-#    @{listOfOEMGroup}   Create List
-#    @{listParentClass}  Create List     COMPONENTS      MEM     STORAGE     NI ITEMS
-#
-#    ${quarter}  Set Variable    Q${quarter}-${year}
-#    File Should Exist    ${ssRCDFilePath}
-#    Open Excel Document    filename=${ssRCDFilePath}    doc_id=SSRCD
-#    ${numOfRowsOnSSRCD}     Get Number Of Rows In Excel    ${ssRCDFilePath}
-#
-#    FOR    ${rowIndexOnSSRCD}    IN RANGE    2    ${numOfRowsOnSSRCD}+1
-#        ${parrentClassCol}  Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=9
-#        ${quarterCol}       Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=18
-#        IF    '${parrentClassCol}' in ${listParentClass} and '${quarterCol}' == '${quarter}'
-#             IF    '${attribute}' == 'REVQTY'
-#                  ${attributeCol}     Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=29
-#             ELSE IF     '${attribute}' == 'REVAMOUNT'
-#                  ${attributeCol}     Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=30
-#             ELSE
-#                Fail    The value of attribute parameter ${attribute} is invalid. Please contact with Admin!
-#             END
-#             IF    '${attributeCol}' != '0'
-#                  ${oemGroupCol}      Read Excel Cell    row_num=${rowIndexOnSSRCD}    col_num=2
-#                  Append To List    ${listOfOEMGroup}   ${oemGroupCol}
-#             END
-#        END
-#
-#    END
-#    ${listOfOEMGroup}     Remove Duplicates    ${listOfOEMGroup}
-#    Close All Excel Documents
-#
-#    [Return]    ${listOfOEMGroup}
 
+    
+
+
+
+
+
+
+
+
+
+    
