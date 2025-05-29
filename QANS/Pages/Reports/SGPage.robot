@@ -33,7 +33,7 @@ Setup Test Environment For SG Report
     Login To NS With Account    account=PRODUCTION
     Navigate To SS Revenue Cost Dump
     Export SS To CSV
-    Sleep    120s
+    Sleep    180s
     ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
     Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
     @{emptyTable}   Create List
