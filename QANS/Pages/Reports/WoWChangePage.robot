@@ -13,6 +13,27 @@ ${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}       1
 
 
 *** Keywords ***
+Setup Test Environment For WoW Change Report
+    [Arguments]     ${browser}
+    Create Excel File    filePath=${WOW_CHANGE_RESULT_FILE_PATH}
+    Wait Until Created    path=${WOW_CHANGE_RESULT_FILE_PATH}   timeout=${TIMEOUT}
+    Setup    browser=${browser}
+    Navigate To Report    reportLink=/NetSuite%20Reports/Sales/SalesManagement/Wow%20Change%20%5BCurrent%20Week%5D
+    Export Report To      option=Excel
+    Wait Until Created    path=${WOW_CHANGE_FILE_PATH}  timeout=${TIMEOUT}
+    Navigate To Report    reportLink=/NetSuite+Reports/Sales/Sales+Gap+Report+NS+With+SO+Forecast&rs:Command=Render
+    @{parentClassOptionsOnSG}   Create List
+    Append To List    ${parentClassOptionsOnSG}     MEM
+    Append To List    ${parentClassOptionsOnSG}     STORAGE
+    Select Parent Class On SG Report    options=${parentClassOptionsOnSG}
+    Click On Button View Report
+    Click On Button View Report
+    Wait Until Element Is Enabled    locator=${btnViewReport}   timeout=${TIMEOUT}
+    Export Report To      option=Excel
+    Wait Until Created    path=${SG_FILE_PATH}
+    Sleep    5s
+    Close Browser
+
 Get WoW By Formular By OEM GRoup
     [Arguments]     ${nameOftable}    ${nameOfCol}    ${oemGroup}
     ${wowByFormula}           Set Variable    0

@@ -19,6 +19,8 @@ ${SG_RESULT_FILE_PATH}              ${OUTPUT_DIR}\\SGResult.xlsx
 ${SG_FILE_PATH}                     ${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
 ${TEST_DATA_FOR_SG_FILE_PATH}       ${TEST_DATA_DIR}\\TestDataForSG.xlsx
 
+${lstParentClass}   //button[@id='ReportViewerControl_ctl04_ctl07_ctl01']
+
 
 *** Keywords ***
 Setup Test Environment For SG Report
@@ -54,6 +56,25 @@ Setup Test Environment For SG Report
      ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
      Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
      Close Browser
+
+Select Parent Class On SG Report
+    [Arguments]     ${options}
+
+    Wait Until Element Is Visible    locator=${lstParentClass}  timeout=${TIMEOUT}
+    Click Element    locator=${lstParentClass}
+    ${chkSelectAllXpath}     Set Variable   //label[normalize-space()='(Select All)']
+    Wait Until Element Is Visible    locator=${chkSelectAllXpath}   timeout=${TIMEOUT}
+    Wait Until Element Is Enabled    locator=${chkSelectAllXpath}   timeout=${TIMEOUT}
+    Click Element    locator=${chkSelectAllXpath}
+    Click Element    locator=${chkSelectAllXpath}
+    FOR    ${option}    IN    @{options}
+        ${chkOptionXpath}  Set Variable    //label[normalize-space()='${option}']
+        Wait Until Element Is Visible    locator=${chkOptionXpath}  timeout=${TIMEOUT}
+        Wait Until Element Is Enabled    locator=${chkOptionXpath}  timeout=${TIMEOUT}
+        Click Element    locator=${chkOptionXpath}
+    END
+    Click Element    locator=${lstParentClass}
+
 
 Comparing Data For Every PN Between SG And SS Approved SF
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSApprovedSF}

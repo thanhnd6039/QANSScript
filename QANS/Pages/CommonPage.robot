@@ -55,10 +55,15 @@ Wait Until Page Load Completed
     END
 
 Navigate To Report
-    [Arguments]     ${configFileName}
-    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SGConfig.json
-    ${url}  Get Value From Json    json_object=${configFileObject}    json_path=$.url
-    ${url}  Set Variable    ${url[0]}
+    [Arguments]     ${reportLink}
+
+    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\AccountConfig.json
+    ${email}                Get Value From Json    json_object=${configFileObject}    json_path=$.accounts[1].email
+    ${password}             Get Value From Json    json_object=${configFileObject}    json_path=$.accounts[1].password
+    ${email}                Set Variable    ${email[0]}
+    ${password}             Set Variable    ${password[0]}
+    ${baseUrl}              Set Variable   http://${email}:${password}@report/ReportServer/Pages/ReportViewer.aspx?
+    ${url}                  Set Variable    ${baseUrl}${reportLink}
     Go To    url=${url}
     Wait Until Element Is Visible    locator=${btnViewReport}   timeout=${TIMEOUT}
     Wait Until Element Is Enabled    locator=${btnViewReport}   timeout=${TIMEOUT}
