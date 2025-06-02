@@ -21,7 +21,6 @@ ${TIMEOUT}          60s
 ${OUTPUT_DIR}       C:\\RobotFramework\\Output
 ${TEST_DATA_DIR}    C:\\RobotFramework\\TestData
 ${RESULT_DIR}       C:\\RobotFramework\\Results
-${TEST_DATA_FOR_MARGIN_FILE}    ${EXECDIR}\\Resources\\TestData\\TestDataForMarginReport.xlsx
 
 ${btnExport}        //*[@id='ReportViewerControl_ctl05_ctl04_ctl00_ButtonLink']
 ${btnViewReport}    //*[@id='ReportViewerControl_ctl04_ctl00']

@@ -28,6 +28,15 @@ Setup Test Environment For SG Report
     Remove All Files In Specified Directory    dirPath=${OUTPUT_DIR}
     Create Excel File     filePath=${SG_RESULT_FILE_PATH}
     Wait Until Created    path=${SG_RESULT_FILE_PATH}
+    @{emptyTable}   Create List
+    @{listNameOfColsForHeader}   Create List
+    Append To List    ${listNameOfColsForHeader}  QUARTER
+    Append To List    ${listNameOfColsForHeader}  TRANS TYPE
+    Append To List    ${listNameOfColsForHeader}  OEM GROUP
+    Append To List    ${listNameOfColsForHeader}  PN
+    Append To List    ${listNameOfColsForHeader}  ON SG
+    Append To List    ${listNameOfColsForHeader}  ON NS
+    Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
     Setup    browser=${browser}
     Navigate To Report    configFileName=SGConfig.json
     Export Report To      option=Excel
@@ -38,15 +47,6 @@ Setup Test Environment For SG Report
     Sleep    180s
     ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
     Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
-    @{emptyTable}   Create List
-    @{listNameOfColsForHeader}   Create List
-     Append To List    ${listNameOfColsForHeader}  QUARTER
-     Append To List    ${listNameOfColsForHeader}  TRANS TYPE
-     Append To List    ${listNameOfColsForHeader}  OEM GROUP
-     Append To List    ${listNameOfColsForHeader}  PN
-     Append To List    ${listNameOfColsForHeader}  ON SG
-     Append To List    ${listNameOfColsForHeader}  ON NS
-     Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
      Navigate To SS Approved Sales Forecast
      Expand Filters On SS
      ${currentYear}     Get Current Year
@@ -55,7 +55,9 @@ Setup Test Environment For SG Report
      Sleep    10s
      ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
      Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
+     Sleep    5s
      Close Browser
+
 
 Select Parent Class On SG Report
     [Arguments]     ${options}

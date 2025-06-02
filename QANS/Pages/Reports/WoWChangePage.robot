@@ -11,12 +11,19 @@ ${POS_OEM_GROUP_COL_ON_WOW_CHANGE}         1
 ${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}   0
 ${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}       1
 
-
 *** Keywords ***
 Setup Test Environment For WoW Change Report
     [Arguments]     ${browser}
     Create Excel File    filePath=${WOW_CHANGE_RESULT_FILE_PATH}
     Wait Until Created    path=${WOW_CHANGE_RESULT_FILE_PATH}   timeout=${TIMEOUT}
+    @{emptyTable}   Create List
+    @{listNameOfColsForHeader}   Create List
+    Append To List    ${listNameOfColsForHeader}  TABLE
+    Append To List    ${listNameOfColsForHeader}  CHECK POINT
+    Append To List    ${listNameOfColsForHeader}  OEM GROUP
+    Append To List    ${listNameOfColsForHeader}  ON WOW CHANGE
+    Append To List    ${listNameOfColsForHeader}  ON SG
+    Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
     Setup    browser=${browser}
     Navigate To Report    reportLink=/NetSuite%20Reports/Sales/SalesManagement/Wow%20Change%20%5BCurrent%20Week%5D
     Export Report To      option=Excel
@@ -33,6 +40,7 @@ Setup Test Environment For WoW Change Report
     Wait Until Created    path=${SG_FILE_PATH}
     Sleep    5s
     Close Browser
+
 
 Get WoW By Formular By OEM GRoup
     [Arguments]     ${nameOftable}    ${nameOfCol}    ${oemGroup}
