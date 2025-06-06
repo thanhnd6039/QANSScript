@@ -123,35 +123,51 @@ Check GAP On WoW Change
     END
 
 Check WoW On WoW Change
-    [Arguments]     ${nameOftable}    ${nameOfCol}
+    [Arguments]     ${nameOftable}    ${nameOfCol}   ${isNextQuarter}=${False}
     ${result}   Set Variable    ${True}
     @{tableError}   Create List
     ${wowByFormula}     Set Variable    0
 
     ${tableOnWoWChange}      Create Table On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
+    IF    '${isNextQuarter}' == '${True}'
+         FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+            ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+            ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+            IF    '${valueOnWoWChange}' != '${EMPTY}'
+                 ${result}     Set Variable    ${False}
+                 @{rowOnTableError}   Create List
+                 Append To List    ${rowOnTableError}   ${nameOftable}
+                 Append To List    ${rowOnTableError}   ${nameOfCol}
+                 Append To List    ${rowOnTableError}   ${oemGroupOnWoWChange}
+                 Append To List    ${rowOnTableError}   ${valueOnWoWChange}
+                 Append To List    ${rowOnTableError}   ${EMPTY}
+                 Append To List    ${tableError}    ${rowOnTableError}
+            END
+         END
+    ELSE
+        FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
+            ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
+            ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
 
-    FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
-        ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
-        ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+            IF    '${nameOfCol}' == 'WoW Of Ships'
+                 ${wowByFormula}         Get WoW By Formular By OEM GRoup    nameOftable=${nameOftable}    nameOfCol=Ships    oemGroup=${oemGroupOnWoWChange}
+            ELSE
+                 ${wowByFormula}         Get WoW By Formular By OEM GRoup    nameOftable=${nameOftable}    nameOfCol=LOS    oemGroup=${oemGroupOnWoWChange}
+            END
 
-        IF    '${nameOfCol}' == 'WoW Of Ships'
-             ${wowByFormula}         Get WoW By Formular By OEM GRoup    nameOftable=${nameOftable}    nameOfCol=Ships    oemGroup=${oemGroupOnWoWChange}
-        ELSE
-             ${wowByFormula}         Get WoW By Formular By OEM GRoup    nameOftable=${nameOftable}    nameOfCol=LOS    oemGroup=${oemGroupOnWoWChange}
-        END
+            ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
+            ${wowByFormula}          Evaluate  "%.2f" % ${wowByFormula}
 
-        ${valueOnWoWChange}      Evaluate  "%.2f" % ${valueOnWoWChange}
-        ${wowByFormula}          Evaluate  "%.2f" % ${wowByFormula}
-
-        IF    ${valueOnWoWChange} != ${wowByFormula}
-              ${result}     Set Variable    ${False}
-              @{rowOnTableError}   Create List
-              Append To List    ${rowOnTableError}   ${nameOftable}
-              Append To List    ${rowOnTableError}   ${nameOfCol}
-              Append To List    ${rowOnTableError}   ${oemGroupOnWoWChange}
-              Append To List    ${rowOnTableError}   ${valueOnWoWChange}
-              Append To List    ${rowOnTableError}   ${wowByFormula}
-              Append To List    ${tableError}    ${rowOnTableError}
+            IF    ${valueOnWoWChange} != ${wowByFormula}
+                  ${result}     Set Variable    ${False}
+                  @{rowOnTableError}   Create List
+                  Append To List    ${rowOnTableError}   ${nameOftable}
+                  Append To List    ${rowOnTableError}   ${nameOfCol}
+                  Append To List    ${rowOnTableError}   ${oemGroupOnWoWChange}
+                  Append To List    ${rowOnTableError}   ${valueOnWoWChange}
+                  Append To List    ${rowOnTableError}   ${wowByFormula}
+                  Append To List    ${tableError}    ${rowOnTableError}
+            END
         END
     END
     IF    '${result}' == '${False}'
@@ -167,8 +183,8 @@ Check WoW On WoW Change
 
 Check TW Commit On WoW Change
     [Arguments]     ${nameOftable}    ${nameOfCol}
-    ${result}   Set Variable    ${True}
     @{tableError}   Create List
+    ${result}   Set Variable    ${True}
 
     ${tableOnWoWChange}     Create Table On WoW Change    nameOftable=${nameOftable}    nameOfCol=${nameOfCol}
 
@@ -360,6 +376,7 @@ Check BGT, Ship, Backlog On WoW Change
     END
     ${totalOnSG}          Evaluate  "%.2f" % ${totalOnSG}
     ${totalOnWoWchange}   Evaluate  "%.2f" % ${totalOnWoWchange}
+
     IF    ${totalOnWoWchange} != ${totalOnSG}
          ${result}     Set Variable    ${False}
          @{rowOnTableError}   Create List

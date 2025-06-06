@@ -155,8 +155,6 @@ Verify LOS for the OEM West table
 
     Depends On Test    name=Verify Ships for the OEM West table
     Depends On Test    name=Verify Backlog for the OEM West table
-    ${currentYear}              Get Current Year
-    ${currentQuarter}           Get Current Quarter
     Check LOS On WoW Change    nameOftable=OEM West + Channel     nameOfCol=LOS
 
 Verify WoW of LOS for the OEM West table
