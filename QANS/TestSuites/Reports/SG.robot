@@ -25,7 +25,9 @@ Verify Revenue QTY on SG Report
              BREAK
         END
     END
+    
     Close All Excel Documents
+    
 
 Verify Revenue Amount on SG Report
     [Tags]  SG_0002

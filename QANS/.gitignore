@@ -1,9 +1,32 @@
-.idea/**
-*.pyc 
-log.html
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Robot Framework logs and output files
 output.xml
+log.html
 report.html
-Report.iml
-Downloads/
-Output/
-Results/
+*.log
+*.txt
+*.db
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# VSCode settings
+.vscode/
+
+# Environment files
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Python virtual environments
+*.egg
+*.egg-info/
+dist/
+build/
