@@ -38,25 +38,26 @@ Setup Test Environment For SG Report
     Append To List    ${listNameOfColsForHeader}  ON NS
     Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
     Setup    browser=${browser}
-    Navigate To Report    configFileName=SGConfig.json
+    
+    Navigate To Report    reportLink=/NetSuite+Reports/Sales/Sales+Gap+Report+NS+With+SO+Forecast&rs:Command=Render
     Export Report To      option=Excel
     Wait Until Created    path=${SG_FILE_PATH}    timeout=${TIMEOUT}
     Login To NS With Account    account=PRODUCTION
-    Navigate To SS Revenue Cost Dump
-    Export SS To CSV
-    Sleep    180s
-    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
-    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
-     Navigate To SS Approved Sales Forecast
-     Expand Filters On SS
-     ${currentYear}     Get Current Year
-     Set Year On SS Approved Sales Forecast    year=${currentYear}
-     Export SS To CSV
-     Sleep    10s
-     ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
-     Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
-     Sleep    5s
-     Close Browser
+    # Navigate To SS Revenue Cost Dump
+    # Export SS To CSV
+    # Sleep    180s
+    # ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
+    # Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    #  Navigate To SS Approved Sales Forecast
+    #  Expand Filters On SS
+    #  ${currentYear}     Get Current Year
+    #  Set Year On SS Approved Sales Forecast    year=${currentYear}
+    #  Export SS To CSV
+    #  Sleep    10s
+    #  ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
+    #  Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
+    #  Sleep    5s
+    #  Close Browser
 
 
 Select Parent Class On SG Report

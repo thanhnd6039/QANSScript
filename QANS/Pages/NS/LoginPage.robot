@@ -32,7 +32,7 @@ Login To NS With Account
     END
 
 Login To NS
-    ${configFileObject}     Load Json From File    ${CONFIG_DIR}\\NSConfig.json
+    ${configFileObject}     Load Json From File    ${CONFIG_DIR}\\AccountConfig.json
     ${url}                  Get Value From Json    ${configFileObject}    $.url
     ${url}               Set Variable       ${url[0]}
     ${email}             Get Value From Json    ${configFileObject}    $.accounts[0].email
@@ -83,7 +83,7 @@ Should See Account Title
     Element Text Should Be    ${txtAccountTitle}    ${title}
 
 Input Verification Code And Click Submit
-    ${configFileObject}     Load Json From File    ${CONFIG_DIR}\\NSConfig.json
+    ${configFileObject}     Load Json From File    ${CONFIG_DIR}\\AccountConfig.json
     ${key}      Get Value From Json    ${configFileObject}    $.key
     ${key}      Set Variable    ${key[0]}
     ${otp}      Generate Otp    ${key}
