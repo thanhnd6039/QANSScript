@@ -197,26 +197,82 @@ Verify TW Commit for the OEM West table
 
    Check TW Commit On WoW Change  nameOftable=OEM West + Channel  nameOfCol=TW Commit
 
-#Verify Ships for the OEM West table
-#    [Tags]  WoWChange_0016
-#    [Documentation]     Verify the data of Ships column for the OEM West table
-#
-#    ${currentYear}              Get Current Year
-#    ${currentQuarter}           Get Current Quarter
-#    IF    '${currentQuarter}' == '4'
-#         ${nextQuarter}     Set Variable    1
-#         ${currentYear}     Evaluate    ${currentYear}+1
-#    ELSE
-#         ${nextQuarter}      Evaluate    ${currentQuarter}+1
-#    END
-#    Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM West + Channel     nameOfCol=Ships  transType=REVENUE   attribute=AMOUNT     year=${currentYear}     quarter=${nextQuarter}
+Verify Ships for the OEM West table
+   [Tags]  WoWChange_0016
+   [Documentation]     Verify the data of Ships column for the OEM West table
 
-#Verify WoW of Ships for the OEM West table
-#    [Tags]  WoWChange_0017
-#    [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM West table
-#
-#    Depends On Test    name=Verify Ships for the OEM West table
-#    Check WoW On WoW Change  table=OEM West + Channel     nameOfCol=WoW Of Ships
+   @{tableError}   Create List
+   ${result}   Set Variable    ${True}
+
+   ${startRow}     Get Start Row On WoW Change    nameOftable=OEM West + Channel
+   ${endRow}       Get End Row On WoW Change      nameOftable=OEM West + Channel
+   File Should Exist      path=${WOW_CHANGE_FILE_PATH}
+   Open Excel Document    filename=${WOW_CHANGE_FILE_PATH}    doc_id=WoWChange
+
+   FOR    ${rowIndex}    IN RANGE    ${startRow}    ${endRow}+3
+       ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_WOW_CHANGE}
+       ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=6
+       IF    '${valueColOnWoWChange}' != '${EMPTY}'
+            ${result}     Set Variable    ${False}
+            @{rowOnTableError}   Create List
+            Append To List    ${rowOnTableError}   OEM West + Channel
+            Append To List    ${rowOnTableError}   Ships
+            Append To List    ${rowOnTableError}   ${oemGroupColOnWoWChange}
+            Append To List    ${rowOnTableError}   ${valueColOnWoWChange}
+            Append To List    ${rowOnTableError}   ${EMPTY}
+            Append To List    ${tableError}    ${rowOnTableError}
+       END
+   END
+   IF    '${result}' == '${False}'
+        @{listNameOfColsForHeader}   Create List
+        Append To List    ${listNameOfColsForHeader}   TABLE
+        Append To List    ${listNameOfColsForHeader}   CHECK POINT
+        Append To List    ${listNameOfColsForHeader}   OEM GROUP
+        Append To List    ${listNameOfColsForHeader}   VALUE ON WOW CHANGE
+        Append To List    ${listNameOfColsForHeader}   VALUE ON SG
+        Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}    hasHeader=${False}
+        Fail   The Ships data for the OEM West + Channel table is wrong
+   END
+   Close Current Excel Document
+
+Verify WoW of Ships for the OEM West table
+   [Tags]  WoWChange_0017
+   [Documentation]     Verify the data of WoW(WoW of Ships column) column for the OEM West table
+
+   Depends On Test    name=Verify Ships for the OEM West table
+   @{tableError}   Create List
+   ${result}   Set Variable    ${True}
+
+   ${startRow}     Get Start Row On WoW Change    nameOftable=OEM West + Channel
+   ${endRow}       Get End Row On WoW Change      nameOftable=OEM West + Channel
+   File Should Exist    path=${WOW_CHANGE_FILE_PATH}
+   Open Excel Document    filename=${WOW_CHANGE_FILE_PATH}    doc_id=WoWChange
+
+   FOR    ${rowIndex}    IN RANGE    ${startRow}    ${endRow}+3
+       ${oemGroupColOnWoWChange}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_WOW_CHANGE}
+       ${valueColOnWoWChange}             Read Excel Cell    row_num=${rowIndex}    col_num=7
+       IF    '${valueColOnWoWChange}' != '${EMPTY}'
+            ${result}     Set Variable    ${False}
+            @{rowOnTableError}   Create List
+            Append To List    ${rowOnTableError}   OEM West + Channel
+            Append To List    ${rowOnTableError}   WoW Of Ships
+            Append To List    ${rowOnTableError}   ${oemGroupColOnWoWChange}
+            Append To List    ${rowOnTableError}   ${valueColOnWoWChange}
+            Append To List    ${rowOnTableError}   ${EMPTY}
+            Append To List    ${tableError}    ${rowOnTableError}
+       END
+   END
+   IF    '${result}' == '${False}'
+        @{listNameOfColsForHeader}   Create List
+        Append To List    ${listNameOfColsForHeader}   TABLE
+        Append To List    ${listNameOfColsForHeader}   CHECK POINT
+        Append To List    ${listNameOfColsForHeader}   OEM GROUP
+        Append To List    ${listNameOfColsForHeader}   VALUE ON WOW CHANGE
+        Append To List    ${listNameOfColsForHeader}   VALUE ON SG
+        Write Table To Excel    filePath=${WOW_CHANGE_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}    hasHeader=${False}
+        Fail   The WoW Of Ships data for the OEM West + Channel table is wrong
+   END
+   Close Current Excel Document
 
 Verify Backlog for the OEM West table
     [Tags]  WoWChange_0018
@@ -237,7 +293,7 @@ Verify LOS for the OEM West table
     [Tags]  WoWChange_0019
     [Documentation]     Verify the data of LOS column for the OEM West table
 
-#     Depends On Test    name=Verify Ships for the OEM West table
+    Depends On Test    name=Verify Ships for the OEM West table
     Depends On Test    name=Verify Backlog for the OEM West table
     Check LOS On WoW Change    nameOftable=OEM West + Channel     nameOfCol=LOS
 

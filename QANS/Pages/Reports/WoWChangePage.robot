@@ -191,6 +191,9 @@ Check TW Commit On WoW Change
     FOR    ${rowOnWoWChange}    IN    @{tableOnWoWChange}
         ${oemGroupOnWoWChange}  Set Variable    ${rowOnWoWChange[${POS_OEM_GROUP_COL_ON_WOW_CHANGE_TABLE}]}
         ${valueOnWoWChange}     Set Variable    ${rowOnWoWChange[${POS_VALUE_COL_ON_WOW_CHANGE_TABLE}]}
+        IF    '${valueOnWoWChange}' == 'None'            
+            ${valueOnWoWChange}    Set Variable    ${EMPTY}
+        END      
         IF    '${valueOnWoWChange}' != '${EMPTY}'
              ${result}     Set Variable    ${False}
              @{rowOnTableError}   Create List
