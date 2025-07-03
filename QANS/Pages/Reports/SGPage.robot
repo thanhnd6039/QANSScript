@@ -9,7 +9,7 @@ ${POS_MAIN_SALES_REP_COL_ON_SG_TABLE}    1
 ${POS_PN_COL_ON_SG_TABLE}                2
 ${POS_VALUE_COL_ON_SG_TABLE}             3
 
-${START_ROW_ON_SG}      6
+${START_ROW_ON_SG}                       6
 ${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SG}    3
 ${POS_OEM_GROUP_COL_ON_SG}               2
 ${POS_MAIN_SALES_REP_COL_ON_SG}          3
@@ -37,28 +37,26 @@ Setup Test Environment For SG Report
     Append To List    ${listNameOfColsForHeader}  ON SG
     Append To List    ${listNameOfColsForHeader}  ON NS
     Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=@{emptyTable}  hasHeader=${True}
-    Setup    browser=${browser}
-    
+    Setup    browser=${browser}  
     Navigate To Report    reportLink=/NetSuite+Reports/Sales/Sales+Gap+Report+NS+With+SO+Forecast&rs:Command=Render
     Export Report To      option=Excel
     Wait Until Created    path=${SG_FILE_PATH}    timeout=${TIMEOUT}
     Login To NS With Account    account=PRODUCTION
-    # Navigate To SS Revenue Cost Dump
-    # Export SS To CSV
-    # Sleep    180s
-    # ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
-    # Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
-    #  Navigate To SS Approved Sales Forecast
-    #  Expand Filters On SS
-    #  ${currentYear}     Get Current Year
-    #  Set Year On SS Approved Sales Forecast    year=${currentYear}
-    #  Export SS To CSV
-    #  Sleep    10s
-    #  ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
-    #  Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
-    #  Sleep    5s
-    #  Close Browser
-
+    Navigate To SS Revenue Cost Dump
+    Export SS To CSV
+    Sleep    180s
+    ${fullyFileNameOfSSRCD}     Get Fully File Name From Given Name    givenName=RevenueCostDump    dirPath=${OUTPUT_DIR}
+    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSRCD}    xlsxFilePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
+    Navigate To SS Approved Sales Forecast
+    Expand Filters On SS
+    ${currentYear}     Get Current Year
+    Set Year On SS Approved Sales Forecast    year=${currentYear}
+    Export SS To CSV
+    Sleep    10s
+    ${fullyFileNameOfSSApprovedSalesFC}     Get Fully File Name From Given Name    givenName=ApprovedSalesForecast    dirPath=${OUTPUT_DIR}
+    Convert Csv To Xlsx    csvFilePath=${OUTPUT_DIR}\\${fullyFileNameOfSSApprovedSalesFC}    xlsxFilePath=${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
+    Sleep    5s
+    Close Browser
 
 Select Parent Class On SG Report
     [Arguments]     ${options}
@@ -180,8 +178,8 @@ Comparing Data For Every PN Between SG And SS RCD
 
     ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
     ${tableSSRCD}           Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
-    ${totalValueOnSG}       Get Total Value On SG Report    table=${tableSG}
-    ${totalValueOnSSRCD}    Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}
+    ${totalValueOnSG}       Get Total Value On SG Report    table=${tableSG}   
+    ${totalValueOnSSRCD}    Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}   
     IF    '${attribute}' == 'AMOUNT'
          ${totalValueOnSG}         Evaluate  "%.2f" % ${totalValueOnSG}
          ${totalValueOnSSRCD}      Evaluate  "%.2f" % ${totalValueOnSSRCD}
@@ -189,7 +187,8 @@ Comparing Data For Every PN Between SG And SS RCD
     
     ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSRCD})
     IF    ${diff} > 1
-         FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
+        
+        FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
             ${oemGroupColOnSSRCD}       Set Variable    ${rowOnSSRCD[0]}
             ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
             ${pnColOnSSRCD}             Set Variable    ${rowOnSSRCD[1]}
@@ -229,8 +228,8 @@ Comparing Data For Every PN Between SG And SS RCD
                 Append To List    ${rowOnTableError}    ${valueColOnSSRCD}
                 Append To List    ${tableError}     ${rowOnTableError}
             END
-         END
-         FOR    ${rowOnSG}    IN    @{tableSG}
+        END
+        FOR    ${rowOnSG}    IN    @{tableSG}
             ${oemGroupColOnSG}      Set Variable    ${rowOnSG[${POS_OEM_GROUP_COL_ON_SG_TABLE}]}
             ${oemGroupColOnSG}      Convert To Upper Case    ${oemGroupColOnSG}
             ${pnColOnSG}            Set Variable    ${rowOnSG[${POS_PN_COL_ON_SG_TABLE}]}
@@ -255,9 +254,9 @@ Comparing Data For Every PN Between SG And SS RCD
                 Append To List    ${rowOnTableError}    ${EMPTY}
                 Append To List    ${tableError}     ${rowOnTableError}
             END
-         END
-         ${lengthTableError}  Get Length    ${tableError}
-         IF    ${lengthTableError} > 0
+        END
+        ${lengthTableError}  Get Length    ${tableError}
+        IF    ${lengthTableError} > 0
              @{listNameOfColsForHeader}   Create List
              Append To List    ${listNameOfColsForHeader}  QUARTER
              Append To List    ${listNameOfColsForHeader}  TRANS TYPE
@@ -266,7 +265,7 @@ Comparing Data For Every PN Between SG And SS RCD
              Append To List    ${listNameOfColsForHeader}  ON SG
              Append To List    ${listNameOfColsForHeader}  ON NS
              Write Table To Excel    filePath=${SG_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}  hasHeader=${False}
-         END
+        END
     END
 
 Get Total Value On SG Report

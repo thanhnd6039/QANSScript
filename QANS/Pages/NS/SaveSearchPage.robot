@@ -27,7 +27,7 @@ ${POS_PN_COL_ON_SS_RCD_TABLE}                       1
 ${POS_VALUE_COL_ON_SS_RCD_TABLE}                    2
 
 ${URL_SS_APPROVED_SF}       https://4499123.app.netsuite.com/app/common/custom/custrecordentrylist.nl?rectype=548
-${URL_SS_RCD}               https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=4412
+${URL_SS_RCD}               https://4499123.app.netsuite.com/app/common/search/searchredirect.nl?id=1636
 
 *** Keywords ***
 Navigate To SS Approved Sales Forecast
@@ -36,7 +36,7 @@ Navigate To SS Approved Sales Forecast
 
 Navigate To SS Revenue Cost Dump
     Run Keyword And Ignore Error    Go To    url=${URL_SS_RCD}
-    SS Should Contain Title    title=Revenue Cost Dump - BL - BL FC - CUS FC Last Year
+    SS Should Contain Title    title=Revenue Cost Dump
 
 Get Total Value On SS Revenue Cost Dump
     [Arguments]     ${table}
