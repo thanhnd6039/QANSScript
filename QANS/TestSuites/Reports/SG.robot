@@ -57,6 +57,7 @@ Verify Revenue Amount on SG Report
 Verify Backlog QTY on SG Report
     [Tags]  SG_0003
     [Documentation]     Verify the QTY data of Backlog on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Backlog
