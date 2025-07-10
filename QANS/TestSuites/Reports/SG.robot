@@ -1,5 +1,5 @@
 *** Settings ***
-# Suite Setup     Setup Test Environment For SG Report    browser=firefox
+Suite Setup     Setup Test Environment For SG Report    browser=firefox
 Resource    ../../Pages/Reports/SGPage.robot
 
 *** Test Cases ***
@@ -19,9 +19,10 @@ Verify Revenue QTY on SG Report
     Switch Current Excel Document    doc_id=SGResult
     ${numOfRowsOnSGResult}  Get Number Of Rows In Excel    filePath=${SG_RESULT_FILE_PATH}
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnSGResult}+1
-        ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
+        ${transTypeColOnSGResult}    Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "REVENUE-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
+             Close All Excel Documents
              Fail   The Revenue QTY data is different between SG report and SS Revenue Cost Dump
              BREAK
         END

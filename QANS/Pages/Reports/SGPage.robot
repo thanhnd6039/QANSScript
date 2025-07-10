@@ -176,7 +176,7 @@ Comparing Data For Every PN Between SG And SS RCD
     [Arguments]     ${transType}    ${attribute}    ${year}     ${quarter}   ${nameOfColOnSSRCD}
     @{tableError}   Create List
 
-    ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}
+    ${tableSG}              Create Table For SG Report    transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}   
     ${tableSSRCD}           Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
     ${totalValueOnSG}       Get Total Value On SG Report    table=${tableSG}   
     ${totalValueOnSSRCD}    Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}   
@@ -186,8 +186,7 @@ Comparing Data For Every PN Between SG And SS RCD
     END
     
     ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSRCD})
-    IF    ${diff} > 1
-        
+    IF    ${diff} > 1       
         FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
             ${oemGroupColOnSSRCD}       Set Variable    ${rowOnSSRCD[0]}
             ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
@@ -237,7 +236,7 @@ Comparing Data For Every PN Between SG And SS RCD
             ${isFoundOEMGroupAndPN}     Set Variable    ${False}
             FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
                 ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
-                ${oemGroupColOnSSRCD}     Convert To Upper Case    ${oemGroupColOnSSRCD}
+                ${oemGroupColOnSSRCD}     Convert To Upper Case    ${oemGroupColOnSSRCD}               
                 ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
                 IF    '${oemGroupColOnSG}' == '${oemGroupColOnSSRCD}' and '${pnColOnSG}' == '${pnColOnSSRCD}'
                     ${isFoundOEMGroupAndPN}     Set Variable    ${True}

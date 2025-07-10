@@ -112,7 +112,7 @@ Create Table For SS Approved Sales Forecast
     END
     Close All Excel Documents
     [Return]    ${table}
-    
+
 Create Table For SS Revenue Cost Dump
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List
@@ -125,6 +125,7 @@ Create Table For SS Revenue Cost Dump
         ${value}        Set Variable    0
         FOR    ${transaction}    IN    @{allTransactions}
             ${oemGroupOnTransaction}      Set Variable    ${transaction[0]}
+            
             ${pnOnTransaction}            Set Variable    ${transaction[1]}
             ${valueOnTransaction}         Set Variable    ${transaction[2]}
             IF    '${oemGroup}' == '${oemGroupOnTransaction}' and '${pn}' == '${pnOnTransaction}'
@@ -135,6 +136,22 @@ Create Table For SS Revenue Cost Dump
         ${tempValue}    Convert To Integer    ${tempValue}
         IF    '${tempValue}' == '0'
              Continue For Loop
+        END
+
+        IF    '${oemGroup}' == 'Lockheed Martin Corporation : Lockheed Martin Missiles and Fire Control'
+            ${oemGroup}    Set Variable    Lockheed Martin Missiles and Fire Control
+        ELSE IF    '${oemGroup}' == 'AMETEK Programmable Power : VTI Instruments'
+            ${oemGroup}    Set Variable    VTI Instruments
+        ELSE IF    '${oemGroup}' == 'BAE SYSTEMS APPLIED INTELLIGENCE : BAE systems'
+            ${oemGroup}    Set Variable    BAE SYSTEMS APPLIED INTELLIGENCE
+        ELSE IF    '${oemGroup}' == 'Boeing : Argon ST, Inc.'
+            ${oemGroup}    Set Variable    Argon ST, Inc.
+        ELSE IF    '${oemGroup}' == 'INFINERA : FABRINET CO., LTD.'
+            ${oemGroup}    Set Variable    INFINERA
+        ELSE IF    '${oemGroup}' == 'SANMINA-SCI : SCI TECHNOLOGY, INC.'
+            ${oemGroup}    Set Variable    SCI TECHNOLOGY, INC.
+        ELSE IF    '${oemGroup}' == 'SM ELECTRONIC TECHNOLOGIES PVT. LTD. : GS TECHNOLOGY PTE LTD'
+            ${oemGroup}    Set Variable    GS TECHNOLOGY PTE LTD
         END
 
         ${rowOnTable}   Create List
