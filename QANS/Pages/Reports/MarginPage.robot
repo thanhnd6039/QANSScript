@@ -52,7 +52,7 @@ Comparing Data For Every PN Between Margin And SS RCD
     ${totalValueOnMargin}       Get Total Value On Margin Report           table=${tableMargin}   
     ${totalValueOnSSRCD}        Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}  
 
-    IF    '${attribute}' == 'AMOUNT'
+    IF    '${attribute}' == 'AMOUNT' or '${attribute}' == 'COST'
          ${totalValueOnMargin}         Evaluate  "%.2f" % ${totalValueOnMargin}
          ${totalValueOnSSRCD}          Evaluate  "%.2f" % ${totalValueOnSSRCD}
     END
@@ -73,7 +73,7 @@ Comparing Data For Every PN Between Margin And SS RCD
                     ${valueColOnMargin}         Set Variable    ${rowOnMargin[2]}                   
                     IF    '${oemGroupColOnSSRCD}' == '${oemGroupColOnMargin}' and '${pnColOnSSRCD}' == '${pnColOnMargin}'
                          ${isFoundOEMGroupAndPN}     Set Variable    ${True}
-                         IF    '${attribute}' == 'AMOUNT'
+                         IF    '${attribute}' == 'AMOUNT' or '${attribute}' == 'COST'
                               ${valueColOnSSRCD}      Evaluate  "%.2f" % ${valueColOnSSRCD}
                               ${valueColOnMargin}     Evaluate  "%.2f" % ${valueColOnMargin}
                          END
@@ -175,7 +175,7 @@ Create Table For Margin Report
 
     IF    '${attribute}' == 'QTY'
          ${posOfValueCol}   Evaluate    ${posOfValueCol}+0
-    ELSE IF     '${attribute}' == 'REV'
+    ELSE IF     '${attribute}' == 'AMOUNT'
          ${posOfValueCol}   Evaluate    ${posOfValueCol}+2
     ELSE IF     '${attribute}' == 'COST'
          ${posOfValueCol}   Evaluate    ${posOfValueCol}+3

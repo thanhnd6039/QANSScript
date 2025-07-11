@@ -23,11 +23,9 @@ Verify Revenue QTY on SG Report
         ${transTypesColIsContain}    Evaluate    "REVENUE-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Revenue QTY data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Fail   The Revenue QTY data is different between SG report and SS Revenue Cost Dump            
         END
-    END
-    
+    END   
     Close All Excel Documents
 
 Verify Revenue Amount on SG Report
@@ -49,8 +47,8 @@ Verify Revenue Amount on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "REVENUE-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Revenue Amount data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Revenue Amount data is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
@@ -74,8 +72,8 @@ Verify Backlog QTY on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Backlog QTY data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Backlog QTY data is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
@@ -98,8 +96,8 @@ Verify Backlog Amount on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Backlog Amount data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Backlog Amount data is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
@@ -122,8 +120,8 @@ Verify Backlog Forecast QTY on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Backlog Forecast QTY data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Backlog Forecast QTY data is different between SG report and SS Revenue Cost Dump             
         END
     END
     Close All Excel Documents
@@ -146,8 +144,8 @@ Verify Backlog Forecast Amount on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Backlog Forecast Amount data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Backlog Forecast Amount data is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
@@ -170,8 +168,8 @@ Verify Customer Forecast QTY on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Customer Forecast QTY data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Customer Forecast QTY data is different between SG report and SS Revenue Cost Dump             
         END
     END
     Close All Excel Documents
@@ -194,8 +192,8 @@ Verify Customer Forecast Amount on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Customer Forecast Amount data is different between SG report and SS Revenue Cost Dump
-             BREAK
+             Close All Excel Documents
+             Fail   The Customer Forecast Amount data is different between SG report and SS Revenue Cost Dump             
         END
     END
     Close All Excel Documents
@@ -218,8 +216,8 @@ Verify Budget QTY on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BUDGET-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Budget QTY data is different between SG report and SS Approved SF
-             BREAK
+             Close All Excel Documents
+             Fail   The Budget QTY data is different between SG report and SS Approved SF            
         END
     END
     Close All Excel Documents
@@ -242,8 +240,8 @@ Verify Budget Amount on SG Report
         ${transTypeColOnSGResult}   Read Excel Cell    row_num=${rowIndex}    col_num=2
         ${transTypesColIsContain}    Evaluate    "BUDGET-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
-             Fail   The Budget Amount data is different between SG report and SS Approved SF
-             BREAK
+             Close All Excel Documents
+             Fail   The Budget Amount data is different between SG report and SS Approved SF             
         END
     END
     Close All Excel Documents
