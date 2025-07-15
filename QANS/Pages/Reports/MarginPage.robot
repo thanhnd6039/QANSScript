@@ -48,6 +48,7 @@ Comparing Data For Every PN Between Margin And SS RCD
 
     ${tableMargin}      Create Table For Margin Report           transType=${transType}    attribute=${attribute}    year=${year}    quarter=${quarter}   
     ${tableSSRCD}       Create Table For SS Revenue Cost Dump    nameOfCol=${nameOfColOnSSRCD}    year=${year}    quarter=${quarter}
+    
 
     ${totalValueOnMargin}       Get Total Value On Margin Report           table=${tableMargin}   
     ${totalValueOnSSRCD}        Get Total Value On SS Revenue Cost Dump    table=${tableSSRCD}  
@@ -57,15 +58,16 @@ Comparing Data For Every PN Between Margin And SS RCD
          ${totalValueOnSSRCD}          Evaluate  "%.2f" % ${totalValueOnSSRCD}
     END
 
-    ${diff}     Evaluate    abs(${totalValueOnMargin}-${totalValueOnSSRCD})
+    ${diffTotalValue}     Evaluate    abs(${totalValueOnMargin}-${totalValueOnSSRCD})
 
-     IF    ${diff} > 1
+     IF    ${diffTotalValue} > 1
           FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
                ${oemGroupColOnSSRCD}     Set Variable    ${rowOnSSRCD[0]}
                ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
                ${pnColOnSSRCD}           Set Variable    ${rowOnSSRCD[1]}
                ${valueColOnSSRCD}           Set Variable    ${rowOnSSRCD[2]}              
                ${isFoundOEMGroupAndPN}     Set Variable    ${False}
+               ${diffValue}    Set Variable    0
                FOR    ${rowOnMargin}    IN    @{tableMargin}
                     ${oemGroupColOnMargin}      Set Variable    ${rowOnMargin[0]}
                     ${oemGroupColOnMargin}      Convert To Upper Case    ${oemGroupColOnMargin}
@@ -77,7 +79,8 @@ Comparing Data For Every PN Between Margin And SS RCD
                               ${valueColOnSSRCD}      Evaluate  "%.2f" % ${valueColOnSSRCD}
                               ${valueColOnMargin}     Evaluate  "%.2f" % ${valueColOnMargin}
                          END
-                         IF    ${valueColOnSSRCD} != ${valueColOnMargin}
+                         ${diffValue}    Evaluate    abs(${valueColOnSSRCD} - ${valueColOnMargin})
+                         IF    ${diffValue} > 1
                               @{rowOnTableError}   Create List
                               Append To List    ${rowOnTableError}    Q${quarter}-${year}
                               Append To List    ${rowOnTableError}    ${transType}-${attribute}

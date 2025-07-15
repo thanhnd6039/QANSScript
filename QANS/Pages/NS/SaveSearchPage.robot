@@ -132,12 +132,11 @@ Create Table For SS Revenue Cost Dump
                  ${value}    Evaluate    ${value}+${valueOnTransaction}
             END        
         END
-        ${tempValue}    Set Variable    ${value}
-        ${tempValue}    Convert To Integer    ${tempValue}
+        ${tempValue}    Set Variable    ${value}       
         IF    '${tempValue}' == '0'
              Continue For Loop
         END
-
+        
         IF    '${oemGroup}' == 'Lockheed Martin Corporation : Lockheed Martin Missiles and Fire Control'
             ${oemGroup}    Set Variable    Lockheed Martin Missiles and Fire Control
         ELSE IF    '${oemGroup}' == 'AMETEK Programmable Power : VTI Instruments'
@@ -180,7 +179,7 @@ Get All Transactions On SS RCD For Every Quarter
     ${posOfOEMGroupColOnSSRCD}  Set Variable    ${posOfOEMGroupColOnSSRCD[0]}
     ${posOfPNColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
     ${posOfPNColOnSSRCD}  Set Variable    ${posOfPNColOnSSRCD[0]}
-    ${posOfValueCol}     Get Position Of Column    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx    rowIndex=${rowIndexForSearchColOnSSRCD}    searchStr=${nameOfCol}
+    ${posOfValueCol}     Get Position Of Column    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx    rowIndex=${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SS_RCD}    searchStr=${nameOfCol}
     IF    '${posOfValueCol}' == '0'
          Fail   Not found the position of ${nameOfCol} column
     END
@@ -198,10 +197,12 @@ Get All Transactions On SS RCD For Every Quarter
                 ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
                 ${valueCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
                 ${tempValue}    Set Variable    ${valueCol}
-                ${tempValue}    Convert To Integer    ${tempValue}
-                IF    '${tempValue}' == '0'
+                # ${tempValue}    Convert To Integer    ${tempValue}
+                
+                IF    '${tempValue}' == '0' or '${tempValue}' == '${EMPTY}' or '${tempValue}' == 'None'
                      Continue For Loop
                 END
+                               
                 ${rowOnTable}   Create List
                 ...             ${oemGroupCol}
                 ...             ${pnCol}
@@ -211,7 +212,7 @@ Get All Transactions On SS RCD For Every Quarter
         END
     END
     Close Current Excel Document
-
+    
     [Return]    ${table}
 
 Get List OEM GROUP And PN For Every Quarter
