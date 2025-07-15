@@ -1,5 +1,5 @@
 *** Settings ***
-Suite Setup     Setup Test Environment For WoW Change Report    browser=firefox
+# Suite Setup     Setup Test Environment For WoW Change Report    browser=firefox
 Resource       ../../Pages/Reports/WoWChangePage.robot
 Library    DependencyLibrary
 
