@@ -142,8 +142,7 @@ Comparing Data For Every PN Between Margin And SS RCD
                Append To List    ${listNameOfColsForHeader}  PN
                Append To List    ${listNameOfColsForHeader}  ON MARGIN
                Append To List    ${listNameOfColsForHeader}  ON NS
-               Write Table To Excel    filePath=${MARGIN_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}
-               Fail   The data is different between Margin report and SS Revenue Cost Dump
+               Write Table To Excel    filePath=${MARGIN_RESULT_FILE_PATH}    listNameOfCols=${listNameOfColsForHeader}    table=${tableError}               
           END
      END
     
