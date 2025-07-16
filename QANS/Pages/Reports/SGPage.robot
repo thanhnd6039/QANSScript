@@ -90,8 +90,8 @@ Comparing Data For Every PN Between SG And SS Approved SF
          ${totalValueOnSG}                Evaluate  "%.2f" % ${totalValueOnSG}
          ${totalValueOnSSApprovedSF}      Evaluate  "%.2f" % ${totalValueOnSSApprovedSF}
     END
-    ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSApprovedSF})
-    IF    ${diff} > 1
+    ${diffTotalValue}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSApprovedSF})
+    IF    ${diffTotalValue} > 1
          FOR    ${rowOnSSApprovedSF}    IN    @{tableSSApprovedSF}
             ${oemGroupColOnSSApprovedSF}       Set Variable    ${rowOnSSApprovedSF[0]}
             ${oemGroupColOnSSApprovedSF}       Convert To Upper Case    ${oemGroupColOnSSApprovedSF}
@@ -109,7 +109,8 @@ Comparing Data For Every PN Between SG And SS Approved SF
                          ${valueColOnSSApprovedSF}      Evaluate  "%.2f" % ${valueColOnSSApprovedSF}
                          ${valueColOnSG}                Evaluate  "%.2f" % ${valueColOnSG}
                     END
-                    IF    ${valueColOnSSApprovedSF} != ${valueColOnSG}
+                    ${diffValue}    Evaluate    abs(${valueColOnSSApprovedSF} - ${valueColOnSG})
+                    IF    ${diffValue} > 1
                         @{rowOnTableError}   Create List
                         Append To List    ${rowOnTableError}    Q${quarter}-${year}
                         Append To List    ${rowOnTableError}    ${transType}-${attribute}
@@ -185,8 +186,8 @@ Comparing Data For Every PN Between SG And SS RCD
          ${totalValueOnSSRCD}      Evaluate  "%.2f" % ${totalValueOnSSRCD}
     END
     
-    ${diff}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSRCD})
-    IF    ${diff} > 1       
+    ${diffTotalValue}     Evaluate    abs(${totalValueOnSG}-${totalValueOnSSRCD})
+    IF    ${diffTotalValue} > 1       
         FOR    ${rowOnSSRCD}    IN    @{tableSSRCD}
             ${oemGroupColOnSSRCD}       Set Variable    ${rowOnSSRCD[0]}
             ${oemGroupColOnSSRCD}       Convert To Upper Case    ${oemGroupColOnSSRCD}
@@ -204,7 +205,8 @@ Comparing Data For Every PN Between SG And SS RCD
                          ${valueColOnSSRCD}      Evaluate  "%.2f" % ${valueColOnSSRCD}
                          ${valueColOnSG}         Evaluate  "%.2f" % ${valueColOnSG}
                     END
-                    IF    ${valueColOnSSRCD} != ${valueColOnSG}
+                    ${diffValue}    Evaluate    abs(${valueColOnSSRCD} - ${valueColOnSG})
+                    IF    ${diffValue} > 1
                         @{rowOnTableError}   Create List
                         Append To List    ${rowOnTableError}    Q${quarter}-${year}
                         Append To List    ${rowOnTableError}    ${transType}-${attribute}

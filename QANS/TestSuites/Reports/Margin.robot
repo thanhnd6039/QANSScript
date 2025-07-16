@@ -1,6 +1,7 @@
 *** Settings ***
 # Suite Setup     Setup Test Environment For Margin Report    browser=firefox
 Resource    ../../Pages/Reports/MarginPage.robot
+Library    OperatingSystem
 
 *** Test Cases ***
 Verify QTY of Revenue on Margin Report
@@ -38,7 +39,7 @@ Verify Amount of Revenue on Margin Report
     FOR    ${rowIndex}    IN RANGE    2    ${numOfRowsOnTestDataForMargin}+1
         ${year}     Read Excel Cell    row_num=${rowIndex}    col_num=1
         ${quarter}  Read Excel Cell    row_num=${rowIndex}    col_num=2
-        Comparing Data For Every PN Between Margin And SS RCD    transType=REVENUE    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=COGS AMOUNT
+        Comparing Data For Every PN Between Margin And SS RCD    transType=REVENUE    attribute=AMOUNT    year=${year}    quarter=${quarter}    nameOfColOnSSRCD=REV AMOUNT
     END
     Open Excel Document    filename=${MARGIN_RESULT_FILE_PATH}    doc_id=MarginResult
     Switch Current Excel Document    doc_id=MarginResult
@@ -256,7 +257,7 @@ Verify QTY of Customer Forecast on Margin Report
 Verify Amount of Customer Forecast on Margin Report
     [Tags]  Margin_0011
     [Documentation]     Verify Amount of Customer Forecast on Margin report
-
+   
     File Should Exist      path=${TEST_DATA_FOR_MARGIN_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_MARGIN_FILE_PATH}    doc_id=TestDataForMargin
     ${numOfRowsOnTestDataForMargin}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_MARGIN_FILE_PATH}   sheetName=Customer Forecast

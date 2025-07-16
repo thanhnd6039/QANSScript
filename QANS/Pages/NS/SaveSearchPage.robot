@@ -64,37 +64,22 @@ Create Table For SS Approved Sales Forecast
     [Arguments]     ${nameOfCol}    ${year}     ${quarter}
     @{table}    Create List
     ${approvedSFFilePath}   Set Variable    ${OUTPUT_DIR}\\SS Approved Sales Forecast.xlsx
-    ${SSApprovedSFConfigFilePath}   Set Variable    ${CONFIG_DIR}\\SSApprovedSFConfig.json
+    # ${SSApprovedSFConfigFilePath}   Set Variable    ${CONFIG_DIR}\\SSApprovedSFConfig.json
 
     
     File Should Exist    path=${approvedSFFilePath}
     Open Excel Document    filename=${approvedSFFilePath}    doc_id=ApprovedSF
     ${numOfRows}    Get Number Of Rows In Excel    filePath=${approvedSFFilePath}
-
-    ${configFileObject}     Load Json From File    file_name=${SSApprovedSFConfigFilePath}
-    ${startRow}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
-    ${startRow}  Set Variable    ${startRow[0]}
-    ${posOfOEMGroupCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
-    ${posOfOEMGroupCol}  Set Variable    ${posOfOEMGroupCol[0]}
-    ${posOfPNCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
-    ${posOfPNCol}  Set Variable    ${posOfPNCol[0]}
-    ${posOfYearCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfYearCol
-    ${posOfYearCol}  Set Variable    ${posOfYearCol[0]}
-    ${posOfQuarterCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfQuarterCol
-    ${posOfQuarterCol}  Set Variable    ${posOfQuarterCol[0]}
-    ${rowIndexForSearchPosOfCol}  Get Value From Json    json_object=${configFileObject}    json_path=$.rowIndexForSearchPosOfCol
-    ${rowIndexForSearchPosOfCol}  Set Variable    ${rowIndexForSearchPosOfCol[0]}
-
-    ${posOfValueCol}     Get Position Of Column    filePath=${approvedSFFilePath}   rowIndex=${rowIndexForSearchPosOfCol}    searchStr=${nameOfCol}
+    ${posOfValueCol}     Get Position Of Column    filePath=${approvedSFFilePath}   rowIndex=${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SS_APPROVED_SF}    searchStr=${nameOfCol}
     IF    '${posOfValueCol}' == '0'
          Fail   Not found the position of ${nameOfCol} column
     END
 
-    FOR    ${rowIndex}    IN RANGE    ${startRow}    ${numOfRows}+1
-        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupCol}
-        ${pnCol}            Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNCol}
-        ${yearCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfYearCol}
-        ${quarterCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterCol}
+    FOR    ${rowIndex}    IN RANGE    ${START_ROW_ON_SS_APPROVED_SF}    ${numOfRows}+1
+        ${oemGroupCol}      Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_SS_APPROVED_SF}
+        ${pnCol}            Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PN_COL_ON_SS_APPROVED_SF}
+        ${yearCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_YEAR_COL_ON_SS_APPROVED_SF}
+        ${quarterCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${POS_QUARTER_COL_ON_SS_APPROVED_SF}
         ${valueCol}         Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
         IF    '${yearCol}' == '${year}' and '${quarterCol}' == '${quarter}'
              ${tempValue}   Set Variable    ${valueCol}
@@ -166,19 +151,6 @@ Get All Transactions On SS RCD For Every Quarter
     @{table}       Create List
     ${quarterStr}  Set Variable    Q${quarter}-${year}
 
-    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
-    ${rowIndexForSearchColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.rowIndexForSearchPosOfCol
-    ${rowIndexForSearchColOnSSRCD}  Set Variable    ${rowIndexForSearchColOnSSRCD[0]}
-    ${startRowOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
-    ${startRowOnSSRCD}  Set Variable    ${startRowOnSSRCD[0]}
-    ${posOfParentClassColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfParentClassCol
-    ${posOfParentClassColOnSSRCD}  Set Variable    ${posOfParentClassColOnSSRCD[0]}
-    ${posOfQuarterColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfQuarterCol
-    ${posOfQuarterColOnSSRCD}  Set Variable    ${posOfQuarterColOnSSRCD[0]}
-    ${posOfOEMGroupColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
-    ${posOfOEMGroupColOnSSRCD}  Set Variable    ${posOfOEMGroupColOnSSRCD[0]}
-    ${posOfPNColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
-    ${posOfPNColOnSSRCD}  Set Variable    ${posOfPNColOnSSRCD[0]}
     ${posOfValueCol}     Get Position Of Column    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx    rowIndex=${ROW_INDEX_FOR_SEARCH_POS_COL_ON_SS_RCD}    searchStr=${nameOfCol}
     IF    '${posOfValueCol}' == '0'
          Fail   Not found the position of ${nameOfCol} column
@@ -189,16 +161,15 @@ Get All Transactions On SS RCD For Every Quarter
     ${numOfRows}    Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
     ${listParentClass}  Get List Parent Class
     FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
-        ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
+        ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PARENT_CLASS_COL_ON_SS_RCD}
         IF    '${parentClassCol}' in ${listParentClass}
-            ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
+            ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${POS_QUARTER_COL_ON_SS_RCD}
             IF    '${quarterCol}' == '${quarterStr}'
-                ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
-                ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
+                ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_SS_RCD}
+                ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PN_COL_ON_SS_RCD}
                 ${valueCol}       Read Excel Cell    row_num=${rowIndex}    col_num=${posOfValueCol}
                 ${tempValue}    Set Variable    ${valueCol}
-                # ${tempValue}    Convert To Integer    ${tempValue}
-                
+                               
                 IF    '${tempValue}' == '0' or '${tempValue}' == '${EMPTY}' or '${tempValue}' == 'None'
                      Continue For Loop
                 END
@@ -225,25 +196,13 @@ Get List OEM GROUP And PN For Every Quarter
     ${numOfRows}    Get Number Of Rows In Excel    filePath=${OUTPUT_DIR}\\SS Revenue Cost Dump.xlsx
     ${listParentClass}  Get List Parent Class
 
-    ${configFileObject}     Load Json From File    file_name=${CONFIG_DIR}\\SSRevenueCostDumpConfig.json
-    ${startRowOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.startRow
-    ${startRowOnSSRCD}  Set Variable    ${startRowOnSSRCD[0]}
-    ${posOfParentClassColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfParentClassCol
-    ${posOfParentClassColOnSSRCD}  Set Variable    ${posOfParentClassColOnSSRCD[0]}
-    ${posOfQuarterColOnSSRCD}  Get Value From Json    json_object=${configFileObject}    json_path=$.posOfQuarterCol
-    ${posOfQuarterColOnSSRCD}  Set Variable    ${posOfQuarterColOnSSRCD[0]}
-    ${posOfOEMGroupColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfOEMGroupCol
-    ${posOfOEMGroupColOnSSRCD}  Set Variable    ${posOfOEMGroupColOnSSRCD[0]}
-    ${posOfPNColOnSSRCD}   Get Value From Json    json_object=${configFileObject}    json_path=$.posOfPNCol
-    ${posOfPNColOnSSRCD}  Set Variable    ${posOfPNColOnSSRCD[0]}
-
     FOR    ${rowIndex}    IN RANGE    ${startRowOnSSRCD}    ${numOfRows}+1
-        ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfParentClassColOnSSRCD}
+        ${parentClassCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PARENT_CLASS_COL_ON_SS_RCD}
         IF    '${parentClassCol}' in ${listParentClass}
-             ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${posOfQuarterColOnSSRCD}
+             ${quarterCol}   Read Excel Cell    row_num=${rowIndex}    col_num=${POS_QUARTER_COL_ON_SS_RCD}
              IF    '${quarterCol}' == '${quarterStr}'
-                  ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${posOfOEMGroupColOnSSRCD}
-                  ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${posOfPNColOnSSRCD}
+                  ${oemGroupCol}    Read Excel Cell    row_num=${rowIndex}    col_num=${POS_OEM_GROUP_COL_ON_SS_RCD}
+                  ${pnCol}          Read Excel Cell    row_num=${rowIndex}    col_num=${POS_PN_COL_ON_SS_RCD}
                   ${rowOnTable}   Create List
                   ...             ${oemGroupCol}
                   ...             ${pnCol}

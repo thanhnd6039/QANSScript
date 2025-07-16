@@ -3,9 +3,9 @@ Suite Setup     Setup Test Environment For SG Report    browser=firefox
 Resource    ../../Pages/Reports/SGPage.robot
 
 *** Test Cases ***
-Verify Revenue QTY on SG Report
+Verify QTY of Revenue on SG Report
     [Tags]  SG_0001
-    [Documentation]     Verify the QTY data of Revenue on SG report
+    [Documentation]     Verify QTY of Revenue on SG report
     
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}     doc_id=TestDataForSG
@@ -23,14 +23,14 @@ Verify Revenue QTY on SG Report
         ${transTypesColIsContain}    Evaluate    "REVENUE-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Revenue QTY data is different between SG report and SS Revenue Cost Dump            
+             Fail   QTY of Revenue is different between SG report and SS Revenue Cost Dump            
         END
     END   
     Close All Excel Documents
 
-Verify Revenue Amount on SG Report
+Verify Amount of Revenue on SG Report
     [Tags]  SG_0002
-    [Documentation]     Verify the Amount data of Revenue on SG report
+    [Documentation]     Verify Amount of Revenue on SG report
     
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
@@ -48,14 +48,14 @@ Verify Revenue Amount on SG Report
         ${transTypesColIsContain}    Evaluate    "REVENUE-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Revenue Amount data is different between SG report and SS Revenue Cost Dump            
+             Fail   Amount of Revenue is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
 
-Verify Backlog QTY on SG Report
+Verify QTY of Backlog on SG Report
     [Tags]  SG_0003
-    [Documentation]     Verify the QTY data of Backlog on SG report
+    [Documentation]     Verify QTY of Backlog on SG report
 
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
@@ -73,14 +73,15 @@ Verify Backlog QTY on SG Report
         ${transTypesColIsContain}    Evaluate    "BACKLOG-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Backlog QTY data is different between SG report and SS Revenue Cost Dump            
+             Fail   QTY of Backlog is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
 
-Verify Backlog Amount on SG Report
+Verify Amount of Backlog on SG Report
     [Tags]  SG_0004
-    [Documentation]     Verify the Amount data of Backlog on SG report
+    [Documentation]     Verify Amount of Backlog on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}   sheetName=Backlog
@@ -97,14 +98,15 @@ Verify Backlog Amount on SG Report
         ${transTypesColIsContain}    Evaluate    "BACKLOG-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Backlog Amount data is different between SG report and SS Revenue Cost Dump            
+             Fail   Amount of Backlog is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
 
-Verify Backlog Forecast QTY on SG Report
+Verify QTY of Backlog Forecast on SG Report
     [Tags]  SG_0005
-    [Documentation]     Verify the QTY data of Backlog Forecast on SG report
+    [Documentation]     Verify QTY of Backlog Forecast on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Backlog Forecast
@@ -121,14 +123,15 @@ Verify Backlog Forecast QTY on SG Report
         ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Backlog Forecast QTY data is different between SG report and SS Revenue Cost Dump             
+             Fail   QTY of Backlog Forecast is different between SG report and SS Revenue Cost Dump             
         END
     END
     Close All Excel Documents
 
-Verify Backlog Forecast Amount on SG Report
+Verify Amount of Backlog Forecast on SG Report
     [Tags]  SG_0006
-    [Documentation]     Verify the Amount data of Backlog Forecast on SG report
+    [Documentation]     Verify Amount of Backlog Forecast on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Backlog Forecast
@@ -145,14 +148,15 @@ Verify Backlog Forecast Amount on SG Report
         ${transTypesColIsContain}    Evaluate    "BACKLOG FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Backlog Forecast Amount data is different between SG report and SS Revenue Cost Dump            
+             Fail   Amount of Backlog Forecast is different between SG report and SS Revenue Cost Dump            
         END
     END
     Close All Excel Documents
 
-Verify Customer Forecast QTY on SG Report
+Verify QTY of Customer Forecast on SG Report
     [Tags]  SG_0007
-    [Documentation]     Verify the QTY data of Customer Forecast on SG report
+    [Documentation]     Verify QTY of Customer Forecast on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Customer Forecast
@@ -169,14 +173,15 @@ Verify Customer Forecast QTY on SG Report
         ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Customer Forecast QTY data is different between SG report and SS Revenue Cost Dump             
+             Fail   QTY of Customer Forecast is different between SG report and SS Revenue Cost Dump             
         END
     END
     Close All Excel Documents
 
-Verify Customer Forecast Amount on SG Report
+Verify Amount of Customer Forecast on SG Report
     [Tags]  SG_0008
-    [Documentation]     Verify the Amount data of Customer Forecast on SG report
+    [Documentation]     Verify Amount of Customer Forecast on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Customer Forecast
@@ -193,14 +198,15 @@ Verify Customer Forecast Amount on SG Report
         ${transTypesColIsContain}    Evaluate    "CUSTOMER FORECAST-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Customer Forecast Amount data is different between SG report and SS Revenue Cost Dump             
+             Fail   Amount of Customer Forecast is different between SG report and SS Revenue Cost Dump             
         END
     END
     Close All Excel Documents
 
-Verify Budget QTY on SG Report
+Verify QTY of Budget on SG Report
     [Tags]  SG_0009
-    [Documentation]     Verify the QTY data of Budget on SG report
+    [Documentation]     Verify QTY of Budget on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Budget
@@ -217,14 +223,15 @@ Verify Budget QTY on SG Report
         ${transTypesColIsContain}    Evaluate    "BUDGET-QTY" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Budget QTY data is different between SG report and SS Approved SF            
+             Fail   QTY of Budget is different between SG report and SS Approved SF            
         END
     END
     Close All Excel Documents
 
-Verify Budget Amount on SG Report
+Verify Amount of Budget on SG Report
     [Tags]  SG_0010
-    [Documentation]     Verify the Amount data of Budget on SG report
+    [Documentation]     Verify Amount of Budget on SG report
+
     File Should Exist      path=${TEST_DATA_FOR_SG_FILE_PATH}
     Open Excel Document    filename=${TEST_DATA_FOR_SG_FILE_PATH}    doc_id=TestDataForSG
     ${numOfRowsOnTestDataForSG}    Get Number Of Rows In Excel    filePath=${TEST_DATA_FOR_SG_FILE_PATH}    sheetName=Budget
@@ -241,7 +248,7 @@ Verify Budget Amount on SG Report
         ${transTypesColIsContain}    Evaluate    "BUDGET-AMOUNT" in """${transTypeColOnSGResult}"""
         IF    '${transTypesColIsContain}' == '${True}'
              Close All Excel Documents
-             Fail   The Budget Amount data is different between SG report and SS Approved SF             
+             Fail   Amount of Budget is different between SG report and SS Approved SF             
         END
     END
     Close All Excel Documents

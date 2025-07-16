@@ -1,5 +1,4 @@
 from openpyxl import load_workbook
-# from pyexcel.cookbook import merge_all_to_a_book
 import glob
 import os
 from robot.api import logger
