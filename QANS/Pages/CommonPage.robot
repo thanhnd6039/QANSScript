@@ -3,6 +3,7 @@ Library     SeleniumLibrary
 Library     JSONLibrary
 Library     ExcelLibrary
 Library     Collections
+Library     OperatingSystem
 Library     String
 Library     XML
 Library     DateTime
@@ -13,7 +14,6 @@ Library     ../Libs/COTP.py
 Library     ../Libs/CBrowser.py
 Library     ../Libs/CDateTime.py
 
-Resource    UtilityPage.robot
 
 *** Variables ***
 ${CONFIG_DIR}       C:\\RobotFramework\\Config
