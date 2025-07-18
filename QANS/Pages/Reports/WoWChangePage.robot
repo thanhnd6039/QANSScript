@@ -33,14 +33,13 @@ Setup Test Environment For WoW Change Report
     Append To List    ${parentClassOptionsOnSG}     MEM
     Append To List    ${parentClassOptionsOnSG}     STORAGE
     Select Parent Class On SG Report    options=${parentClassOptionsOnSG}
-    Click On Button View Report
+    Sleep    10s  
     Click On Button View Report
     Wait Until Element Is Enabled    locator=${btnViewReport}   timeout=${TIMEOUT}
     Export Report To      option=Excel
     Wait Until Created    path=${SG_FILE_PATH}
-    Sleep    5s
+    Sleep    20s
     Close Browser
-
 
 Get WoW By Formular By OEM GRoup
     [Arguments]     ${nameOftable}    ${nameOfCol}    ${oemGroup}
