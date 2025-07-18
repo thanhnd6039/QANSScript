@@ -1,8 +1,7 @@
 *** Settings ***
-# Suite Setup     Setup Test Environment For WoW Change Report    browser=firefox
+Suite Setup     Setup Test Environment For WoW Change Report    browser=firefox
 Resource       ../../Pages/Reports/WoWChangePage.robot
 Library    DependencyLibrary
-
 
 *** Test Cases ***
 Verify Prev Q Ship for the OEM East table
@@ -19,14 +18,6 @@ Verify Prev Q Ship for the OEM East table
     END
 
     Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM East     nameOfCol=Pre Q Ships  transType=REVENUE   attribute=AMOUNT     year=${currentYear}     quarter=${preQuarter}
-
-Verify Current Q Budget for the OEM East table
-    [Tags]  WoWChange_0002
-    [Documentation]     Verify the data of Current Q Budget column for the OEM East table
-
-    ${currentYear}              Get Current Year
-    ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM East     nameOfCol=Current Q Budget  transType=BUDGET   attribute=AMOUNT     year=${currentYear}     quarter=${currentQuarter}
 
 Verify LW Commit for the OEM East table
      [Tags]  WoWChange_0003
@@ -106,14 +97,6 @@ Verify Prev Quarter Ship for the OEM West table
     END
     Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM West + Channel     nameOfCol=Pre Q Ships  transType=REVENUE   attribute=AMOUNT     year=${currentYear}     quarter=${preQuarter}
 
-Verify Current Quarter Budget for the OEM West table
-    [Tags]  WoWChange_0013
-    [Documentation]     Verify the data of Current Q Budget column for the OEM East table
-
-    ${currentYear}              Get Current Year
-    ${currentQuarter}           Get Current Quarter
-    Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM West + Channel     nameOfCol=Current Q Budget  transType=BUDGET   attribute=AMOUNT     year=${currentYear}     quarter=${currentQuarter}
-
 Verify LW Commit for the OEM West table
     [Tags]  WoWChange_0014
     [Documentation]     Verify the data of LW Commit column for the OEM East table
@@ -177,3 +160,39 @@ Verify GAP for the OEM West table
     [Documentation]     Verify the data of Comments column for the OEM West table
 
     Check LW Commit, Comment On WoW Change  nameOftable=OEM West + Channel     nameOfCol=Comments
+
+Verify Current Q Budget for the OEM East table
+    [Tags]  WoWChange_0002
+    [Documentation]     Verify the data of Current Q Budget column for the OEM East table
+
+    ${SGFileIsExist}    Run Keyword And Return Status    File Should Exist    path=${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+    IF    '${SGFileIsExist}' == '${True}'
+        Remove File    path=${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+    END
+    Setup    browser=firefox
+    Navigate To Report    reportLink=/NetSuite+Reports/Sales/Sales+Gap+Report+NS+With+SO+Forecast&rs:Command=Render
+    Export Report To      option=Excel
+    Wait Until Created    path=${SG_FILE_PATH}
+    Sleep    20s
+    Close Browser
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM East     nameOfCol=Current Q Budget  transType=BUDGET   attribute=AMOUNT     year=${currentYear}     quarter=${currentQuarter}
+
+Verify Current Quarter Budget for the OEM West table
+    [Tags]  WoWChange_0013
+    [Documentation]     Verify the data of Current Q Budget column for the OEM East table
+
+    ${SGFileIsExist}    Run Keyword And Return Status    File Should Exist    path=${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+    IF    '${SGFileIsExist}' == '${True}'
+        Remove File    path=${OUTPUT_DIR}\\Sales Gap Report NS With SO Forecast.xlsx
+    END
+    Setup    browser=firefox
+    Navigate To Report    reportLink=/NetSuite+Reports/Sales/Sales+Gap+Report+NS+With+SO+Forecast&rs:Command=Render
+    Export Report To      option=Excel
+    Wait Until Created    path=${SG_FILE_PATH}
+    Sleep    20s
+    Close Browser
+    ${currentYear}              Get Current Year
+    ${currentQuarter}           Get Current Quarter
+    Check BGT, Ship, Backlog On WoW Change    nameOftable=OEM West + Channel     nameOfCol=Current Q Budget  transType=BUDGET   attribute=AMOUNT     year=${currentYear}     quarter=${currentQuarter}
